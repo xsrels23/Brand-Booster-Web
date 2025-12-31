@@ -1,0 +1,117 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brand Booster Media - Momentum Plan</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #1a1a1a; color: #f0f0f0; overflow-x: hidden; }
+        .brand-gradient-bg { background-image: linear-gradient(to right, #ec4899, #8b5cf6); }
+        .btn-primary { background-image: linear-gradient(to right, #ec4899 0%, #8b5cf6 51%, #ec4899 100%); background-size: 200% auto; transition: 0.5s; }
+        .btn-primary:hover { background-position: right center; }
+        .card-bg { background-color: #2c2c2c; }
+        .nav-link { transition: all 0.3s ease; position: relative; }
+        .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -4px; left: 0; background-image: linear-gradient(to right, #ec4899, #8b5cf6); transition: width 0.3s ease; }
+        .nav-link:hover::after, .nav-link.active::after { width: 100%; }
+        .nav-link.active { color: #ec4899; font-weight: 600; }
+        .fade-in { animation: fadeIn 0.5s ease-in-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
+</head>
+<body class="antialiased flex flex-col min-h-screen">
+
+    <header class="bg-black/80 backdrop-blur-md sticky top-0 z-50 border-b border-gray-800">
+        <nav class="container mx-auto px-6 py-4 flex justify-between items-center">
+            <a href="index.html" class="flex items-center">
+                <img src="logo.png" alt="Brand Booster Media" class="h-16 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <span style="display:none;" class="font-bold text-xl tracking-tight ml-2">Brand Booster Media</span>
+            </a>
+            <div class="hidden md:flex items-center space-x-8">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="about.html" class="nav-link">About</a>
+                <a href="memberships.html" class="nav-link active">Memberships</a>
+                <a href="#contact" class="px-5 py-2 rounded-full font-semibold text-white text-sm btn-primary">Get Started</a>
+            </div>
+            <button id="mobile-menu-btn" class="md:hidden text-white focus:outline-none"><i data-lucide="menu" class="w-6 h-6"></i></button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden bg-zinc-900 border-b border-zinc-800 absolute w-full left-0 top-full">
+             <div class="flex flex-col p-4 space-y-4">
+                 <a href="index.html" class="text-left py-2 hover:text-pink-500">Home</a>
+                 <a href="about.html" class="text-left py-2 hover:text-pink-500">About</a>
+                 <a href="memberships.html" class="text-left py-2 hover:text-pink-500">Memberships</a>
+                 <a href="#contact" class="w-full py-2 rounded font-semibold text-white btn-primary text-center">Contact Us</a>
+             </div>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <section class="page-section fade-in">
+            <div class="container mx-auto px-6 py-20">
+                <a href="memberships.html" class="mb-8 flex items-center text-gray-400 hover:text-white"><i data-lucide="arrow-left" class="w-4 h-4 mr-2"></i> Back to Plans</a>
+                
+                <div class="card-bg rounded-3xl p-8 md:p-16 max-w-4xl mx-auto border-t-8 border-purple-500">
+                    <div class="flex flex-col md:flex-row justify-between items-start md:items-center mb-10">
+                        <div>
+                            <h1 class="text-4xl font-bold">Momentum Plan</h1>
+                            <p class="text-gray-400 mt-2">Scalable editing for growing businesses and creators.</p>
+                        </div>
+                        <div class="mt-4 md:mt-0 text-right">
+                            <span class="text-4xl font-bold text-purple-500">$499</span><span class="text-gray-500">/Month</span>
+                        </div>
+                    </div>
+
+                    <div class="grid md:grid-cols-2 gap-12">
+                        <div>
+                            <h3 class="text-xl font-bold text-white mb-4">What's Included</h3>
+                            <ul class="space-y-3">
+                                <li class="flex items-center text-gray-300"><i data-lucide="check" class="text-purple-500 w-5 h-5 mr-3"></i> Avg. 15-30 Videos/Month</li>
+                                <li class="flex items-center text-gray-300"><i data-lucide="check" class="text-purple-500 w-5 h-5 mr-3"></i> Unlimited revisions & uploads</li>
+                                <li class="flex items-center text-gray-300"><i data-lucide="check" class="text-purple-500 w-5 h-5 mr-3"></i> Dedicated editor & project manager</li>
+                                <li class="flex items-center text-gray-300"><i data-lucide="check" class="text-purple-500 w-5 h-5 mr-3"></i> Up to 4 brands & 4 users</li>
+                                <li class="flex items-center text-gray-300"><i data-lucide="check" class="text-purple-500 w-5 h-5 mr-3"></i> Access to Creator Edge (trends & mastermind)</li>
+                            </ul>
+                        </div>
+                        <div>
+                            <h3 class="text-xl font-bold text-white mb-4">Turnaround Time</h3>
+                            <div class="bg-zinc-900 p-4 rounded-lg space-y-2">
+                                <p class="text-gray-300"><span class="font-bold text-white">Short-form:</span> 1 business day</p>
+                                <p class="text-gray-300"><span class="font-bold text-white">Long-form (&lt;10m):</span> 2-4 business days</p>
+                                <p class="text-gray-300"><span class="font-bold text-white">Podcasts (&lt;60m):</span> 1-2 business days</p>
+                            </div>
+                            <div class="mt-6">
+                                <h3 class="text-xl font-bold text-white mb-2">Best For</h3>
+                                <p class="text-gray-400">Creators and small businesses scaling their video production.</p>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="mt-12 text-center">
+                        <button class="w-full md:w-auto px-10 py-4 rounded-full font-bold text-white text-lg btn-primary">Select Momentum Plan</button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Footer -->
+        <section id="contact" class="container mx-auto px-6 py-20 mt-auto">
+             <div class="brand-gradient-bg rounded-xl p-8 md:p-12 text-center relative overflow-hidden">
+                 <div class="relative z-10">
+                     <h2 class="text-3xl md:text-4xl font-bold text-white">Ready to Boost Your Brand?</h2>
+                     <p class="mt-4 text-lg text-white/90 max-w-2xl mx-auto">Let's talk about your goals and how we can help you achieve them. Schedule a free consultation today!</p>
+                     <a href="https://calendar.app.google/ojsVAJy1vNYC4bjY6" target="_blank" class="mt-8 px-8 py-4 bg-white text-pink-600 rounded-full font-bold text-lg hover:bg-gray-100 transition shadow-lg inline-block">Schedule Free Call</a>
+                 </div>
+                 <div class="absolute top-0 left-0 w-full h-full bg-black opacity-10"></div>
+             </div>
+             <div class="text-center text-gray-600 mt-12 text-sm">&copy; 2024 Brand Booster Media. All rights reserved.</div>
+        </section>
+    </main>
+
+    <script>
+        lucide.createIcons();
+        document.getElementById('mobile-menu-btn').addEventListener('click', () => { document.getElementById('mobile-menu').classList.toggle('hidden'); });
+    </script>
+</body>
+</html>
