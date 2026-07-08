@@ -1,0 +1,394 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brand Booster Media - Our Work</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #0d0d0d; color: #f0f0f0; overflow-x: hidden; }
+        .brand-gradient-text { background: linear-gradient(135deg, #ec4899, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .brand-gradient-bg { background-image: linear-gradient(135deg, #ec4899, #8b5cf6); }
+        .nav-link { transition: all 0.3s ease; position: relative; }
+        .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -4px; left: 0; background-image: linear-gradient(to right, #ec4899, #8b5cf6); transition: width 0.3s ease; }
+        .nav-link:hover::after, .nav-link.active::after { width: 100%; }
+        .nav-link.active { color: #ec4899; font-weight: 600; }
+        .card-bg { background-color: #16161a; border: 1px solid rgba(255, 255, 255, 0.05); transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .card-bg:hover { transform: translateY(-8px); border-color: rgba(236, 72, 153, 0.2); box-shadow: 0 20px 40px -15px rgba(139, 92, 246, 0.15); }
+        .btn-primary { background-image: linear-gradient(to right, #ec4899 0%, #8b5cf6 51%, #ec4899 100%); background-size: 200% auto; transition: 0.5s; }
+        .btn-primary:hover { background-position: right center; }
+        
+        /* Scroll Reveal System */
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(30px);
+            transition: opacity 1s cubic-bezier(0.16, 1, 0.3, 1), transform 1s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-on-scroll.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+        
+        .glow-overlay {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, rgba(139, 92, 246, 0.12) 0%, rgba(0,0,0,0) 70%);
+            border-radius: 50%;
+            pointer-events: none;
+            z-index: 0;
+        }
+    </style>
+</head>
+<body class="antialiased flex flex-col min-h-screen">
+
+    <!-- Navigation -->
+    <header class="bg-black/80 backdrop-blur-md sticky top-0 z-50 border-b border-zinc-900">
+        <nav class="container mx-auto px-6 py-5 flex justify-between items-center">
+            <a href="index.html" class="flex items-center">
+                <img src="logo.png" alt="Brand Booster Media" class="h-16 object-contain" onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                <span style="display:none;" class="font-bold text-xl tracking-tight ml-2">Brand Booster Media</span>
+            </a>
+            <div class="hidden md:flex items-center space-x-10">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="about.html" class="nav-link">About</a>
+                <a href="work.html" class="nav-link active">Our Work</a>
+                <a href="memberships.html" class="nav-link">Memberships</a>
+                <a href="#contact" class="px-6 py-2.5 rounded-full font-semibold text-white text-sm btn-primary">Get Started</a>
+            </div>
+            <button id="mobile-menu-btn" class="md:hidden text-white focus:outline-none"><i data-lucide="menu" class="w-6 h-6"></i></button>
+        </nav>
+        <div id="mobile-menu" class="hidden md:hidden bg-zinc-950 border-b border-zinc-900 absolute w-full left-0 top-full z-50">
+             <div class="flex flex-col p-6 space-y-4">
+                 <a href="index.html" class="text-left py-2 hover:text-pink-500">Home</a>
+                 <a href="about.html" class="text-left py-2 hover:text-pink-500">About</a>
+                 <a href="work.html" class="text-left py-2 hover:text-pink-500 active">Our Work</a>
+                 <a href="memberships.html" class="text-left py-2 hover:text-pink-500">Memberships</a>
+                 <a href="#contact" class="w-full py-3 rounded font-semibold text-white btn-primary text-center">Contact Us</a>
+             </div>
+        </div>
+    </header>
+
+    <main class="flex-grow relative">
+        <div class="glow-overlay top-20 left-10"></div>
+        <div class="glow-overlay bottom-40 right-10"></div>
+
+        <!-- Portfolio Header -->
+        <section class="container mx-auto px-6 pt-24 pb-16 text-center relative z-10 reveal-on-scroll">
+            <span class="text-pink-500 font-bold uppercase tracking-widest text-sm bg-pink-500/10 px-4 py-1.5 rounded-full">Portfolio Showcase</span>
+            <h1 class="text-5xl md:text-7xl font-extrabold mt-6 mb-8 leading-tight">Discover Our <span class="brand-gradient-text">Mastery</span></h1>
+            <p class="text-xl md:text-2xl text-zinc-400 max-w-3xl mx-auto font-light leading-relaxed">
+                Explore a selected gallery of premium visual stories we've edited, animated, and structured to captivate audiences and power business growth.
+            </p>
+        </section>
+
+        <!-- Dynamic Filter Controls -->
+        <section class="container mx-auto px-6 mb-16 relative z-10 reveal-on-scroll">
+            <div class="flex flex-wrap justify-center gap-3">
+                <button class="filter-btn active px-6 py-2.5 rounded-full text-sm font-semibold transition bg-zinc-800 text-white border border-zinc-700" data-filter="all">All Projects</button>
+                <button class="filter-btn px-6 py-2.5 rounded-full text-sm font-semibold transition bg-zinc-900 text-zinc-400 hover:text-white hover:bg-zinc-800 border border-transparent" data-filter="short">Short-Form Content</button>
+                <button class="filter-btn px-6 py-2.5 rounded-full text-sm font-semibold transition bg-zinc-900 text-zinc-400 hover:text-white hover:bg-zinc-800 border border-transparent" data-filter="long">Long-Form Videos</button>
+                <button class="filter-btn px-6 py-2.5 rounded-full text-sm font-semibold transition bg-zinc-900 text-zinc-400 hover:text-white hover:bg-zinc-800 border border-transparent" data-filter="brand">Brand Videos</button>
+                <button class="filter-btn px-6 py-2.5 rounded-full text-sm font-semibold transition bg-zinc-900 text-zinc-400 hover:text-white hover:bg-zinc-800 border border-transparent" data-filter="podcast">Podcasts & Audio</button>
+            </div>
+        </section>
+
+        <!-- Video Portfolio Grid -->
+        <section class="container mx-auto px-6 py-12 relative z-10 reveal-on-scroll">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-14" id="portfolio-grid">
+                <!-- Video Item 1 -->
+                <div class="portfolio-item card-bg rounded-2xl overflow-hidden flex flex-col group" data-category="short">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <!-- Beautiful placeholder mockup overlay simulating high production values -->
+                        <div class="absolute inset-0 bg-gradient-to-br from-pink-500/20 to-purple-800/30 opacity-60 group-hover:scale-105 transition-transform duration-700"></div>
+                        <i data-lucide="sparkles" class="absolute top-4 left-4 text-pink-400 w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-pink-400 z-20">0:58</span>
+                        
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-pink-500 group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Micro-Storytelling Strategy"
+                                data-video-src="https://www.w3schools.com/html/mov_bbb.mp4">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="p-8 flex-grow flex flex-col">
+                        <h3 class="text-xl font-bold mb-3 text-white group-hover:text-pink-400 transition-colors">Micro-Storytelling Strategy</h3>
+                        <p class="text-zinc-400 text-sm mb-6 flex-grow">A high-conversion short-form narrative optimized with dynamic subtitles and targeted kinetic typography designed to hold visual attention.</p>
+                        <div class="flex items-center text-xs text-zinc-500 space-x-2">
+                            <span class="px-2.5 py-1 rounded bg-zinc-800/50 text-pink-300 border border-zinc-700/50">Short-Form</span>
+                            <span>&bull;</span>
+                            <span>Engagement Rate: +42%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Item 2 -->
+                <div class="portfolio-item card-bg rounded-2xl overflow-hidden flex flex-col group" data-category="long">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <div class="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-indigo-800/30 opacity-60 group-hover:scale-105 transition-transform duration-700"></div>
+                        <i data-lucide="tv" class="absolute top-4 left-4 text-purple-400 w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-purple-400 z-20">12:34</span>
+                        
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-purple-500 group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Corporate Journey Documentary"
+                                data-video-src="https://www.w3schools.com/html/movie.mp4">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="p-8 flex-grow flex flex-col">
+                        <h3 class="text-xl font-bold mb-3 text-white group-hover:text-purple-400 transition-colors">Corporate Journey Documentary</h3>
+                        <p class="text-zinc-400 text-sm mb-6 flex-grow">A detailed, cinematic overview that builds authentic emotional connection and details the foundational vision and operational steps of the target firm.</p>
+                        <div class="flex items-center text-xs text-zinc-500 space-x-2">
+                            <span class="px-2.5 py-1 rounded bg-zinc-800/50 text-purple-300 border border-zinc-700/50">Long-Form</span>
+                            <span>&bull;</span>
+                            <span>Scale: Global Impact</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Item 3 -->
+                <div class="portfolio-item card-bg rounded-2xl overflow-hidden flex flex-col group" data-category="brand">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-pink-800/30 opacity-60 group-hover:scale-105 transition-transform duration-700"></div>
+                        <i data-lucide="shield" class="absolute top-4 left-4 text-indigo-400 w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-indigo-400 z-20">2:15</span>
+                        
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-indigo-500 group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="SaaS Product Brand Launch"
+                                data-video-src="https://www.w3schools.com/html/mov_bbb.mp4">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="p-8 flex-grow flex flex-col">
+                        <h3 class="text-xl font-bold mb-3 text-white group-hover:text-indigo-400 transition-colors">SaaS Product Brand Launch</h3>
+                        <p class="text-zinc-400 text-sm mb-6 flex-grow">High-end product visual rendering sequence featuring hyper-smooth transitions, targeted title cards, and specialized color timing.</p>
+                        <div class="flex items-center text-xs text-zinc-500 space-x-2">
+                            <span class="px-2.5 py-1 rounded bg-zinc-800/50 text-indigo-300 border border-zinc-700/50">Brand Video</span>
+                            <span>&bull;</span>
+                            <span>Reach: Multi-Channel</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Item 4 -->
+                <div class="portfolio-item card-bg rounded-2xl overflow-hidden flex flex-col group" data-category="podcast">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <div class="absolute inset-0 bg-gradient-to-br from-purple-500/20 to-pink-800/30 opacity-60 group-hover:scale-105 transition-transform duration-700"></div>
+                        <i data-lucide="mic" class="absolute top-4 left-4 text-pink-400 w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-pink-400 z-20">45:10</span>
+                        
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-pink-500 group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Founder Secrets Podcast Episode"
+                                data-video-src="https://www.w3schools.com/html/movie.mp4">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="p-8 flex-grow flex flex-col">
+                        <h3 class="text-xl font-bold mb-3 text-white group-hover:text-pink-400 transition-colors">Founder Secrets Podcast</h3>
+                        <p class="text-zinc-400 text-sm mb-6 flex-grow">A split-screen podcast production designed with automated speaker highlighting, smooth audio balancing, and aesthetic branding assets.</p>
+                        <div class="flex items-center text-xs text-zinc-500 space-x-2">
+                            <span class="px-2.5 py-1 rounded bg-zinc-800/50 text-pink-300 border border-zinc-700/50">Podcast</span>
+                            <span>&bull;</span>
+                            <span>Retention rate: 68%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Item 5 -->
+                <div class="portfolio-item card-bg rounded-2xl overflow-hidden flex flex-col group" data-category="short">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <div class="absolute inset-0 bg-gradient-to-br from-indigo-500/20 to-purple-800/30 opacity-60 group-hover:scale-105 transition-transform duration-700"></div>
+                        <i data-lucide="smartphone" class="absolute top-4 left-4 text-purple-400 w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-purple-400 z-20">0:45</span>
+                        
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-purple-500 group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="E-Commerce Ad Optimization"
+                                data-video-src="https://www.w3schools.com/html/mov_bbb.mp4">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="p-8 flex-grow flex flex-col">
+                        <h3 class="text-xl font-bold mb-3 text-white group-hover:text-purple-400 transition-colors">E-Commerce Hook Ads</h3>
+                        <p class="text-zinc-400 text-sm mb-6 flex-grow">Engineered with high-velocity hook variations within the first 3 seconds to optimize conversions on social media platforms.</p>
+                        <div class="flex items-center text-xs text-zinc-500 space-x-2">
+                            <span class="px-2.5 py-1 rounded bg-zinc-800/50 text-purple-300 border border-zinc-700/50">Short-Form</span>
+                            <span>&bull;</span>
+                            <span>CTR Boost: +110%</span>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Video Item 6 -->
+                <div class="portfolio-item card-bg rounded-2xl overflow-hidden flex flex-col group" data-category="brand">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <div class="absolute inset-0 bg-gradient-to-br from-pink-500/20 to-purple-800/30 opacity-60 group-hover:scale-105 transition-transform duration-700"></div>
+                        <i data-lucide="crown" class="absolute top-4 left-4 text-pink-400 w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-pink-400 z-20">1:40</span>
+                        
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-pink-500 group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Keynote Visual Highlights"
+                                data-video-src="https://www.w3schools.com/html/movie.mp4">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="p-8 flex-grow flex flex-col">
+                        <h3 class="text-xl font-bold mb-3 text-white group-hover:text-pink-400 transition-colors">Keynote Highlight Sizzle</h3>
+                        <p class="text-zinc-400 text-sm mb-6 flex-grow">A high-energy, fast-cut summary piece capturing premium conference speeches, audio enhancements, and energetic dynamic transitions.</p>
+                        <div class="flex items-center text-xs text-zinc-500 space-x-2">
+                            <span class="px-2.5 py-1 rounded bg-zinc-800/50 text-pink-300 border border-zinc-700/50">Brand Video</span>
+                            <span>&bull;</span>
+                            <span>Atmosphere: High Energy</span>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Video Modal Overlay (Universal Player) -->
+        <div id="video-modal" class="fixed inset-0 bg-black/95 backdrop-blur-md z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+            <div class="absolute top-6 right-6 flex items-center space-x-4">
+                <span class="text-zinc-400 text-sm font-medium">Click outside or tap escape to dismiss</span>
+                <button id="close-modal-btn" class="w-12 h-12 rounded-full bg-zinc-900 border border-zinc-800 text-white flex items-center justify-center hover:bg-zinc-800 hover:border-zinc-700 transition">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <div class="w-full max-w-5xl px-6 flex flex-col justify-center">
+                <h2 id="modal-video-title" class="text-2xl md:text-3xl font-extrabold mb-4 text-white text-center">Video Title</h2>
+                <div class="aspect-video w-full rounded-2xl overflow-hidden bg-zinc-950 border border-zinc-800 shadow-2xl relative">
+                    <!-- Standard video node ready for Direct MP4, Google Drive, YouTube or Vimeo embeds -->
+                    <video id="modal-video-element" class="w-full h-full object-contain" controls autoplay src=""></video>
+                </div>
+                <!-- Interactive Embed Instructions Panel -->
+                <div class="mt-6 bg-zinc-900/50 border border-zinc-800/80 rounded-xl p-4 text-xs text-zinc-500 text-center max-w-2xl mx-auto">
+                    <p class="font-semibold text-zinc-400 mb-1"><i data-lucide="info" class="w-3.5 h-3.5 inline mr-1 text-pink-400"></i> Code Customization Guide</p>
+                    <p>To insert your Google Drive link here, replace the <code class="text-pink-300">&lt;video&gt;</code> element in the code with an iframe pointing to <code class="text-purple-300">https://drive.google.com/file/d/YOUR_FILE_ID/preview</code>.</p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Footer Call-to-Action -->
+        <section id="contact" class="container mx-auto px-6 py-28 relative z-10 reveal-on-scroll">
+             <div class="brand-gradient-bg rounded-3xl p-10 md:p-20 text-center relative overflow-hidden shadow-2xl">
+                 <div class="relative z-10">
+                     <span class="text-white/80 font-bold uppercase tracking-widest text-xs bg-white/10 px-4 py-1.5 rounded-full inline-block mb-4">Let's Build Together</span>
+                     <h2 class="text-4xl md:text-6xl font-extrabold text-white leading-tight">Ready to Boost Your Brand?</h2>
+                     <p class="mt-6 text-lg md:text-xl text-white/90 max-w-2xl mx-auto font-light leading-relaxed">Let's coordinate on your strategic visual goals and outline a roadmap designed to perform. Book a free discovery session today!</p>
+                     <a href="https://calendar.app.google/ojsVAJy1vNYC4bjY6" target="_blank" class="mt-10 px-10 py-5 bg-white text-pink-600 rounded-full font-bold text-lg hover:bg-zinc-50 hover:scale-105 transition duration-300 shadow-xl inline-block">Schedule Free Call</a>
+                 </div>
+                 <div class="absolute top-0 left-0 w-full h-full bg-black opacity-15"></div>
+                 <div class="absolute -right-16 -top-16 w-64 h-64 bg-white/5 rounded-full blur-2xl"></div>
+             </div>
+             <div class="text-center text-zinc-600 mt-20 text-sm font-medium">&copy; 2026 Brand Booster Media. All rights reserved.</div>
+        </section>
+    </main>
+
+    <script>
+        lucide.createIcons();
+        
+        // Mobile menu trigger
+        document.getElementById('mobile-menu-btn').addEventListener('click', () => { 
+            document.getElementById('mobile-menu').classList.toggle('hidden'); 
+        });
+
+        // Portfolio Filtering logic
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const portfolioItems = document.querySelectorAll('.portfolio-item');
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                filterBtns.forEach(b => {
+                    b.classList.remove('active', 'bg-zinc-800', 'text-white');
+                    b.classList.add('bg-zinc-900', 'text-zinc-400');
+                    b.style.borderColor = 'transparent';
+                });
+                btn.classList.add('active', 'bg-zinc-800', 'text-white');
+                btn.classList.remove('bg-zinc-900', 'text-zinc-400');
+                btn.style.borderColor = 'rgba(255,255,255,0.1)';
+
+                const filter = btn.getAttribute('data-filter');
+                portfolioItems.forEach(item => {
+                    if (filter === 'all' || item.getAttribute('data-category') === filter) {
+                        item.classList.remove('hidden');
+                        setTimeout(() => item.style.opacity = '1', 50);
+                    } else {
+                        item.style.opacity = '0';
+                        item.classList.add('hidden');
+                    }
+                });
+            });
+        });
+
+        // Interactive Video Modal Player
+        const videoModal = document.getElementById('video-modal');
+        const modalVideoElement = document.getElementById('modal-video-element');
+        const modalVideoTitle = document.getElementById('modal-video-title');
+        const playTriggers = document.querySelectorAll('.play-trigger');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+
+        playTriggers.forEach(trigger => {
+            trigger.addEventListener('click', (e) => {
+                const videoSrc = trigger.getAttribute('data-video-src');
+                const videoTitle = trigger.getAttribute('data-video-title');
+                
+                modalVideoElement.src = videoSrc;
+                modalVideoTitle.textContent = videoTitle;
+                
+                videoModal.classList.remove('hidden');
+                setTimeout(() => {
+                    videoModal.classList.remove('opacity-0');
+                    videoModal.classList.add('opacity-100');
+                }, 50);
+                modalVideoElement.play();
+            });
+        });
+
+        const closeModal = () => {
+            videoModal.classList.add('opacity-0');
+            videoModal.classList.remove('opacity-100');
+            setTimeout(() => {
+                videoModal.classList.add('hidden');
+                modalVideoElement.pause();
+                modalVideoElement.src = "";
+            }, 300);
+        };
+
+        closeModalBtn.addEventListener('click', closeModal);
+        videoModal.addEventListener('click', (e) => {
+            if (e.target === videoModal) {
+                closeModal();
+            }
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !videoModal.classList.contains('hidden')) {
+                closeModal();
+            }
+        });
+
+        // Scroll Reveal Engine
+        const revealOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const revealObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, revealOptions);
+
+        document.querySelectorAll('.reveal-on-scroll').forEach(element => {
+            revealObserver.observe(element);
+        });
+    </script>
+</body>
+</html>
