@@ -1,0 +1,1050 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Brand Booster Media - Our Work</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+    <script src="https://unpkg.com/lucide@latest"></script>
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    fontFamily: { sans: ['Inter', 'sans-serif'] },
+                    colors: {
+                        supernova: '#f3f4f6',
+                        brandDark: '#111827',
+                        brandGray: '#1f2937',
+                        brandMuted: '#6b7280',
+                        brandPink: '#ec4899',
+                        brandPurple: '#8b5cf6'
+                    }
+                }
+            }
+        }
+    </script>
+    
+    <style>
+        body { font-family: 'Inter', sans-serif; background-color: #f3f4f6; color: #1f2937; overflow-x: hidden; }
+        .brand-gradient-text { background: linear-gradient(to right, #ec4899, #8b5cf6); -webkit-background-clip: text; -webkit-text-fill-color: transparent; }
+        .brand-gradient-bg { background-image: linear-gradient(135deg, #ec4899, #8b5cf6); }
+        .nav-link { transition: all 0.3s ease; position: relative; color: #6b7280; font-weight: 500; }
+        .nav-link::after { content: ''; position: absolute; width: 0; height: 2px; bottom: -4px; left: 0; background-image: linear-gradient(to right, #ec4899, #8b5cf6); transition: width 0.3s ease; }
+        .nav-link:hover::after, .nav-link.active::after { width: 100%; }
+        .nav-link:hover, .nav-link.active { color: #111827; }
+        
+        /* Light Editorial Card Styles */
+        .card-editorial { background-color: #ffffff; border: 1px solid rgba(0, 0, 0, 0.04); box-shadow: 0 10px 30px -5px rgba(0,0,0,0.03), 0 1px 3px rgba(0,0,0,0.01); transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1); }
+        .card-editorial:hover { transform: translateY(-6px); border-color: rgba(139, 92, 246, 0.15); box-shadow: 0 25px 50px -12px rgba(139, 92, 246, 0.08); }
+        
+        .btn-gradient { background-image: linear-gradient(to right, #ec4899 0%, #8b5cf6 51%, #ec4899 100%); background-size: 200% auto; transition: 0.5s; }
+        .btn-gradient:hover { background-position: right center; box-shadow: 0 10px 25px -5px rgba(236, 72, 153, 0.3); }
+        
+        /* Scroll Reveal Engine */
+        .reveal-on-scroll {
+            opacity: 0;
+            transform: translateY(35px);
+            transition: opacity 1.2s cubic-bezier(0.16, 1, 0.3, 1), transform 1.2s cubic-bezier(0.16, 1, 0.3, 1);
+        }
+        .reveal-on-scroll.is-visible {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    </style>
+</head>
+<body class="antialiased flex flex-col min-h-screen">
+
+    <header class="bg-white/90 backdrop-blur-md sticky top-0 z-50 border-b border-gray-100">
+        <nav class="container mx-auto px-6 py-5 flex justify-between items-center">
+            <a href="index.html" class="flex items-center">
+                <img src="Brand Boosters Logo Icon - COLOR.png" alt="Brand Boosters Logo" class="w-10 h-10 object-contain mr-3">
+                <div>
+                    <span class="font-extrabold text-xl tracking-tight text-brandDark block">Brand Booster Media</span>
+                    <span class="text-[9px] font-black text-brandMuted uppercase tracking-widest block -mt-1">Media Infrastructure</span>
+                </div>
+            </a>
+            
+            <div class="hidden md:flex items-center space-x-10">
+                <a href="index.html" class="nav-link">Home</a>
+                <a href="about.html" class="nav-link">About</a>
+                <a href="work.html" class="nav-link active">Our Work</a>
+                <a href="#contact" class="px-6 py-2.5 rounded-full font-bold text-white text-sm btn-gradient shadow-md">Get Started</a>
+            </div>
+
+            <button id="mobile-menu-btn" class="md:hidden text-brandDark focus:outline-none"><i data-lucide="menu" class="w-6 h-6"></i></button>
+        </nav>
+        
+        <!-- Mobile Drawer -->
+        <div id="mobile-menu" class="hidden md:hidden bg-white border-b border-gray-100 absolute w-full left-0 top-full z-50 shadow-lg">
+             <div class="flex flex-col p-6 space-y-4">
+                 <a href="index.html" class="text-left py-2 text-brandDark hover:text-brandPink font-bold">Home</a>
+                 <a href="about.html" class="text-left py-2 text-brandDark hover:text-brandPink font-bold">About</a>
+                 <a href="work.html" class="text-left py-2 text-brandDark hover:text-brandPink font-bold">Our Work</a>
+                 <a href="#contact" class="w-full py-3 rounded-full font-bold text-white btn-gradient text-center shadow-md">Contact Us</a>
+             </div>
+        </div>
+    </header>
+
+    <main class="flex-grow">
+        <section class="container mx-auto px-6 py-28 md:py-36 text-center reveal-on-scroll">
+            <span class="text-brandPink font-extrabold uppercase tracking-widest text-xs bg-brandPink/10 px-4 py-1.5 rounded-full">Creative Proof</span>
+            <h1 class="text-5xl md:text-7xl lg:text-8xl font-black text-brandDark mt-6 mb-8 leading-none">
+                Discover Our <span class="brand-gradient-text">Mastery</span>
+            </h1>
+            <p class="text-lg md:text-xl text-brandMuted max-w-3xl mx-auto font-normal leading-relaxed">
+                Explore our full archive of premium visual stories constructed to spark imagination, support communities, and drive conversions.
+            </p>
+        </section>
+
+        <!-- Filters Block: Fluid editorial navigation buttons directly on the Supernova background -->
+        <section class="container mx-auto px-6 mb-12 reveal-on-scroll">
+            <div id="filter-wrapper" class="flex flex-wrap justify-center gap-3">
+                <button class="filter-btn px-6 py-2.5 rounded-full text-xs font-bold tracking-wider uppercase transition-all duration-300 bg-brandDark text-white" data-filter="all">All Projects</button>
+                <button class="filter-btn px-6 py-2.5 rounded-full text-xs font-bold transition-all bg-white border border-gray-200 text-brandMuted hover:text-brandDark hover:border-gray-300" data-filter="bts">Behind the Scenes</button>
+                <button class="filter-btn px-6 py-2.5 rounded-full text-sm font-bold transition-all bg-white text-brandMuted hover:text-brandDark border border-gray-200 hover:border-gray-300" data-filter="highlights">Event Highlights</button>
+                <button class="filter-btn px-6 py-2.5 rounded-full text-sm font-semibold transition bg-white text-brandMuted hover:text-brandDark hover:border-gray-300 border border-gray-200" data-filter="presenters">Presenters</button>
+                <button class="filter-btn px-6 py-2.5 rounded-full text-sm font-semibold transition bg-white text-brandMuted hover:text-brandDark hover:border-gray-300 border border-transparent" data-filter="reels">Social Reels</button>
+                <button class="filter-btn px-6 py-2.5 rounded-full text-sm font-semibold transition bg-white text-brandMuted hover:text-brandDark hover:border-gray-300 border border-transparent" data-filter="testimonials">Testimonials</button>
+                <button class="filter-btn px-6 py-2.5 rounded-full text-sm font-semibold transition bg-white text-brandMuted hover:text-brandDark hover:border-gray-300 border border-transparent" data-filter="ads">Ads & Promos</button>
+            </div>
+        </section>
+
+        <!-- Invisible Portfolio Grid: All containers and boundaries stripped off your 34 projects -->
+        <section class="container mx-auto px-6 py-12 reveal-on-scroll">
+            <div class="grid md:grid-cols-2 lg:grid-cols-3 gap-10 lg:gap-14" id="portfolio-grid">
+                
+                <!-- Video 1 (Behind the Scenes) -->
+                <div class="portfolio-item rounded-3xl overflow-hidden flex flex-col group" data-category="bts">
+                    <div class="relative overflow-hidden aspect-video bg-brandDark flex items-center justify-center rounded-2xl shadow-sm border border-gray-200/40">
+                        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 opacity-90" 
+                             src="https://drive.google.com/thumbnail?id=1E3UeBXcZRrfFr0T1NgaimeojGjSe9i68&sz=w800" 
+                             onerror="this.style.display='none'; this.nextElementSibling.style.display='block';">
+                        <div style="display:none;" class="absolute inset-0 brand-gradient-bg opacity-20"></div>
+                        <div class="absolute inset-0 bg-gradient-to-t from-brandDark/80 to-transparent z-10"></div>
+                        <i data-lucide="sparkles" class="absolute top-4 left-4 text-brandPink w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-brandDark/70 backdrop-blur-md px-3 py-1 rounded-full text-xs font-bold text-white z-20">1:31</span>
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-brandDark flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-brandPink group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="EGUSD Expanded Learning Mission"
+                                data-video-src="https://drive.google.com/file/d/1E3UeBXcZRrfFr0T1NgaimeojGjSe9i68/preview">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="pt-6 flex-grow flex flex-col">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brandPurple mb-2">Behind the Scenes</span>
+                        <h3 class="text-xl font-bold mb-3 text-brandDark group-hover:text-brandPink transition-colors">EGUSD Expanded Learning Mission</h3>
+                        <p class="text-brandMuted text-xs md:text-sm font-light leading-relaxed flex-grow">Acts as a supportive bridge between traditional school hours and home life, empowering educators to cultivate genuine belonging.</p>
+                    </div>
+                </div>
+
+                <!-- Video 2 (Behind the scenes) -->
+                <div class="portfolio-item rounded-3xl overflow-hidden flex flex-col group" data-category="bts">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center rounded-2xl shadow-sm border border-gray-200/40">
+                        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                             src="https://drive.google.com/thumbnail?id=1EDDFEdlFF_IH8ZDf8wuBqOaYGrYwdrhw&sz=w800" 
+                             onerror="this.style.display='none';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <i data-lucide="sparkles" class="absolute top-4 left-4 text-brandPink w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-white z-20">1:24</span>
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-brandPurple group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="The Zone of Genius Workshop"
+                                data-video-src="https://drive.google.com/file/d/1EDDFEdlFF_IH8ZDf8wuBqOaYGrYwdrhw/preview">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="pt-6 flex-grow flex flex-col">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brandPurple mb-2">Behind the Scenes</span>
+                        <h3 class="text-xl font-bold mb-3 text-brandDark group-hover:text-brandPink transition-colors">The Zone of Genius Workshop</h3>
+                        <p class="text-brandMuted text-xs md:text-sm font-light leading-relaxed flex-grow">Interactive classroom management tactics covering structural routines, active play integration, and constructive support guidelines.</p>
+                    </div>
+                </div>
+
+                <!-- Video 3 (Behind the Scenes) -->
+                <div class="portfolio-item rounded-3xl overflow-hidden flex flex-col group" data-category="bts">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center rounded-2xl shadow-sm border border-gray-200/40">
+                        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                             src="https://drive.google.com/thumbnail?id=1ZHItwjhn8uQDUYV8Kcyn-dSpNAOWz4vy&sz=w800" 
+                             onerror="this.style.display='none';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <i data-lucide="sparkles" class="absolute top-4 left-4 text-brandPink w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-white z-20">0:51</span>
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-brandPurple group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Positive Classroom Dynamics"
+                                data-video-src="https://drive.google.com/file/d/1ZHItwjhn8uQDUYV8Kcyn-dSpNAOWz4vy/preview">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="pt-6 flex-grow flex flex-col">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brandPurple mb-2">Behind the Scenes</span>
+                        <h3 class="text-xl font-bold mb-3 text-brandDark group-hover:text-brandPink transition-colors">Positive Classroom Dynamics</h3>
+                        <p class="text-brandMuted text-xs md:text-sm font-light leading-relaxed flex-grow">An exploration of classroom energy, creating positive environments, and leveraging constructive rewards systems.</p>
+                    </div>
+                </div>
+
+                <!-- Video 4 (Behind the Scenes) -->
+                <div class="portfolio-item rounded-3xl overflow-hidden flex flex-col group" data-category="bts">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center rounded-2xl shadow-sm border border-gray-200/40">
+                        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                             src="https://drive.google.com/thumbnail?id=1aF2vwNe0yE9_DdYeM_iIjOJB2_alwRzH&sz=w800" 
+                             onerror="this.style.display='none';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <i data-lucide="sparkles" class="absolute top-4 left-4 text-brandPink w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-white z-20">0:57</span>
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-brandPurple group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Stellar Classroom Architectures"
+                                data-video-src="https://drive.google.com/file/d/1aF2vwNe0yE9_DdYeM_iIjOJB2_alwRzH/preview">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="pt-6 flex-grow flex flex-col">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brandPurple mb-2">Behind the Scenes</span>
+                        <h3 class="text-xl font-bold mb-3 text-brandDark group-hover:text-brandPink transition-colors">Stellar Classroom Architectures</h3>
+                        <p class="text-brandMuted text-xs md:text-sm font-light leading-relaxed flex-grow">Developing daily educational routines, physical play schedules, and building immediate safety with kids.</p>
+                    </div>
+                </div>
+
+                <!-- Video 5 (Event Highlights) -->
+                <div class="portfolio-item rounded-3xl overflow-hidden flex flex-col group" data-category="highlights">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center rounded-2xl shadow-sm border border-gray-200/40">
+                        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                             src="https://drive.google.com/thumbnail?id=1EikhNkJ7phVmPn-nB4UbMY7nyChdmoGg&sz=w800" 
+                             onerror="this.style.display='none';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <i data-lucide="tv" class="absolute top-4 left-4 text-brandPink w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-white z-20">3:47</span>
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-brandPurple group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Expanded Learning Summit Highlights"
+                                data-video-src="https://drive.google.com/file/d/1EikhNkJ7phVmPn-nB4UbMY7nyChdmoGg/preview">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="pt-6 flex-grow flex flex-col">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brandPurple mb-2">Event Highlights</span>
+                        <h3 class="text-xl font-bold mb-3 text-brandDark group-hover:text-brandPink transition-colors">Expanded Learning Summit Highlights</h3>
+                        <p class="text-brandMuted text-xs md:text-sm font-light leading-relaxed flex-grow">A high-energy overview of the Elk Grove Unified School District's conference targeting youth empowerment, routines, and mentorship structures.</p>
+                    </div>
+                </div>
+
+                <!-- Video 6 (Event Highlights) -->
+                <div class="portfolio-item rounded-3xl overflow-hidden flex flex-col group" data-category="highlights">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center rounded-2xl shadow-sm border border-gray-200/40">
+                        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                             src="https://drive.google.com/thumbnail?id=13rfECPU6-an05lqCMfDs5-z2icAn55nK&sz=w800" 
+                             onerror="this.style.display='none';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <i data-lucide="tv" class="absolute top-4 left-4 text-brandPink w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-white z-20">2:53</span>
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-brandPurple group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Educational Excellence Training"
+                                data-video-src="https://drive.google.com/file/d/13rfECPU6-an05lqCMfDs5-z2icAn55nK/preview">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="pt-6 flex-grow flex flex-col">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brandPurple mb-2">Event Highlights</span>
+                        <h3 class="text-xl font-bold mb-3 text-brandDark group-hover:text-brandPink transition-colors">Educational Excellence Training</h3>
+                        <p class="text-brandMuted text-xs md:text-sm font-light leading-relaxed flex-grow">Details on bridging education gaps, expert training workflows, and foundational quality standards for safe modern learning spaces.</p>
+                    </div>
+                </div>
+
+                <!-- Video 7 (Presenters) -->
+                <div class="portfolio-item rounded-3xl overflow-hidden flex flex-col group" data-category="presenters">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center rounded-2xl shadow-sm border border-gray-200/40">
+                        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                             src="https://drive.google.com/thumbnail?id=1Gq5K_h5srr8-pJLFXjOjDBT24PJ85Y2Z&sz=w800" 
+                             onerror="this.style.display='none';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <i data-lucide="mic" class="absolute top-4 left-4 text-brandPink w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-white z-20">0:49</span>
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-brandPurple group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Heart Work & Growth Mindset"
+                                data-video-src="https://drive.google.com/file/d/1Gq5K_h5srr8-pJLFXjOjDBT24PJ85Y2Z/preview">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="pt-6 flex-grow flex flex-col">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brandPurple mb-2">Presenters</span>
+                        <h3 class="text-xl font-bold mb-3 text-brandDark group-hover:text-brandPink transition-colors">Heart Work & Growth Mindset</h3>
+                        <p class="text-brandMuted text-xs md:text-sm font-light leading-relaxed flex-grow">Britney Moore, educator for 19 years, presents on building student resilience, empathy and personal character through education.</p>
+                    </div>
+                </div>
+
+                <!-- Video 8 (Presenters) -->
+                <div class="portfolio-item rounded-3xl overflow-hidden flex flex-col group" data-category="presenters">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center rounded-2xl shadow-sm border border-gray-200/40">
+                        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                             src="https://drive.google.com/thumbnail?id=1gt_hrTA1rs8n6Rx31zQfyJ_nyxLZTuM_&sz=w800" 
+                             onerror="this.style.display='none';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <i data-lucide="mic" class="absolute top-4 left-4 text-brandPink w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-white z-20">0:40</span>
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-brandPurple group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Quality Safe-Space Standards"
+                                data-video-src="https://drive.google.com/file/d/1gt_hrTA1rs8n6Rx31zQfyJ_nyxLZTuM_/preview">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="pt-6 flex-grow flex flex-col">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brandPurple mb-2">Presenters</span>
+                        <h3 class="text-xl font-bold mb-3 text-brandDark group-hover:text-brandPink transition-colors">Quality Safe-Space Standards</h3>
+                        <p class="text-brandMuted text-xs md:text-sm font-light leading-relaxed flex-grow">Crystal Robinson from Expanded Learning University outlines strategies for establishing premium, inclusive student-focused safety.</p>
+                    </div>
+                </div>
+
+                <!-- Video 9 (Presenters) -->
+                <div class="portfolio-item rounded-3xl overflow-hidden flex flex-col group" data-category="presenters">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center rounded-2xl shadow-sm border border-gray-200/40">
+                        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                             src="https://drive.google.com/thumbnail?id=1jRR3LAQc8jEZLVXwYJ7BYoZvtxG-LMRj&sz=w800" 
+                             onerror="this.style.display='none';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <i data-lucide="mic" class="absolute top-4 left-4 text-brandPink w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-white z-20">0:53</span>
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-brandPurple group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Cultivating Trust & Student Voice"
+                                data-video-src="https://drive.google.com/file/d/1jRR3LAQc8jEZLVXwYJ7BYoZvtxG-LMRj/preview">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="pt-6 flex-grow flex flex-col">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brandPurple mb-2">Presenters</span>
+                        <h3 class="text-xl font-bold mb-3 text-brandDark group-hover:text-brandPink transition-colors">Cultivating Trust & Student Voice</h3>
+                        <p class="text-brandMuted text-xs md:text-sm font-light leading-relaxed flex-grow">Kachise Ademadu breaks down the deep relationship-building process required to yield improved classroom behavior and academic progress.</p>
+                    </div>
+                </div>
+
+                <!-- Video 10 (Presenters) -->
+                <div class="portfolio-item rounded-3xl overflow-hidden flex flex-col group" data-category="presenters">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center rounded-2xl shadow-sm border border-gray-200/40">
+                        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                             src="https://drive.google.com/thumbnail?id=1YroKFn2SGToLptJxhNE7P-5oFYLSdMwF&sz=w800" 
+                             onerror="this.style.display='none';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <i data-lucide="mic" class="absolute top-4 left-4 text-brandPink w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-white z-20">0:51</span>
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-brandPurple group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Caring Connected Environments"
+                                data-video-src="https://drive.google.com/file/d/1YroKFn2SGToLptJxhNE7P-5oFYLSdMwF/preview">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="pt-6 flex-grow flex flex-col">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brandPurple mb-2">Presenters</span>
+                        <h3 class="text-xl font-bold mb-3 text-brandDark group-hover:text-brandPink transition-colors">Caring Connected Environments</h3>
+                        <p class="text-brandMuted text-xs md:text-sm font-light leading-relaxed flex-grow">Cayen Tao Yang and Alina Belton map out foundational standards to support multilingual learners in after-school program structures.</p>
+                    </div>
+                </div>
+
+                <!-- Video 11 (Presenters) -->
+                <div class="portfolio-item rounded-3xl overflow-hidden flex flex-col group" data-category="presenters">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center rounded-2xl shadow-sm border border-gray-200/40">
+                        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                             src="https://drive.google.com/thumbnail?id=1ytkILDaeaVdx6s036PnNraQ8TNFoez_2&sz=w800" 
+                             onerror="this.style.display='none';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <i data-lucide="mic" class="absolute top-4 left-4 text-brandPink w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-white z-20">1:04</span>
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-brandPurple group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Digital Compassion & Restorative Practices"
+                                data-video-src="https://drive.google.com/file/d/1ytkILDaeaVdx6s036PnNraQ8TNFoez_2/preview">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="pt-6 flex-grow flex flex-col">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brandPurple mb-2">Presenters</span>
+                        <h3 class="text-xl font-bold mb-3 text-brandDark group-hover:text-brandPink transition-colors">Digital Compassion & Restorative Practices</h3>
+                        <p class="text-brandMuted text-xs md:text-sm font-light leading-relaxed flex-grow">Ryan McCarthy from Global Kindness Initiative analyzes tech addiction, algorithmic targets, and youth coping mechanisms.</p>
+                    </div>
+                </div>
+
+                <!-- Video 12 (Presenters) -->
+                <div class="portfolio-item rounded-3xl overflow-hidden flex flex-col group" data-category="presenters">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center rounded-2xl shadow-sm border border-gray-200/40">
+                        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                             src="https://drive.google.com/thumbnail?id=170mblGjSDxJdYwHBA-6DEQ82Gy4SjC9l&sz=w800" 
+                             onerror="this.style.display='none';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <i data-lucide="mic" class="absolute top-4 left-4 text-brandPink w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-white z-20">1:20</span>
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-brandPurple group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Nurturing Student Well-being"
+                                data-video-src="https://drive.google.com/file/d/170mblGjSDxJdYwHBA-6DEQ82Gy4SjC9l/preview">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="pt-6 flex-grow flex flex-col">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brandPurple mb-2">Presenters</span>
+                        <h3 class="text-xl font-bold mb-3 text-brandDark group-hover:text-brandPink transition-colors">Nurturing Student Well-being</h3>
+                        <p class="text-brandMuted text-xs md:text-sm font-light leading-relaxed flex-grow">A collective look at personal development, empathy standards, character training, and deep supportive trust frameworks.</p>
+                    </div>
+                </div>
+
+                <!-- Video 13 (Presenters) -->
+                <div class="portfolio-item rounded-3xl overflow-hidden flex flex-col group" data-category="presenters">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center rounded-2xl shadow-sm border border-gray-200/40">
+                        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                             src="https://drive.google.com/thumbnail?id=1ZJPnAc9EdyJkR8ouU9spgqXq0NMmBgV7&sz=w800" 
+                             onerror="this.style.display='none';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <i data-lucide="mic" class="absolute top-4 left-4 text-brandPink w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-white z-20">1:17</span>
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-brandPurple group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Connecting Through Conversation"
+                                data-video-src="https://drive.google.com/file/d/1ZJPnAc9EdyJkR8ouU9spgqXq0NMmBgV7/preview">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="pt-6 flex-grow flex flex-col">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brandPurple mb-2">Presenters</span>
+                        <h3 class="text-xl font-bold mb-3 text-brandDark group-hover:text-brandPink transition-colors">Connecting Through Conversation</h3>
+                        <p class="text-brandMuted text-xs md:text-sm font-light leading-relaxed flex-grow">Tiffany Burns and Erika present easy-to-use sentence stems and relational strategies designed to optimize student behavior.</p>
+                    </div>
+                </div>
+
+                <!-- Video 14 (Presenters) -->
+                <div class="portfolio-item rounded-3xl overflow-hidden flex flex-col group" data-category="presenters">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center rounded-2xl shadow-sm border border-gray-200/40">
+                        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                             src="https://drive.google.com/thumbnail?id=16FGqZXoOb8ubUc7G--XotKDo92XY_L9g&sz=w800" 
+                             onerror="this.style.display='none';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <i data-lucide="mic" class="absolute top-4 left-4 text-brandPink w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-white z-20">0:49</span>
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-brandPurple group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Character Development Obligation"
+                                data-video-src="https://drive.google.com/file/d/16FGqZXoOb8ubUc7G--XotKDo92XY_L9g/preview">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="pt-6 flex-grow flex flex-col">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brandPurple mb-2">Presenters</span>
+                        <h3 class="text-xl font-bold mb-3 text-brandDark group-hover:text-brandPink transition-colors">Character Development Obligation</h3>
+                        <p class="text-brandMuted text-xs md:text-sm font-light leading-relaxed flex-grow">Speaker Ty McIntyre details youth leadership development and the critical role strong mentors play in reinforcing emotional wellness.</p>
+                    </div>
+                </div>
+
+                <!-- Video 15 (Reels) -->
+                <div class="portfolio-item rounded-3xl overflow-hidden flex flex-col group" data-category="reels">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center rounded-2xl shadow-sm border border-gray-200/40">
+                        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                             src="https://drive.google.com/thumbnail?id=1Ys-6szm8RDofBGRwhkMMxyAsMpKpKq1w&sz=w800" 
+                             onerror="this.style.display='none';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <i data-lucide="smartphone" class="absolute top-4 left-4 text-brandPink w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-white z-20">0:15</span>
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-brandPurple group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Frontline Action Loop"
+                                data-video-src="https://drive.google.com/file/d/1Ys-6szm8RDofBGRwhkMMxyAsMpKpKq1w/preview">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="pt-6 flex-grow flex flex-col">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brandPurple mb-2">Social Reels</span>
+                        <h3 class="text-xl font-bold mb-3 text-brandDark group-hover:text-brandPink transition-colors">Frontline Action Loop</h3>
+                        <p class="text-brandMuted text-xs md:text-sm font-light leading-relaxed mb-6 flex-grow">A vibrant, high-velocity reel capturing expanded learning facilitators and program activities in live-action settings.</p>
+                    </div>
+                </div>
+
+                <!-- Video 16 (Reels) -->
+                <div class="portfolio-item rounded-3xl overflow-hidden flex flex-col group" data-category="reels">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center rounded-2xl shadow-sm border border-gray-200/40">
+                        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                             src="https://drive.google.com/thumbnail?id=1VAl4Hit1akgUZgm3UORE1DiRwDjDGkpw&sz=w800" 
+                             onerror="this.style.display='none';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <i data-lucide="smartphone" class="absolute top-4 left-4 text-brandPink w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-white z-20">0:30</span>
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-brandPurple group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="EGUSD XL Program Reel"
+                                data-video-src="https://drive.google.com/file/d/1VAl4Hit1akgUZgm3UORE1DiRwDjDGkpw/preview">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="pt-6 flex-grow flex flex-col">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brandPurple mb-2">Social Reels</span>
+                        <h3 class="text-xl font-bold mb-3 text-brandDark group-hover:text-brandPink transition-colors">EGUSD XL Program Reel</h3>
+                        <p class="text-brandMuted text-xs md:text-sm font-light leading-relaxed mb-6 flex-grow">Showcasing collaborative educational routines, athletic setups, and active physical engagement.</p>
+                    </div>
+                </div>
+
+                <!-- Video 17 (Reels) -->
+                <div class="portfolio-item rounded-3xl overflow-hidden flex flex-col group" data-category="reels">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center rounded-2xl shadow-sm border border-gray-200/40">
+                        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                             src="https://drive.google.com/thumbnail?id=1U_dCxzD89iVcmLCsa9F3akel7b7-WN8T&sz=w800" 
+                             onerror="this.style.display='none';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <i data-lucide="smartphone" class="absolute top-4 left-4 text-brandPink w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-white z-20">0:15</span>
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-brandPurple group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Active Staff & Fun Activities"
+                                data-video-src="https://drive.google.com/file/d/1U_dCxzD89iVcmLCsa9F3akel7b7-WN8T/preview">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="pt-6 flex-grow flex flex-col">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brandPurple mb-2">Social Reels</span>
+                        <h3 class="text-xl font-bold mb-3 text-brandDark group-hover:text-brandPink transition-colors">Active Staff & Fun Activities</h3>
+                        <p class="text-brandMuted text-xs md:text-sm font-light leading-relaxed mb-6 flex-grow">Interactive highlight loop displaying supportive team interactions and student enrichment play-times.</p>
+                    </div>
+                </div>
+
+                <!-- Video 18 (Reels) -->
+                <div class="portfolio-item rounded-3xl overflow-hidden flex flex-col group" data-category="reels">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center rounded-2xl shadow-sm border border-gray-200/40">
+                        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                             src="https://drive.google.com/thumbnail?id=1kpfKbIMfVPt6_ljuoooWB_GarfVOWBol&sz=w800" 
+                             onerror="this.style.display='none';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <i data-lucide="smartphone" class="absolute top-4 left-4 text-brandPink w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-white z-20">0:30</span>
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-brandPurple group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Collaborative Staff Action"
+                                data-video-src="https://drive.google.com/file/d/1kpfKbIMfVPt6_ljuoooWB_GarfVOWBol/preview">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="pt-6 flex-grow flex flex-col">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brandPurple mb-2">Social Reels</span>
+                        <h3 class="text-xl font-bold mb-3 text-brandDark group-hover:text-brandPink transition-colors">Collaborative Staff Action</h3>
+                        <p class="text-brandMuted text-xs md:text-sm font-light leading-relaxed mb-6 flex-grow">A high-engagement visual sequence highlighting active professional group support and direct peer mentorship.</p>
+                    </div>
+                </div>
+
+                <!-- Video 19 (Reels) -->
+                <div class="portfolio-item rounded-3xl overflow-hidden flex flex-col group" data-category="reels">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center rounded-2xl shadow-sm border border-gray-200/40">
+                        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                             src="https://drive.google.com/thumbnail?id=1NrEOjiL9xkKxTfJO3tJomDvc5iPb6ZWz&sz=w800" 
+                             onerror="this.style.display='none';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <i data-lucide="smartphone" class="absolute top-4 left-4 text-brandPink w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-white z-20">0:16</span>
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-brandPurple group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Peer-to-Peer Highlights"
+                                data-video-src="https://drive.google.com/file/d/1NrEOjiL9xkKxTfJO3tJomDvc5iPb6ZWz/preview">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="pt-6 flex-grow flex flex-col">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brandPurple mb-2">Social Reels</span>
+                        <h3 class="text-xl font-bold mb-3 text-brandDark group-hover:text-brandPink transition-colors">Peer-to-Peer Highlights</h3>
+                        <p class="text-brandMuted text-xs md:text-sm font-light leading-relaxed mb-6 flex-grow">Quick social cut highlighting active student routines and comfortable workshop environments.</p>
+                    </div>
+                </div>
+
+                <!-- Video 20 (Reels) -->
+                <div class="portfolio-item rounded-3xl overflow-hidden flex flex-col group" data-category="reels">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center rounded-2xl shadow-sm border border-gray-200/40">
+                        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                             src="https://drive.google.com/thumbnail?id=19wSQ9lsBQYRkr818dUfZEhVyBXSFkojy&sz=w800" 
+                             onerror="this.style.display='none';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <i data-lucide="smartphone" class="absolute top-4 left-4 text-brandPink w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-white z-20">0:15</span>
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-brandPurple group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Daily Sizzle Compilation"
+                                data-video-src="https://drive.google.com/file/d/19wSQ9lsBQYRkr818dUfZEhVyBXSFkojy/preview">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="pt-6 flex-grow flex flex-col">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brandPurple mb-2">Social Reels</span>
+                        <h3 class="text-xl font-bold mb-3 text-brandDark group-hover:text-brandPink transition-colors">Daily Sizzle Compilation</h3>
+                        <p class="text-brandMuted text-xs md:text-sm font-light leading-relaxed mb-6 flex-grow">Pristine summary loop displaying educational environments and student connection points in action.</p>
+                    </div>
+                </div>
+
+                <!-- Video 21 (Testimonials) -->
+                <div class="portfolio-item rounded-3xl overflow-hidden flex flex-col group" data-category="testimonials">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center rounded-2xl shadow-sm border border-gray-200/40">
+                        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                             src="https://drive.google.com/thumbnail?id=1985udMFggq7oscT9wsz7-bXvpqH1IHcr&sz=w800" 
+                             onerror="this.style.display='none';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <i data-lucide="heart" class="absolute top-4 left-4 text-brandPink w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-white z-20">0:38</span>
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-brandPurple group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Brightening Kids' Days"
+                                data-video-src="https://drive.google.com/file/d/1985udMFggq7oscT9wsz7-bXvpqH1IHcr/preview">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="pt-6 flex-grow flex flex-col">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brandPurple mb-2">Testimonials</span>
+                        <h3 class="text-xl font-bold mb-3 text-brandDark group-hover:text-brandPink transition-colors">Brightening Kids' Days</h3>
+                        <p class="text-brandMuted text-xs md:text-sm font-light leading-relaxed mb-6 flex-grow">An educator details the rewarding experience of brightening a child's day, making positive impacts, and watching students bond.</p>
+                    </div>
+                </div>
+
+                <!-- Video 22 (Testimonials) -->
+                <div class="portfolio-item rounded-3xl overflow-hidden flex flex-col group" data-category="testimonials">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center rounded-2xl shadow-sm border border-gray-200/40">
+                        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                             src="https://drive.google.com/thumbnail?id=1HSfziMSv-cKFaIoAtWM9LMw30GZ4c1Bj&sz=w800" 
+                             onerror="this.style.display='none';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <i data-lucide="heart" class="absolute top-4 left-4 text-brandPink w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-white z-20">0:32</span>
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-brandPurple group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Giving Back to the Community"
+                                data-video-src="https://drive.google.com/file/d/1HSfziMSv-cKFaIoAtWM9LMw30GZ4c1Bj/preview">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="pt-6 flex-grow flex flex-col">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brandPurple mb-2">Testimonials</span>
+                        <h3 class="text-xl font-bold mb-3 text-brandDark group-hover:text-brandPink transition-colors">Giving Back to the Community</h3>
+                        <p class="text-brandMuted text-xs md:text-sm font-light leading-relaxed mb-6 flex-grow">A dedicated athletic instructor discusses their passion for community wellness, sports instruction, and forming meaningful connections.</p>
+                    </div>
+                </div>
+
+                <!-- Video 23 (Ads & Promos) -->
+                <div class="portfolio-item rounded-3xl overflow-hidden flex flex-col group" data-category="ads">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center rounded-2xl shadow-sm border border-gray-200/40">
+                        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                             src="https://drive.google.com/thumbnail?id=1DcYiXuDZL3CFveedoLNdgdrghybjV5Uh&sz=w800" 
+                             onerror="this.style.display='none';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <i data-lucide="sparkles" class="absolute top-4 left-4 text-brandPink w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-white z-20">0:48</span>
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-brandPurple group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Ballet Folklórico Academy"
+                                data-video-src="https://drive.google.com/file/d/1DcYiXuDZL3CFveedoLNdgdrghybjV5Uh/preview">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="pt-6 flex-grow flex flex-col">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brandPurple mb-2">Ads & Promos</span>
+                        <h3 class="text-xl font-bold mb-3 text-brandDark group-hover:text-brandPink transition-colors">Ballet Folklórico Academy</h3>
+                        <p class="text-brandMuted text-xs md:text-sm font-light leading-relaxed mb-6 flex-grow">An immersive program on Mexican cultural heritage, guiding grades TK-12 in coordination, colorful choreography, and visual arts.</p>
+                    </div>
+                </div>
+
+                <!-- Video 24 (Ads & Promos) -->
+                <div class="portfolio-item rounded-3xl overflow-hidden flex flex-col group" data-category="ads">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center rounded-2xl shadow-sm border border-gray-200/40">
+                        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                             src="https://drive.google.com/thumbnail?id=1creSKina8kbSNJfr4PBkfHWlkPLUVO_t&sz=w800" 
+                             onerror="this.style.display='none';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <i data-lucide="music" class="absolute top-4 left-4 text-brandPink w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-white z-20">0:40</span>
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-brandPurple group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Casa Folklore y Mariachi Program"
+                                data-video-src="https://drive.google.com/file/d/1creSKina8kbSNJfr4PBkfHWlkPLUVO_t/preview">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="pt-6 flex-grow flex flex-col">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brandPurple mb-2">Ads & Promos</span>
+                        <h3 class="text-xl font-bold mb-3 text-brandDark group-hover:text-brandPink transition-colors">Mariachi Culture & Legacy</h3>
+                        <p class="text-brandMuted text-xs md:text-sm font-light leading-relaxed mb-6 flex-grow">VAPA-aligned expert musical workshops driving heritage connection, team confidence, and vocal styling for middle/high school.</p>
+                    </div>
+                </div>
+
+                <!-- Video 25 (Ads & Promos) -->
+                <div class="portfolio-item rounded-3xl overflow-hidden flex flex-col group" data-category="ads">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center rounded-2xl shadow-sm border border-gray-200/40">
+                        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                             src="https://drive.google.com/thumbnail?id=1tA91LqCmqONca5dHivjg6aJSBl7Vjgia&sz=w800" 
+                             onerror="this.style.display='none';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <i data-lucide="video" class="absolute top-4 left-4 text-brandPink w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-white z-20">0:53</span>
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-brandPurple group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Expanded Learning Supplemental Programs"
+                                data-video-src="https://drive.google.com/file/d/1tA91LqCmqONca5dHivjg6aJSBl7Vjgia/preview">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="pt-6 flex-grow flex flex-col">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brandPurple mb-2">Ads & Promos</span>
+                        <h3 class="text-xl font-bold mb-3 text-brandDark group-hover:text-brandPink transition-colors">Creative Arts Supplemental Programs</h3>
+                        <p class="text-brandMuted text-xs md:text-sm font-light leading-relaxed mb-6 flex-grow">Integrating standard-aligned folklorico, mariachi, and movement practices to build student focus and neighborhood cultural pride.</p>
+                    </div>
+                </div>
+
+                <!-- Video 26 (Ads & Promos) -->
+                <div class="portfolio-item rounded-3xl overflow-hidden flex flex-col group" data-category="ads">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center rounded-2xl shadow-sm border border-gray-200/40">
+                        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                             src="https://drive.google.com/thumbnail?id=1q6QNXfIpOvn9mkWrwVADkpkRQY8OOpvJ&sz=w800" 
+                             onerror="this.style.display='none';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <i data-lucide="layers" class="absolute top-4 left-4 text-brandPink w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-white z-20">0:59</span>
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-brandPurple group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Casa Folklore y Mariachi Overview"
+                                data-video-src="https://drive.google.com/file/d/1q6QNXfIpOvn9mkWrwVADkpkRQY8OOpvJ/preview">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="pt-6 flex-grow flex flex-col">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brandPurple mb-2">Ads & Promos</span>
+                        <h3 class="text-xl font-bold mb-3 text-brandDark group-hover:text-brandPink transition-colors">Creative Enrichment Campaigns</h3>
+                        <p class="text-brandMuted text-xs md:text-sm font-light leading-relaxed mb-6 flex-grow">Highlighting folklorico dancing structures and active performance joy across generations during school hours and after-school programs.</p>
+                    </div>
+                </div>
+
+                <!-- Video 27 (Reels) -->
+                <div class="portfolio-item rounded-3xl overflow-hidden flex flex-col group" data-category="reels">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center rounded-2xl shadow-sm border border-gray-200/40">
+                        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                             src="https://drive.google.com/thumbnail?id=1MlTHo9m3kvVC6CDvGSTqiRb-ue5kxiwZ&sz=w800" 
+                             onerror="this.style.display='none';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <i data-lucide="smartphone" class="absolute top-4 left-4 text-brandPink w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-white z-20">0:23</span>
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-brandPurple group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Staff Spotlight Sizzle"
+                                data-video-src="https://drive.google.com/file/d/1MlTHo9m3kvVC6CDvGSTqiRb-ue5kxiwZ/preview">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="pt-6 flex-grow flex flex-col">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brandPurple mb-2">Social Reels</span>
+                        <h3 class="text-xl font-bold mb-3 text-brandDark group-hover:text-brandPink transition-colors">Staff Spotlight Sizzle</h3>
+                        <p class="text-brandMuted text-xs md:text-sm font-light leading-relaxed mb-6 flex-grow">Interactive social capture detailing frontline facilitator engagement and fast active play segments.</p>
+                    </div>
+                </div>
+
+                <!-- Video 28 (Reels) -->
+                <div class="portfolio-item rounded-3xl overflow-hidden flex flex-col group" data-category="reels">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center rounded-2xl shadow-sm border border-gray-200/40">
+                        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                             src="https://drive.google.com/thumbnail?id=1aCAeWu-_ocT-Tg8_Cmv9_hePgT6LiT_R&sz=w800" 
+                             onerror="this.style.display='none';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <i data-lucide="smartphone" class="absolute top-4 left-4 text-brandPink w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-white z-20">0:24</span>
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-brandPurple group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Expanded Learning Action Loop"
+                                data-video-src="https://drive.google.com/file/d/1aCAeWu-_ocT-Tg8_Cmv9_hePgT6LiT_R/preview">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="pt-6 flex-grow flex flex-col">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brandPurple mb-2">Social Reels</span>
+                        <h3 class="text-xl font-bold mb-3 text-brandDark group-hover:text-brandPink transition-colors">Expanded Learning Action Loop</h3>
+                        <p class="text-brandMuted text-xs md:text-sm font-light leading-relaxed mb-6 flex-grow">An upbeat social reel mapping high-energy program implementation across educational networks.</p>
+                    </div>
+                </div>
+
+                <!-- Video 29 (Reels) -->
+                <div class="portfolio-item rounded-3xl overflow-hidden flex flex-col group" data-category="reels">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center rounded-2xl shadow-sm border border-gray-200/40">
+                        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                             src="https://drive.google.com/thumbnail?id=14B6p8Dga1ukn2NnQsbyP7gPoxGMK5SR3&sz=w800" 
+                             onerror="this.style.display='none';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <i data-lucide="smartphone" class="absolute top-4 left-4 text-brandPink w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-white z-20">0:20</span>
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-brandPurple group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Team & Mentor Spotlight"
+                                data-video-src="https://drive.google.com/file/d/14B6p8Dga1ukn2NnQsbyP7gPoxGMK5SR3/preview">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="pt-6 flex-grow flex flex-col">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brandPurple mb-2">Social Reels</span>
+                        <h3 class="text-xl font-bold mb-3 text-brandDark group-hover:text-brandPink transition-colors">Team & Mentor Spotlight</h3>
+                        <p class="text-brandMuted text-xs md:text-sm font-light leading-relaxed mb-6 flex-grow">Quick cuts showcasing the supportive dynamic, mentorship strategies, and classroom laughter.</p>
+                    </div>
+                </div>
+
+                <!-- Video 30 (Reels) -->
+                <div class="portfolio-item rounded-3xl overflow-hidden flex flex-col group" data-category="reels">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center rounded-2xl shadow-sm border border-gray-200/40">
+                        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                             src="https://drive.google.com/thumbnail?id=1d8BfPYS2hhfOYQ-7tAWbhsVAVkSdbLuX&sz=w800" 
+                             onerror="this.style.display='none';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <i data-lucide="smartphone" class="absolute top-4 left-4 text-brandPink w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-white z-20">0:34</span>
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-brandPurple group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Daily Connection Compilation"
+                                data-video-src="https://drive.google.com/file/d/1d8BfPYS2hhfOYQ-7tAWbhsVAVkSdbLuX/preview">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="pt-6 flex-grow flex flex-col">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brandPurple mb-2">Social Reels</span>
+                        <h3 class="text-xl font-bold mb-3 text-brandDark group-hover:text-brandPink transition-colors">Daily Connection Compilation</h3>
+                        <p class="text-brandMuted text-xs md:text-sm font-light leading-relaxed mb-6 flex-grow">Interactive summary capturing sports coaching and student bonding points in live time.</p>
+                    </div>
+                </div>
+
+                <!-- Video 31 (Ads & Promos) -->
+                <div class="portfolio-item rounded-3xl overflow-hidden flex flex-col group" data-category="ads">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center rounded-2xl shadow-sm border border-gray-200/40">
+                        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                             src="https://drive.google.com/thumbnail?id=13orWNRz8CqCHYx_juFZnDm5esPZyFBor&sz=w800" 
+                             onerror="this.style.display='none';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <i data-lucide="award" class="absolute top-4 left-4 text-brandPink w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-white z-20">0:42</span>
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-brandPurple group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Intercession Camp Bundle"
+                                data-video-src="https://drive.google.com/file/d/13orWNRz8CqCHYx_juFZnDm5esPZyFBor/preview">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="pt-6 flex-grow flex flex-col">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brandPurple mb-2">Ads & Promos</span>
+                        <h3 class="text-xl font-bold mb-3 text-brandDark group-hover:text-brandPink transition-colors">Intercession Camp Bundle</h3>
+                        <p class="text-brandMuted text-xs md:text-sm font-light leading-relaxed mb-6 flex-grow">A themed camp planning system for TK-6th, featuring hands-on STEM experiments, art tracks, and restorative mindfulness packs.</p>
+                    </div>
+                </div>
+
+                <!-- Video 32 (Ads & Promos) -->
+                <div class="portfolio-item rounded-3xl overflow-hidden flex flex-col group" data-category="ads">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center rounded-2xl shadow-sm border border-gray-200/40">
+                        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                             src="https://drive.google.com/thumbnail?id=1gV3PPq6DJyPmd-0ipSSBa0V_tNOmLQ7L&sz=w800" 
+                             onerror="this.style.display='none';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <i data-lucide="star" class="absolute top-4 left-4 text-brandPink w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-white z-20">0:57</span>
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-brandPurple group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Child Development Environment"
+                                data-video-src="https://drive.google.com/file/d/1gV3PPq6DJyPmd-0ipSSBa0V_tNOmLQ7L/preview">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="pt-6 flex-grow flex flex-col">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brandPurple mb-2">Ads & Promos</span>
+                        <h3 class="text-xl font-bold mb-3 text-brandDark group-hover:text-brandPink transition-colors">Child Development Environment</h3>
+                        <p class="text-brandMuted text-xs md:text-sm font-light leading-relaxed mb-6 flex-grow">Chronicles a warm educational shelter where children expand bravery, learn through action, and explore guided mentorship.</p>
+                    </div>
+                </div>
+
+                <!-- Video 33 (Ads & Promos) -->
+                <div class="portfolio-item rounded-3xl overflow-hidden flex flex-col group" data-category="ads">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center rounded-2xl shadow-sm border border-gray-200/40">
+                        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                             src="https://drive.google.com/thumbnail?id=1N5c_sDXXUnP173ACASVvWg5Pi6kpbyo5&sz=w800" 
+                             onerror="this.style.display='none';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <i data-lucide="check-circle" class="absolute top-4 left-4 text-brandPink w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-white z-20">1:04</span>
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-brandPurple group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Parent Preferred Academies"
+                                data-video-src="https://drive.google.com/file/d/1N5c_sDXXUnP173ACASVvWg5Pi6kpbyo5/preview">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="pt-6 flex-grow flex flex-col">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brandPurple mb-2">Ads & Promos</span>
+                        <h3 class="text-xl font-bold mb-3 text-brandDark group-hover:text-brandPink transition-colors">Parent Preferred Academies</h3>
+                        <p class="text-brandMuted text-xs md:text-sm font-light leading-relaxed mb-6 flex-grow">Showcasing the structural transition away from plain worksheets to active student-led exploration and inclusive empowerment goals.</p>
+                    </div>
+                </div>
+
+                <!-- Video 34 (Ads & Promos) -->
+                <div class="portfolio-item rounded-3xl overflow-hidden flex flex-col group" data-category="ads">
+                    <div class="relative overflow-hidden aspect-video bg-zinc-950 flex items-center justify-center rounded-2xl shadow-sm border border-gray-200/40">
+                        <img class="absolute inset-0 w-full h-full object-cover group-hover:scale-105 transition-transform duration-700" 
+                             src="https://drive.google.com/thumbnail?id=1ze-rn7ZOXBaOHdFx4dYXKBSQcDJoN--e&sz=w800" 
+                             onerror="this.style.display='none';">
+                        <div class="absolute inset-0 bg-gradient-to-t from-black/80 to-transparent z-10"></div>
+                        <i data-lucide="share-2" class="absolute top-4 left-4 text-brandPink w-5 h-5 z-20"></i>
+                        <span class="absolute top-4 right-4 bg-black/60 backdrop-blur-md px-3 py-1 rounded-full text-xs font-semibold tracking-wider text-white z-20">0:35</span>
+                        <button class="play-trigger w-16 h-16 rounded-full bg-white text-zinc-950 flex items-center justify-center shadow-2xl scale-95 group-hover:scale-100 group-hover:bg-brandPurple group-hover:text-white transition duration-300 z-20" 
+                                data-video-title="Expanded Connections Platform"
+                                data-video-src="https://drive.google.com/file/d/1ze-rn7ZOXBaOHdFx4dYXKBSQcDJoN--e/preview">
+                            <i data-lucide="play" class="w-6 h-6 fill-current ml-1"></i>
+                        </button>
+                    </div>
+                    <div class="pt-6 flex-grow flex flex-col">
+                        <span class="text-[10px] font-extrabold uppercase tracking-widest text-brandPurple mb-2">Ads & Promos</span>
+                        <h3 class="text-xl font-bold mb-3 text-brandDark group-hover:text-brandPink transition-colors">Expanded Connections Platform</h3>
+                        <p class="text-brandMuted text-xs md:text-sm font-light leading-relaxed mb-6 flex-grow">An all-in-one engagement digital workspace for educators to eliminate professional isolation, discover class templates, and align communication.</p>
+                    </div>
+                </div>
+
+            </div>
+        </section>
+
+        <!-- Video Modal Overlay (Universal HTML5 + Iframe Hybrid Player) -->
+        <div id="video-modal" class="fixed inset-0 bg-brandDark/95 backdrop-blur-md z-50 flex items-center justify-center hidden opacity-0 transition-opacity duration-300">
+            <div class="absolute top-6 right-6 flex items-center space-x-4">
+                <span class="text-gray-400 text-sm font-medium hidden md:inline">Click outside or press ESC to close</span>
+                <button id="close-modal-btn" class="w-12 h-12 rounded-full bg-zinc-900 border border-zinc-800 text-white flex items-center justify-center hover:bg-zinc-800 hover:border-zinc-700 transition">
+                    <i data-lucide="x" class="w-6 h-6"></i>
+                </button>
+            </div>
+            <div class="w-full max-w-5xl px-6 flex flex-col justify-center">
+                <h2 id="modal-video-title" class="text-2xl md:text-3xl font-extrabold mb-4 text-white text-center">Video Title</h2>
+                <div class="aspect-video w-full rounded-2xl overflow-hidden bg-black border border-zinc-800 shadow-2xl relative">
+                    <!-- Standard MP4/Web Video Node -->
+                    <video id="modal-video-element" class="w-full h-full object-contain hidden" controls src=""></video>
+                    <!-- Google Drive / Vimeo Iframe Node -->
+                    <iframe id="modal-iframe-element" class="w-full h-full object-contain hidden" allow="autoplay; fullscreen" frameborder="0"></iframe>
+                </div>
+            </div>
+        </div>
+
+        <section id="contact" class="container mx-auto px-6 py-28 relative z-10 reveal-on-scroll">
+             <div class="brand-gradient-bg rounded-3xl p-10 md:p-20 text-center relative overflow-hidden shadow-2xl">
+                 <div class="relative z-10">
+                     <span class="text-white/80 font-bold uppercase tracking-widest text-xs bg-white/10 px-4 py-1.5 rounded-full inline-block mb-4">Let's Build Together</span>
+                     <h2 class="text-4xl md:text-6xl font-extrabold text-white leading-tight">Ready to Boost Your Brand?</h2>
+                     <p class="mt-6 text-lg md:text-xl text-white/90 max-w-2xl mx-auto font-light leading-relaxed">Let's coordinate on your strategic visual goals and outline a roadmap designed to perform. Book a free discovery session today!</p>
+                     <a href="https://calendar.app.google/ojsVAJy1vNYC4bjY6" target="_blank" class="mt-10 px-10 py-5 bg-white text-pink-600 rounded-full font-bold text-lg hover:bg-zinc-50 hover:scale-105 transition duration-300 shadow-xl inline-block">Schedule Free Call</a>
+                 </div>
+                 <div class="absolute top-0 left-0 w-full h-full bg-black opacity-15"></div>
+                 <div class="absolute -right-16 -top-16 w-64 h-64 bg-white/5 rounded-full blur-2xl"></div>
+             </div>
+             <div class="text-center text-zinc-600 mt-20 text-sm font-medium">&copy; 2026 Brand Booster Media. All rights reserved.</div>
+        </section>
+    </main>
+
+    <script>
+        lucide.createIcons();
+        
+        // Mobile menu trigger
+        document.getElementById('mobile-menu-btn').addEventListener('click', () => { 
+            document.getElementById('mobile-menu').classList.toggle('hidden'); 
+        });
+
+        // Portfolio Filtering logic
+        const filterBtns = document.querySelectorAll('.filter-btn');
+        const portfolioItems = document.querySelectorAll('.portfolio-item');
+
+        function applyFilter(filter) {
+            // Apply visual classes to filter buttons
+            filterBtns.forEach(btn => {
+                if (btn.getAttribute('data-filter') === filter) {
+                    btn.className = "filter-btn px-6 py-2.5 rounded-full text-xs font-bold tracking-wider uppercase transition-all duration-300 bg-brandDark text-white";
+                } else {
+                    btn.className = "filter-btn px-6 py-2.5 rounded-full text-sm font-bold transition-all bg-white text-brandMuted hover:text-brandDark border border-gray-200 hover:border-gray-300";
+                }
+            });
+
+            // Toggle show/hide for items
+            portfolioItems.forEach(item => {
+                if (filter === 'all' || item.getAttribute('data-category') === filter) {
+                    item.classList.remove('hidden');
+                    setTimeout(() => item.style.opacity = '1', 50);
+                } else {
+                    item.style.opacity = '0';
+                    item.classList.add('hidden');
+                }
+            });
+        }
+
+        filterBtns.forEach(btn => {
+            btn.addEventListener('click', () => {
+                const filter = btn.getAttribute('data-filter');
+                applyFilter(filter);
+            });
+        });
+
+        // Interactive Video Modal Player (Hybrid Engine)
+        const videoModal = document.getElementById('video-modal');
+        const modalVideoElement = document.getElementById('modal-video-element');
+        const modalIframeElement = document.getElementById('modal-iframe-element');
+        const modalVideoTitle = document.getElementById('modal-video-title');
+        const playTriggers = document.querySelectorAll('.play-trigger');
+        const closeModalBtn = document.getElementById('close-modal-btn');
+
+        playTriggers.forEach(trigger => {
+            trigger.addEventListener('click', (e) => {
+                const videoSrc = trigger.getAttribute('data-video-src');
+                const videoTitle = trigger.getAttribute('data-video-title');
+                
+                modalVideoTitle.textContent = videoTitle;
+                
+                // If it's a Google Drive link, load inside an Iframe, otherwise play natively
+                if (videoSrc.includes('drive.google.com')) {
+                    modalVideoElement.classList.add('hidden');
+                    modalVideoElement.pause();
+                    modalVideoElement.src = "";
+                    
+                    modalIframeElement.classList.remove('hidden');
+                    modalIframeElement.src = videoSrc;
+                } else {
+                    modalIframeElement.classList.add('hidden');
+                    modalIframeElement.src = "";
+                    
+                    modalVideoElement.classList.remove('hidden');
+                    modalVideoElement.src = videoSrc;
+                    modalVideoElement.play();
+                }
+                
+                videoModal.classList.remove('hidden');
+                setTimeout(() => {
+                    videoModal.classList.remove('opacity-0');
+                    videoModal.classList.add('opacity-100');
+                }, 50);
+            });
+        });
+
+        const closeModal = () => {
+            videoModal.classList.add('opacity-0');
+            videoModal.classList.remove('opacity-100');
+            setTimeout(() => {
+                videoModal.classList.add('hidden');
+                modalVideoElement.pause();
+                modalVideoElement.src = "";
+                modalIframeElement.src = "";
+            }, 300);
+        };
+
+        closeModalBtn.addEventListener('click', closeModal);
+        videoModal.addEventListener('click', (e) => {
+            if (e.target === videoModal) {
+                closeModal();
+            }
+        });
+        document.addEventListener('keydown', (e) => {
+            if (e.key === 'Escape' && !videoModal.classList.contains('hidden')) {
+                closeModal();
+            }
+        });
+
+        // Scroll Reveal Engine
+        const revealOptions = {
+            threshold: 0.1,
+            rootMargin: '0px 0px -50px 0px'
+        };
+
+        const revealObserver = new IntersectionObserver((entries, observer) => {
+            entries.forEach(entry => {
+                if (entry.isIntersecting) {
+                    entry.target.classList.add('is-visible');
+                    observer.unobserve(entry.target);
+                }
+            });
+        }, revealOptions);
+
+        document.querySelectorAll('.reveal-on-scroll').forEach(element => {
+            revealObserver.observe(element);
+        });
+
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const filterParam = urlParams.get('filter');
+            if (filterParam) {
+                let targetFilter = filterParam;
+                // Graceful mapping: cinematic documentaries link ("long") routes to the behind the scenes category ("bts")
+                if (filterParam === 'long') {
+                    targetFilter = 'bts';
+                }
+                
+                applyFilter(targetFilter);
+                
+                // Instantly focus and scroll viewport to target portfolio element
+                setTimeout(() => {
+                    const gridElement = document.getElementById('portfolio-grid');
+                    if (gridElement) {
+                        gridElement.scrollIntoView({ behavior: 'smooth', block: 'center' });
+                    }
+                }, 400);
+            }
+        });
+    </script>
+</body>
+</html>
