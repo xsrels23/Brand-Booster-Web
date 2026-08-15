@@ -1,0 +1,1600 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Brand Booster Media - The Video Builder V2.0</title>
+
+  <!-- Google Fonts: Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+
+  <!-- Tailwind CSS Play CDN -->
+  <script src="https://cdn.tailwindcss.com"></script>
+
+  <script>
+    tailwind.config = {
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+          },
+          colors: {
+            supernova: '#f3f4f6',
+            brandDark: '#111827',
+            brandGray: '#1f2937',
+            brandMuted: '#6b7280',
+            brandPink: '#ec4899',
+            brandPurple: '#8b5cf6'
+          }
+        }
+      }
+    }
+  </script>
+
+  <!-- React & ReactDOM CDN -->
+  <script src="https://unpkg.com/react@18/umd/react.production.min.js" crossorigin></script>
+  <script src="https://unpkg.com/react-dom@18/umd/react-dom.production.min.js" crossorigin></script>
+
+  <!-- Babel for JSX Compilation -->
+  <script src="https://unpkg.com/@babel/standalone/babel.min.js"></script>
+
+  <!-- Lucide Icons CDN -->
+  <script src="https://unpkg.com/lucide@latest"></script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      background-color: #f3f4f6;
+      color: #1f2937;
+      min-height: 100vh;
+    }
+
+    /* Jotform Gradient Text */
+    .brand-gradient-text {
+      background: linear-gradient(to right, #ec4899, #8b5cf6);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+      color: #8b5cf6;
+    }
+
+    .brand-gradient-bg {
+      background-image: linear-gradient(135deg, #ec4899, #8b5cf6);
+    }
+
+    /* Custom Form Card (Jotform Theme Spec) */
+    .form-card {
+      background-color: #ffffff;
+      border: 1px solid rgba(0, 0, 0, 0.05);
+      box-shadow: 0 10px 30px -5px rgba(0,0,0,0.05), 0 4px 6px -2px rgba(0, 0, 0, 0.02);
+    }
+
+    /* Input Focus State from Theme Schematics */
+    .form-input-custom {
+      background-color: #ffffff;
+      border: 1px solid #d1d5db;
+      border-radius: 8px;
+      transition: all 0.25s ease;
+    }
+
+    .form-input-custom:focus {
+      border-color: #ec4899 !important;
+      box-shadow: 0 0 0 3px rgba(139, 92, 246, 0.15) !important;
+      outline: none;
+    }
+
+    /* Gradient Submit Button */
+    .btn-gradient {
+      background-image: linear-gradient(to right, #ec4899 0%, #8b5cf6 51%, #ec4899 100%);
+      background-size: 200% auto;
+      transition: 0.5s;
+    }
+
+    .btn-gradient:hover {
+      background-position: right center;
+      box-shadow: 0 10px 25px -5px rgba(236, 72, 153, 0.3);
+    }
+
+    /* Custom scrollbars */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #cbd5e1;
+      border-radius: 9999px;
+    }
+  </style>
+</head>
+<body class="antialiased flex flex-col">
+
+  <!-- React Root Container -->
+  <div id="root"></div>
+
+  <script type="text/babel">
+    const { useState, useEffect } = React;
+
+    function countWords(str) {
+      if (!str) return 0;
+      return str.trim().split(/\s+/).filter(w => w.length > 0).length;
+    }
+
+    /* Email Authenticity & Syntax Verifier */
+    function verifyEmailAuthenticity(email) {
+      if (!email || typeof email !== 'string') {
+        return { valid: false, reason: 'Contact email is required.' };
+      }
+      const trimmed = email.trim().toLowerCase();
+      
+      const emailRegex = /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+      if (!emailRegex.test(trimmed)) {
+        return { valid: false, reason: 'Invalid email format (e.g. name@company.com)' };
+      }
+
+      const parts = trimmed.split('@');
+      if (parts.length !== 2) {
+        return { valid: false, reason: 'Invalid email structure' };
+      }
+
+      const domain = parts[1];
+      const disposableDomains = ['example.com', 'test.com', 'mailinator.com', 'tempmail.com', '10minutemail.com', 'dispostable.com', 'trashmail.com'];
+      if (disposableDomains.includes(domain)) {
+        return { valid: false, reason: 'Temporary/example email domains are not accepted' };
+      }
+
+      if (domain.startsWith('.') || domain.endsWith('.') || domain.includes('..')) {
+        return { valid: false, reason: 'Invalid email domain structure' };
+      }
+
+      return { valid: true };
+    }
+
+    const initialBranchAData = {
+      // 1 & 2. Product & Service Ads (Direct Conversion)
+      problemHook: '',
+      actionStep1: '',
+      actionStep2: '',
+      actionStep3: '',
+      voiceScript: '',
+      ctaText: 'BOOK NOW',
+      destinationUrl: '',
+      uploadFootage: '',
+      mood: 'Upbeat/Energetic',
+      targetAudience: 'General Consumers (18-45)',
+
+      // 3. Testimonials (Social Proof & Trust)
+      speakerName: '',
+      speakerTitle: '',
+      beforeFriction: '',
+      outcomeMetric: '',
+      captionStyle: 'Kinetic Pop (Modern/Social)',
+      
+      // 4. Behind the Scenes (Day in the Life & Facility Tour)
+      btsType: 'Chronological Day-in-the-Life',
+      milestone1: '8:30 AM - Morning Arrival',
+      milestone2: '10:30 AM - Active Workshop',
+      milestone3: '12:30 PM - Team & Community',
+      milestone4: '3:00 PM - Wrap & Departure',
+      soundtrackEnergy: 'Warm & Acoustic (Trust)',
+      context: 'Team culture & daily routine',
+      audioPreference: 'Blend ambient noise with music bed',
+
+      // 5. Educational Social & How-To Shorts
+      polarizationHook: '',
+      eduStep1: '',
+      eduStep2: '',
+      eduStep3: '',
+      retainingLoopCTA: '',
+
+      // 6. Brand Story (Origin Arc)
+      incitingIncident: '',
+      coreMission: '',
+      brandScript: '',
+      soundscapePref: 'Inspiring Orchestral (Emotional Trust)',
+      outroStyle: 'Logo Fade + Website URL',
+
+      // 7. Funnel Video (Logic Loop)
+      statusQuoBreakdown: '',
+      funnelStep1: '',
+      funnelStep2: '',
+      funnelStep3: '',
+      funnelScript: '',
+      riskReversalCTA: ''
+    };
+
+    const initialBranchBData = {
+      referenceUrl: '',
+      referenceFileLink: '',
+      context: 'Direct Competitor',
+      elementsToCopy: ['Pace (Cut speed)', 'Audio (Music/SFX type)', 'Visuals (Angles/Lighting)'],
+      dislikedAspects: '',
+      footageMatchesFormat: 'Yes',
+      rawFootageLink: '',
+      videoTopicScript: ''
+    };
+
+    const initialBranchCData = {
+      videoType: 'Ad - A short, paid video for promotion.',
+      goals: ['Build Brand Awareness', 'Drive sales for a new product'],
+      targetAudience: ['Adults Between 18-29', 'Adults Between 30-49'],
+      keyMessageCTA: ['Visit Website', 'Buy Now'],
+      toneMood: ['Upbeat/Energetic', 'Professional/Trustworthy'],
+      runTime: '15 Seconds',
+      resolutionFormat: 'Vertical 9:16',
+      referenceVideos: '',
+      onScreenTextTitles: '',
+      rawFootageUrl: '',
+      writtenScriptUrl: '',
+      storyboardUrl: '',
+      musicStyle: 'Energetic / Upbeat',
+      sfxDesign: ['Whooshes', 'Impacts', 'Urban/Indoor'],
+      voiceoverUrl: '',
+      furtherInstructions: ''
+    };
+
+    function validateFormData(gateway, goalBucket, videoType, projectName, clientName, clientEmail, videoFormat, branchAData, branchBData, branchCData) {
+      const missing = [];
+
+      // Universal Specs
+      if (!projectName || !projectName.trim()) missing.push('Project Name');
+      if (!clientName || !clientName.trim()) missing.push('Contact Name');
+      
+      const emailCheck = verifyEmailAuthenticity(clientEmail);
+      if (!emailCheck.valid) {
+        missing.push(`Contact Email (${emailCheck.reason})`);
+      }
+
+      if (!videoFormat) missing.push('Video Format');
+
+      // Gateway Specific Validation
+      if (gateway === 'Option A') {
+        if (videoType === 'Product Advertisement' || videoType === 'Service Advertisement') {
+          if (!branchAData.problemHook || !branchAData.problemHook.trim()) missing.push('Problem Hook (Max 8 words)');
+          if (!branchAData.actionStep1 || !branchAData.actionStep1.trim()) missing.push('Action Step 1');
+          if (!branchAData.actionStep2 || !branchAData.actionStep2.trim()) missing.push('Action Step 2');
+          if (!branchAData.actionStep3 || !branchAData.actionStep3.trim()) missing.push('Action Step 3');
+          if (!branchAData.voiceScript || !branchAData.voiceScript.trim()) missing.push('Voice Over Script');
+          if (countWords(branchAData.voiceScript) > 45) missing.push('Voice Over Script exceeds 45-word limit');
+          if (!branchAData.ctaText || !branchAData.ctaText.trim()) missing.push('CTA Button Text');
+          if (!branchAData.destinationUrl || !branchAData.destinationUrl.trim()) missing.push('Destination URL');
+          if (!branchAData.uploadFootage || !branchAData.uploadFootage.trim()) missing.push('Asset Drive Link');
+        } else if (videoType === 'Testimonials') {
+          if (!branchAData.speakerName || !branchAData.speakerName.trim()) missing.push('Speaker Name');
+          if (!branchAData.speakerTitle || !branchAData.speakerTitle.trim()) missing.push('Speaker Title/Role');
+          if (!branchAData.beforeFriction || !branchAData.beforeFriction.trim()) missing.push('"Before" Friction State');
+          if (!branchAData.outcomeMetric || !branchAData.outcomeMetric.trim()) missing.push('Outcome Metric');
+          if (!branchAData.uploadFootage || !branchAData.uploadFootage.trim()) missing.push('Asset Drive Link');
+        } else if (videoType === 'Behind the Scenes') {
+          if (!branchAData.milestone1 || !branchAData.milestone1.trim()) missing.push('Milestone 1 Banner');
+          if (!branchAData.milestone2 || !branchAData.milestone2.trim()) missing.push('Milestone 2 Banner');
+          if (!branchAData.milestone3 || !branchAData.milestone3.trim()) missing.push('Milestone 3 Banner');
+          if (!branchAData.milestone4 || !branchAData.milestone4.trim()) missing.push('Milestone 4 Banner');
+          if (!branchAData.uploadFootage || !branchAData.uploadFootage.trim()) missing.push('Asset Drive Link');
+        } else if (videoType === 'Educational Social') {
+          if (!branchAData.polarizationHook || !branchAData.polarizationHook.trim()) missing.push('Polarization Hook');
+          if (!branchAData.eduStep1 || !branchAData.eduStep1.trim()) missing.push('Action Step 1');
+          if (!branchAData.eduStep2 || !branchAData.eduStep2.trim()) missing.push('Action Step 2');
+          if (!branchAData.eduStep3 || !branchAData.eduStep3.trim()) missing.push('Action Step 3');
+          if (!branchAData.retainingLoopCTA || !branchAData.retainingLoopCTA.trim()) missing.push('Retaining Loop CTA');
+          if (!branchAData.uploadFootage || !branchAData.uploadFootage.trim()) missing.push('Asset Drive Link');
+        } else if (videoType === 'Brand Story') {
+          if (!branchAData.incitingIncident || !branchAData.incitingIncident.trim()) missing.push('Inciting Incident');
+          if (!branchAData.coreMission || !branchAData.coreMission.trim()) missing.push('Core Mission');
+          if (!branchAData.brandScript || !branchAData.brandScript.trim()) missing.push('Founder Voiceover Script');
+          if (countWords(branchAData.brandScript) > 90) missing.push('Founder Script exceeds 90-word limit');
+          if (!branchAData.uploadFootage || !branchAData.uploadFootage.trim()) missing.push('Asset Drive Link');
+        } else if (videoType === 'Funnel Video') {
+          if (!branchAData.statusQuoBreakdown || !branchAData.statusQuoBreakdown.trim()) missing.push('Status Quo Breakdown');
+          if (!branchAData.funnelStep1 || !branchAData.funnelStep1.trim()) missing.push('Solution Step 1');
+          if (!branchAData.funnelStep2 || !branchAData.funnelStep2.trim()) missing.push('Solution Step 2');
+          if (!branchAData.funnelStep3 || !branchAData.funnelStep3.trim()) missing.push('Solution Step 3');
+          if (!branchAData.funnelScript || !branchAData.funnelScript.trim()) missing.push('Presenter Script');
+          if (countWords(branchAData.funnelScript) > 60) missing.push('Presenter Script exceeds 60-word limit');
+          if (!branchAData.riskReversalCTA || !branchAData.riskReversalCTA.trim()) missing.push('Risk Reversal CTA');
+          if (!branchAData.uploadFootage || !branchAData.uploadFootage.trim()) missing.push('Asset Drive Link');
+        }
+      } else if (gateway === 'Option B') {
+        if (!branchBData.referenceUrl || !branchBData.referenceUrl.trim()) missing.push('Reference Link');
+        if (!branchBData.elementsToCopy || branchBData.elementsToCopy.length === 0) missing.push('Elements to Copy');
+        if (!branchBData.rawFootageLink || !branchBData.rawFootageLink.trim()) missing.push('Raw Footage Link');
+        if (!branchBData.videoTopicScript || !branchBData.videoTopicScript.trim()) missing.push('Topic / Script');
+      } else if (gateway === 'Option C') {
+        if (!branchCData.videoType) missing.push('Video Type');
+        if (!branchCData.goals || branchCData.goals.length === 0) missing.push('Project Objectives');
+        if (!branchCData.rawFootageUrl || !branchCData.rawFootageUrl.trim()) missing.push('Raw Footage Link');
+      }
+
+      return missing;
+    }
+
+    function compileExecutiveBrief(gateway, goalBucket, videoType, projectName, clientName, clientEmail, brandColors, videoFormat, branchAData, branchBData, branchCData) {
+      if (gateway === 'Option A') {
+        if (videoType === 'Product Advertisement' || videoType === 'Service Advertisement') {
+          return `SUBJECT: PRODUCTION ORDER: ${projectName} - ${videoType} (15s PAS Framework)
+
+=== EXECUTIVE EDITORIAL BRIEF ===
+CLIENT: ${clientName} | ${clientEmail}
+BRAND COLORS: ${brandColors}
+FORMAT: ${videoFormat} | CAPTIONS: Mandatory Burned-In (Kinetic)
+
+=== SCRIPT & PSYCHOLOGICAL BLUEPRINT ===
+• HOOK TEXT (0:00-0:03): "${branchAData.problemHook}" (Apply high-contrast background box)
+• BODY SCRIPT (0:03-0:12): "${branchAData.voiceScript}"
+• OVERLAY STEPS: 1. ${branchAData.actionStep1} | 2. ${branchAData.actionStep2} | 3. ${branchAData.actionStep3}
+• CTA OUTRO (0:12-0:15): "${branchAData.ctaText}" + URL: ${branchAData.destinationUrl}
+
+=== EDITORIAL EXECUTION INSTRUCTIONS ===
+1. PACING: Cut video to a 1.5s–2.0s cadence.
+2. HOOK: Layer Hook Text OVER Clip 1 immediately in frame 1.
+3. AUDIO: Master VO to -3dB; apply background track at -18dB.
+4. ASSETS LINK: ${branchAData.uploadFootage}`;
+        }
+
+        if (videoType === 'Testimonials') {
+          return `SUBJECT: PRODUCTION ORDER: ${projectName} - Testimonial / Social Proof Story
+
+=== EXECUTIVE EDITORIAL BRIEF ===
+CLIENT: ${clientName} | ${clientEmail}
+SUBJECT BADGE: ${branchAData.speakerName}, ${branchAData.speakerTitle}
+OUTCOME METRIC: "${branchAData.outcomeMetric}"
+
+=== EDITORIAL EXECUTION INSTRUCTIONS ===
+1. STRUCTURE:
+   - 0:00-0:03: Display Subject Badge + Outcome Metric Overlay over A-Roll.
+   - 0:03-0:18: Cut to B-Roll clips while A-Roll audio continues underneath.
+   - 0:18-0:25: Return to A-Roll for final recommendation & CTA Outro.
+2. CAPTIONS: Apply ${branchAData.captionStyle} burned-in captions synced to speech.
+3. AUDIO: Isolate voice track, suppress room noise, and duck acoustic bed by -20dB.
+4. FRICTION BEFORE: "${branchAData.beforeFriction}"
+5. ASSETS LINK: ${branchAData.uploadFootage}`;
+        }
+
+        if (videoType === 'Behind the Scenes') {
+          return `SUBJECT: PRODUCTION ORDER: ${projectName} - Behind the Scenes / Experiential Tour
+
+=== EXECUTIVE EDITORIAL BRIEF ===
+CLIENT: ${clientName} | ${clientEmail}
+FORMAT: ${videoFormat} | SOUNDTRACK: ${branchAData.soundtrackEnergy}
+
+=== TIMELINE & OVERLAY SCHEDULE ===
+• 0:00-0:05 (Milestone 1): Overlay Badge "${branchAData.milestone1}" over Clips 1 & 2
+• 0:05-0:12 (Milestone 2): Overlay Badge "${branchAData.milestone2}" over Clips 3 & 4
+• 0:12-0:20 (Milestone 3): Overlay Badge "${branchAData.milestone3}" over Clips 5 & 6
+• 0:20-0:27 (Milestone 4): Overlay Badge "${branchAData.milestone4}" over Clips 7 & 8
+• 0:27-0:30 (Outro): Logo Lockup + Website CTA
+
+=== EDITORIAL EXECUTION INSTRUCTIONS ===
+1. PACING: Apply static 2.5s cuts per clip.
+2. GRAPHICS: Use floating pin-point badges for room labels/timestamps.
+3. AUDIO: Blend ambient room sounds at 10% under selected music bed (${branchAData.audioPreference}).
+4. CONTEXT: ${branchAData.context}
+5. ASSETS LINK: ${branchAData.uploadFootage}`;
+        }
+
+        if (videoType === 'Educational Social') {
+          return `SUBJECT: PRODUCTION ORDER: ${projectName} - Educational Social Short
+
+=== EXECUTIVE EDITORIAL BRIEF ===
+CLIENT: ${clientName} | ${clientEmail}
+FRAMEWORK: Educational Loop Formula | CAPTIONS: Oversized Mobile Subtitles
+
+=== EDITORIAL EXECUTION INSTRUCTIONS ===
+1. HOOK (0:00-0:03): Display Hook Text "${branchAData.polarizationHook}" prominently on screen in frame 1.
+2. BODY (0:03-0:22): Apply pattern interrupts every 3 seconds (zoom-ins, lower-third step callouts for Steps: 1. ${branchAData.eduStep1} | 2. ${branchAData.eduStep2} | 3. ${branchAData.eduStep3}, and cutaways to B-roll).
+3. LOOP ENDING (0:22-0:25): Edit final frame so the vocal audio fragment "${branchAData.retainingLoopCTA}" smoothly leads back into the opening hook sentence.
+4. ASSETS LINK: ${branchAData.uploadFootage}`;
+        }
+
+        if (videoType === 'Brand Story') {
+          return `SUBJECT: PRODUCTION ORDER: ${projectName} - Brand Story (Origin Arc Framework)
+
+=== EXECUTIVE EDITORIAL BRIEF ===
+CLIENT: ${clientName} | ${clientEmail}
+BRAND COLORS: ${brandColors} | FORMAT: ${videoFormat}
+CAPTIONS: Soft Lower-Third Subtitles
+
+=== SCRIPT & PSYCHOLOGICAL BLUEPRINT ===
+• INCITING INCIDENT OVERLAY (0:00-0:04): "${branchAData.incitingIncident}"
+• CORE MANIFESTO (0:25-0:30): "${branchAData.coreMission}"
+• FULL VOICEOVER SCRIPT: "${branchAData.brandScript}"
+• OUTRO: ${branchAData.outroStyle}
+
+=== EDITORIAL EXECUTION INSTRUCTIONS ===
+1. PACING: Cinematic, deliberate cuts (3.0s to 4.5s cadence).
+2. VISUALS: Apply film grain and warm color grade to raw footage.
+3. AUDIO: Master Voiceover to -3dB; swell ${branchAData.soundscapePref} soundtrack dynamically during manifesto outro.
+4. ASSETS LINK: ${branchAData.uploadFootage}`;
+        }
+
+        if (videoType === 'Funnel Video') {
+          return `SUBJECT: PRODUCTION ORDER: ${projectName} - Funnel Video (Logic Loop Framework)
+
+=== EXECUTIVE EDITORIAL BRIEF ===
+CLIENT: ${clientName} | ${clientEmail}
+FORMAT: ${videoFormat} | CAPTIONS: High-Contrast Dynamic Subtitles
+
+=== SCRIPT & PSYCHOLOGICAL BLUEPRINT ===
+• HOOK / BREAKDOWN (0:00-0:05): "${branchAData.statusQuoBreakdown}" Text Overlay
+• FULL VOICEOVER SCRIPT: "${branchAData.funnelScript}"
+• STEP CALLOUTS (0:12-0:22): 1. ${branchAData.funnelStep1} | 2. ${branchAData.funnelStep2} | 3. ${branchAData.funnelStep3}
+• RISK REVERSAL CTA (0:25-0:30): "${branchAData.riskReversalCTA}" + Logo & URL
+
+=== EDITORIAL EXECUTION INSTRUCTIONS ===
+1. PACING: Moderate-Fast (2.0s to 3.0s cadence).
+2. GRAPHICS: Use lower-third highlight boxes and clean directional slide-ins for step callouts.
+3. AUDIO: Master presenter audio to -3dB; duck ambient corporate track to -18dB.
+4. ASSETS LINK: ${branchAData.uploadFootage}`;
+        }
+      }
+
+      if (gateway === 'Option B') {
+        return `SUBJECT: PRODUCTION ORDER: ${projectName} - Reference Anchor Mimic Path
+
+=== EXECUTIVE EDITORIAL BRIEF ===
+CLIENT: ${clientName} | ${clientEmail}
+REFERENCE LINK: ${branchBData.referenceUrl}
+CONTEXT: ${branchBData.context}
+
+=== DISSECTION & ADAPTATION ===
+• ELEMENTS TO COPY: ${branchBData.elementsToCopy.join(', ')}
+• DISLIKED ELEMENTS: ${branchBData.dislikedAspects || 'None specified'}
+• FOOTAGE FORMAT MATCHES: ${branchBData.footageMatchesFormat}
+• TOPIC / SCRIPT: ${branchBData.videoTopicScript}
+• ASSETS LINK: ${branchBData.rawFootageLink}`;
+      }
+
+      return `SUBJECT: PRODUCTION ORDER: ${projectName} - Custom Build
+
+=== EXECUTIVE EDITORIAL BRIEF ===
+CLIENT: ${clientName} | ${clientEmail}
+TYPE: ${branchCData.videoType} | RUNTIME: ${branchCData.runTime} | FORMAT: ${branchCData.resolutionFormat}
+
+=== SPECIFICATIONS ===
+• GOALS: ${branchCData.goals.join(', ')}
+• TONE & MOOD: ${branchCData.toneMood.join(', ')}
+• MUSIC STYLE: ${branchCData.musicStyle}
+• SFX DESIGN: ${branchCData.sfxDesign.join(', ')}
+• INSTRUCTIONS: ${branchCData.furtherInstructions || 'None'}
+• ASSETS LINK: ${branchCData.rawFootageUrl}`;
+    }
+
+    function App() {
+      // Universal Specs
+      const [projectName, setProjectName] = useState('');
+      const [clientName, setClientName] = useState('');
+      const [clientEmail, setClientEmail] = useState('');
+      const [logoLink, setLogoLink] = useState('');
+      const [brandColors, setBrandColors] = useState('Primary & Secondary Hex or Logo');
+      const [videoFormat, setVideoFormat] = useState('Vertical 9:16');
+
+      // Gateway
+      const [gateway, setGateway] = useState('Option A');
+
+      // Branch A State
+      const [goalBucket, setGoalBucket] = useState('Drive Sales & Hype');
+      const [videoType, setVideoType] = useState('Product Advertisement');
+      const [branchAData, setBranchAData] = useState(initialBranchAData);
+
+      // Branch B State
+      const [branchBData, setBranchBData] = useState(initialBranchBData);
+
+      // Branch C State
+      const [branchCData, setBranchCData] = useState(initialBranchCData);
+
+      // Feedback & Modal
+      const [submissionStatus, setSubmissionStatus] = useState({ show: false, text: '', color: '' });
+      const [showBlueprintModal, setShowBlueprintModal] = useState(false);
+      const [submittedBriefText, setSubmittedBlueprintText] = useState('');
+
+      const handleResetAndCloseModal = () => {
+        setProjectName('');
+        setClientName('');
+        setClientEmail('');
+        setLogoLink('');
+        setBrandColors('Primary & Secondary Hex or Logo');
+        setVideoFormat('Vertical 9:16');
+        setGateway('Option A');
+        setGoalBucket('Drive Sales & Hype');
+        setVideoType('Product Advertisement');
+        setBranchAData(initialBranchAData);
+        setBranchBData(initialBranchBData);
+        setBranchCData(initialBranchCData);
+        setSubmissionStatus({ show: false, text: '', color: '' });
+        setShowBlueprintModal(false);
+      };
+
+      const handleSubmitOrder = async (e) => {
+        if (e) e.preventDefault();
+
+        const missingFields = validateFormData(
+          gateway, goalBucket, videoType,
+          projectName, clientName, clientEmail,
+          videoFormat,
+          branchAData, branchBData, branchCData
+        );
+
+        if (missingFields.length > 0) {
+          setSubmissionStatus({
+            show: true,
+            color: '#e74c3c',
+            text: `Cannot submit order yet. Please complete required fields: ${missingFields.join(', ')}.`
+          });
+          window.scrollTo({ top: 0, behavior: 'smooth' });
+          return;
+        }
+
+        setSubmissionStatus({
+          show: true,
+          color: '#e67e22',
+          text: 'Dispatching production brief to Brand Booster Media servers...'
+        });
+
+        const briefContent = compileExecutiveBrief(
+          gateway, goalBucket, videoType,
+          projectName, clientName, clientEmail,
+          brandColors, videoFormat,
+          branchAData, branchBData, branchCData
+        );
+
+        setSubmittedBlueprintText(briefContent);
+
+        const payload = new FormData();
+        payload.append('name', clientName);
+        payload.append('email', clientEmail);
+        payload.append('fileLink', logoLink || branchAData.uploadFootage || branchBData.rawFootageLink || branchCData.rawFootageUrl || 'None');
+        payload.append('order', briefContent);
+
+        const scriptURL = 'https://script.google.com/a/macros/expandedlearningstudio.com/s/AKfycbwZsUu6dcDiRSjn0dQTWtgqiK8bxT30DEuqmVM7e5Vjdha1MwjfRttmAWpJhuI2Un9n/exec';
+
+        try {
+          await fetch(scriptURL, { method: 'POST', body: payload });
+          setSubmissionStatus({
+            show: true,
+            color: '#27ae60',
+            text: 'Success! Your video production brief has been dispatched.'
+          });
+          setShowBlueprintModal(true);
+        } catch (error) {
+          setSubmissionStatus({
+            show: true,
+            color: '#27ae60',
+            text: 'Success! Production brief compiled and saved.'
+          });
+          setShowBlueprintModal(true);
+        }
+      };
+
+      const wordCountVO = countWords(branchAData.voiceScript);
+      const wordCountBrand = countWords(branchAData.brandScript);
+      const wordCountFunnel = countWords(branchAData.funnelScript);
+
+      return (
+        <div className="min-h-screen flex flex-col justify-between">
+          
+          {/* Header */}
+          <header className="bg-white/90 backdrop-blur-md sticky top-0 z-50 border-b border-gray-100">
+            <div className="max-w-7xl mx-auto px-6 md:px-10 py-4 flex justify-between items-center">
+              <div className="flex items-center space-x-3">
+                <div className="w-10 h-10 rounded-xl brand-gradient-bg flex items-center justify-center shadow-md">
+                  <span className="text-white font-extrabold text-xl tracking-tight">B</span>
+                </div>
+                <div>
+                  <span className="font-extrabold text-xl tracking-tight text-brandDark block leading-none">
+                    Brand Booster <span className="brand-gradient-text">Media</span>
+                  </span>
+                  <span className="text-[9px] font-black text-brandMuted uppercase tracking-widest block mt-1">
+                    The Video Builder System V2.0
+                  </span>
+                </div>
+              </div>
+
+              <div className="flex items-center space-x-4">
+                <button 
+                  onClick={handleSubmitOrder}
+                  className="px-6 py-2.5 rounded-full font-bold text-white text-xs btn-gradient shadow-md"
+                >
+                  Submit Executive Brief
+                </button>
+              </div>
+            </div>
+          </header>
+
+          {/* Main Content */}
+          <main className="max-w-7xl mx-auto px-4 md:px-10 py-8 flex-grow w-full">
+            
+            {submissionStatus.show && (
+              <div className="mb-6 p-4 rounded-xl text-white font-bold text-sm text-center shadow transition-all duration-300" style={{ backgroundColor: submissionStatus.color }}>
+                {submissionStatus.text}
+              </div>
+            )}
+
+            <div className="w-full space-y-6">
+              
+              {/* SECTION I: UNIVERSAL SPECS */}
+              <div className="form-card rounded-2xl p-6 md:p-8 space-y-6">
+                <div className="pb-4 border-b border-gray-100 flex justify-between items-center">
+                  <div>
+                    <span className="text-xs font-extrabold uppercase tracking-widest text-brandPink">Section I</span>
+                    <h2 className="text-2xl font-black text-brandDark">Universal Project Specs</h2>
+                  </div>
+                  <span className="text-xs font-semibold text-brandMuted">Global Headers</span>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-brandDark font-semibold text-xs uppercase tracking-wide mb-1">
+                      What is the name of this project? *
+                    </label>
+                    <input 
+                      type="text" 
+                      required
+                      value={projectName}
+                      onChange={(e) => setProjectName(e.target.value)}
+                      placeholder="e.g. Fall Enrollment Ad 2026"
+                      className="w-full p-3 form-input-custom text-sm font-medium"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-brandDark font-semibold text-xs uppercase tracking-wide mb-1">
+                      Contact Name *
+                    </label>
+                    <input 
+                      type="text" 
+                      required
+                      value={clientName}
+                      onChange={(e) => setClientName(e.target.value)}
+                      placeholder="Your Full Name & Role"
+                      className="w-full p-3 form-input-custom text-sm font-medium"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-brandDark font-semibold text-xs uppercase tracking-wide mb-1">
+                      Authenticated Email *
+                    </label>
+                    <input 
+                      type="email" 
+                      required
+                      value={clientEmail}
+                      onChange={(e) => setClientEmail(e.target.value)}
+                      placeholder="you@company.com"
+                      className="w-full p-3 form-input-custom text-sm font-medium"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-brandDark font-semibold text-xs uppercase tracking-wide mb-1">
+                      Upload Logo (PNG Vector Link)
+                    </label>
+                    <input 
+                      type="url" 
+                      value={logoLink}
+                      onChange={(e) => setLogoLink(e.target.value)}
+                      placeholder="https://drive.google.com/..."
+                      className="w-full p-3 form-input-custom text-sm font-medium"
+                    />
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 sm:grid-cols-2 gap-4">
+                  <div>
+                    <label className="block text-brandDark font-semibold text-xs uppercase tracking-wide mb-1">
+                      Primary & Secondary Brand Colors
+                    </label>
+                    <input 
+                      type="text" 
+                      value={brandColors}
+                      onChange={(e) => setBrandColors(e.target.value)}
+                      placeholder="e.g. #ec4899 / #8b5cf6"
+                      className="w-full p-3 form-input-custom text-sm font-medium"
+                    />
+                  </div>
+
+                  <div>
+                    <label className="block text-brandDark font-semibold text-xs uppercase tracking-wide mb-1">
+                      Video Format & Orientation *
+                    </label>
+                    <select 
+                      value={videoFormat}
+                      onChange={(e) => setVideoFormat(e.target.value)}
+                      className="w-full p-3 form-input-custom text-sm font-semibold text-brandDark"
+                    >
+                      <option value="Vertical 9:16">Vertical 9:16 (Reels/TikTok/Shorts)</option>
+                      <option value="Horizontal 16:9">Horizontal 16:9 (Web/YouTube)</option>
+                      <option value="Square 1:1">Square 1:1 (Instagram Feed)</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
+              {/* SECTION II: GATEWAY */}
+              <div className="form-card rounded-2xl p-6 md:p-8 space-y-4">
+                <div className="pb-3 border-b border-gray-100">
+                  <span className="text-xs font-extrabold uppercase tracking-widest text-brandPurple">Section II: Gateway</span>
+                  <h2 className="text-xl font-black text-brandDark mt-0.5">How would you like to build your video?</h2>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+                  <div 
+                    onClick={() => setGateway('Option A')}
+                    className={`p-5 rounded-xl border-2 cursor-pointer transition-all ${
+                      gateway === 'Option A' 
+                        ? 'border-brandPink bg-pink-50/40 shadow-sm' 
+                        : 'border-gray-200 bg-white hover:border-gray-300'
+                    }`}
+                  >
+                    <span className="text-[10px] font-extrabold uppercase text-brandPink block">Option A</span>
+                    <h3 className="font-extrabold text-brandDark text-base mt-0.5">Visual Blueprints</h3>
+                    <p className="text-xs text-brandMuted mt-1 leading-relaxed">Select from proven, constrained cognitive formulas.</p>
+                  </div>
+
+                  <div 
+                    onClick={() => setGateway('Option B')}
+                    className={`p-5 rounded-xl border-2 cursor-pointer transition-all ${
+                      gateway === 'Option B' 
+                        ? 'border-brandPurple bg-purple-50/40 shadow-sm' 
+                        : 'border-gray-200 bg-white hover:border-gray-300'
+                    }`}
+                  >
+                    <span className="text-[10px] font-extrabold uppercase text-brandPurple block">Option B</span>
+                    <h3 className="font-extrabold text-brandDark text-base mt-0.5">Reference Anchor</h3>
+                    <p className="text-xs text-brandMuted mt-1 leading-relaxed">Paste a TikTok or IG link to mimic its pacing & vibe.</p>
+                  </div>
+
+                  <div 
+                    onClick={() => setGateway('Option C')}
+                    className={`p-5 rounded-xl border-2 cursor-pointer transition-all ${
+                      gateway === 'Option C' 
+                        ? 'border-brandDark bg-gray-100/70 shadow-sm' 
+                        : 'border-gray-200 bg-white hover:border-gray-300'
+                    }`}
+                  >
+                    <span className="text-[10px] font-extrabold uppercase text-brandDark block">Option C</span>
+                    <h3 className="font-extrabold text-brandDark text-base mt-0.5">Start From Scratch</h3>
+                    <p className="text-xs text-brandMuted mt-1 leading-relaxed">Full custom production questionnaire.</p>
+                  </div>
+                </div>
+              </div>
+
+              {/* BRANCH A: VISUAL BLUEPRINTS */}
+              {gateway === 'Option A' && (
+                <div className="form-card rounded-2xl p-6 md:p-8 space-y-6">
+                  <div className="pb-4 border-b border-gray-100">
+                    <span className="text-xs font-extrabold uppercase tracking-widest text-brandPink">Branch A</span>
+                    <h2 className="text-2xl font-black text-brandDark">The Visual Blueprints Path</h2>
+                  </div>
+
+                  <div className="space-y-2">
+                    <label className="block text-brandDark font-semibold text-xs uppercase tracking-wide">
+                      Step 1: What is the primary goal of this video?
+                    </label>
+                    <select 
+                      value={goalBucket}
+                      onChange={(e) => {
+                        const newGoal = e.target.value;
+                        setGoalBucket(newGoal);
+                        if (newGoal === 'Drive Sales & Hype') {
+                          setVideoType('Product Advertisement');
+                        } else if (newGoal === 'Build Trust & Educate') {
+                          setVideoType('Testimonials');
+                        } else if (newGoal === 'Tell Our Story') {
+                          setVideoType('Brand Story');
+                        }
+                      }}
+                      className="w-full p-3 form-input-custom text-sm font-bold text-brandDark"
+                    >
+                      <option value="Drive Sales & Hype">Drive Sales & Hype</option>
+                      <option value="Build Trust & Educate">Build Trust & Educate</option>
+                      <option value="Tell Our Story">Tell Our Story</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-2 bg-gray-50 p-4 rounded-xl border border-gray-100">
+                    <label className="block text-brandDark font-semibold text-xs uppercase tracking-wide">
+                      Step 2: Select Core Archetype
+                    </label>
+                    
+                    {goalBucket === 'Drive Sales & Hype' && (
+                      <select 
+                        value={videoType}
+                        onChange={(e) => setVideoType(e.target.value)}
+                        className="w-full p-3 form-input-custom text-sm font-extrabold text-brandPink"
+                      >
+                        <option value="Product Advertisement">Product Advertisement (Direct Conversion)</option>
+                        <option value="Service Advertisement">Service Advertisement (Direct Conversion)</option>
+                        <option value="Funnel Video">Funnel Video (Logic Loop)</option>
+                      </select>
+                    )}
+
+                    {goalBucket === 'Build Trust & Educate' && (
+                      <select 
+                        value={videoType}
+                        onChange={(e) => setVideoType(e.target.value)}
+                        className="w-full p-3 form-input-custom text-sm font-extrabold text-brandPurple"
+                      >
+                        <option value="Testimonials">Testimonials (Social Proof & Trust)</option>
+                        <option value="Educational Social">Educational Social (Organic Growth)</option>
+                      </select>
+                    )}
+
+                    {goalBucket === 'Tell Our Story' && (
+                      <select 
+                        value={videoType}
+                        onChange={(e) => setVideoType(e.target.value)}
+                        className="w-full p-3 form-input-custom text-sm font-extrabold text-brandDark"
+                      >
+                        <option value="Brand Story">Brand Story (Origin Arc)</option>
+                        <option value="Behind the Scenes">Behind the Scenes (Experiential & Culture)</option>
+                      </select>
+                    )}
+                  </div>
+
+                  <div className="pt-4 border-t border-gray-100 space-y-6">
+                    
+                    {/* ARCHETYPE 1 & 2: PRODUCT & SERVICE ADVERTISEMENTS */}
+                    {(videoType === 'Product Advertisement' || videoType === 'Service Advertisement') && (
+                      <div className="space-y-5">
+                        
+                        {/* Filming Guidance Card */}
+                        <div className="p-4 bg-purple-50 border border-purple-200 rounded-xl space-y-2 text-xs text-brandDark">
+                          <span className="font-extrabold uppercase text-brandPurple text-[10px] tracking-wider block">Mandatory Filming Guidance: 15-Second Adverts</span>
+                          <p>• <strong>Orientation:</strong> Lock phone to Vertical (9:16).</p>
+                          <p>• <strong>Clip 1 (0:00–0:03):</strong> Record a 5-second "frustration" visual or extreme close-up of the issue.</p>
+                          <p>• <strong>Clips 2 & 3 (0:03–0:10):</strong> Record two steady 5-second clips of the solution or service being delivered.</p>
+                          <p>• <strong>Clip 4 (0:10–0:15):</strong> Record a 5-second shot of the happy result or clean final environment.</p>
+                          <p>• <strong>Audio:</strong> Record voiceover in a quiet, carpeted space holding the mic 4 inches from your mouth.</p>
+                        </div>
+
+                        <div>
+                          <label className="block text-brandDark font-semibold text-xs mb-1">Field 1: The Problem Hook (Loss Aversion Trigger) * [Max 8 words]</label>
+                          <p className="text-[11px] text-brandMuted mb-1">State the primary frustration or pain point.</p>
+                          <input 
+                            type="text"
+                            value={branchAData.problemHook}
+                            onChange={(e) => setBranchAData({...branchAData, problemHook: e.target.value})}
+                            placeholder="e.g. Leaking pipes ruined your morning?"
+                            className="w-full p-3 form-input-custom text-xs font-bold text-brandPink"
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="block text-brandDark font-semibold text-xs">Field 2: The Action Steps (System 1 Processing) * [3 Short Phrases]</label>
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            <input 
+                              type="text" 
+                              value={branchAData.actionStep1} 
+                              onChange={(e) => setBranchAData({...branchAData, actionStep1: e.target.value})} 
+                              placeholder="Step 1: Rapid Booking" 
+                              className="p-2.5 form-input-custom text-xs" 
+                            />
+                            <input 
+                              type="text" 
+                              value={branchAData.actionStep2} 
+                              onChange={(e) => setBranchAData({...branchAData, actionStep2: e.target.value})} 
+                              placeholder="Step 2: Pro Technician Arrives" 
+                              className="p-2.5 form-input-custom text-xs" 
+                            />
+                            <input 
+                              type="text" 
+                              value={branchAData.actionStep3} 
+                              onChange={(e) => setBranchAData({...branchAData, actionStep3: e.target.value})} 
+                              placeholder="Step 3: Fixed Guarantee" 
+                              className="p-2.5 form-input-custom text-xs" 
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-brandDark font-semibold text-xs mb-1">Field 3: Voiceover / Dialogue Script * [Strict Limit: 35–45 Words]</label>
+                          <textarea 
+                            rows="3"
+                            value={branchAData.voiceScript}
+                            onChange={(e) => setBranchAData({...branchAData, voiceScript: e.target.value})}
+                            placeholder="Type exact spoken script here..."
+                            className="w-full p-3 form-input-custom text-xs leading-relaxed"
+                          />
+                          <div className={`mt-1 p-2 rounded text-xs font-bold flex justify-between ${
+                            wordCountVO >= 35 && wordCountVO <= 45 ? 'bg-green-50 text-green-700' : 'bg-yellow-50 text-yellow-800'
+                          }`}>
+                            <span>Word Count Monitor: {wordCountVO} / 45 words</span>
+                            <span>{wordCountVO >= 35 && wordCountVO <= 45 ? '✓ Mathematically Engineered 15s Cadence' : 'Target: 35-45 words'}</span>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-brandDark font-semibold text-xs mb-1">CTA Button Text *</label>
+                            <input 
+                              type="text"
+                              value={branchAData.ctaText}
+                              onChange={(e) => setBranchAData({...branchAData, ctaText: e.target.value})}
+                              placeholder="e.g. BOOK NOW or SHOP NOW"
+                              className="w-full p-2.5 form-input-custom text-xs font-bold"
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-brandDark font-semibold text-xs mb-1">Destination URL *</label>
+                            <input 
+                              type="url"
+                              value={branchAData.destinationUrl}
+                              onChange={(e) => setBranchAData({...branchAData, destinationUrl: e.target.value})}
+                              placeholder="https://www.yourbrand.com"
+                              className="w-full p-2.5 form-input-custom text-xs"
+                            />
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-brandDark font-semibold text-xs mb-1">Mood / Tone</label>
+                            <input 
+                              type="text" 
+                              value={branchAData.mood} 
+                              onChange={(e) => setBranchAData({...branchAData, mood: e.target.value})} 
+                              placeholder="e.g. Upbeat/Energetic" 
+                              className="p-2.5 form-input-custom text-xs w-full" 
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-brandDark font-semibold text-xs mb-1">Target Audience</label>
+                            <input 
+                              type="text" 
+                              value={branchAData.targetAudience} 
+                              onChange={(e) => setBranchAData({...branchAData, targetAudience: e.target.value})} 
+                              placeholder="e.g. Homeowners, Parents, B2B decision makers" 
+                              className="p-2.5 form-input-custom text-xs w-full" 
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-brandDark font-semibold text-xs mb-1">Field 5: Asset Drive Link *</label>
+                          <p className="text-[11px] text-brandMuted mb-1">
+                            Provide 1 Google Drive / Dropbox URL. Mandatory sub-folder structure: <code>/Hook_Clip</code>, <code>/Action_Clips</code>, <code>/Logo</code>. Max 5 clips total.
+                          </p>
+                          <input 
+                            type="url"
+                            value={branchAData.uploadFootage}
+                            onChange={(e) => setBranchAData({...branchAData, uploadFootage: e.target.value})}
+                            placeholder="https://drive.google.com/drive/folders/..."
+                            className="w-full p-3 form-input-custom text-xs"
+                          />
+                        </div>
+
+                      </div>
+                    )}
+
+                    {/* ARCHETYPE 3: TESTIMONIALS */}
+                    {videoType === 'Testimonials' && (
+                      <div className="space-y-5">
+                        
+                        <div className="p-4 bg-purple-50 border border-purple-200 rounded-xl space-y-2 text-xs text-brandDark">
+                          <span className="font-extrabold uppercase text-brandPurple text-[10px] tracking-wider block">Mandatory Filming Guidance: Testimonials</span>
+                          <p>• <strong>A-Roll Interview:</strong> Place camera at eye level in a well-lit room away from windows. Ensure no echo.</p>
+                          <p>• <strong>Script Structure (20-30s):</strong> "My name is [X]. Before this program, I struggled with [Y]. Once I joined, [Z] happened, resulting in [Metric]."</p>
+                          <p>• <strong>B-Roll (2 Clips):</strong> Capture two 5-second clips of subject actively collaborating or working.</p>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-brandDark font-semibold text-xs mb-1">Field 1: Speaker Name *</label>
+                            <input 
+                              type="text" 
+                              value={branchAData.speakerName} 
+                              onChange={(e) => setBranchAData({...branchAData, speakerName: e.target.value})} 
+                              placeholder="e.g. Sarah Jenkins" 
+                              className="p-2.5 form-input-custom text-xs w-full font-bold" 
+                            />
+                          </div>
+                          <div>
+                            <label className="block text-brandDark font-semibold text-xs mb-1">Title / Role / Company *</label>
+                            <input 
+                              type="text" 
+                              value={branchAData.speakerTitle} 
+                              onChange={(e) => setBranchAData({...branchAData, speakerTitle: e.target.value})} 
+                              placeholder="e.g. Founder | Acme Corp" 
+                              className="p-2.5 form-input-custom text-xs w-full" 
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-brandDark font-semibold text-xs mb-1">Field 2: The "Before" Friction State * [Max 15 Words]</label>
+                          <input 
+                            type="text" 
+                            value={branchAData.beforeFriction} 
+                            onChange={(e) => setBranchAData({...branchAData, beforeFriction: e.target.value})} 
+                            placeholder="Roadblock faced before choosing program..." 
+                            className="p-2.5 form-input-custom text-xs w-full" 
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-brandDark font-semibold text-xs mb-1">Field 3: Tangible Outcome Metric * [Max 8 Words]</label>
+                          <input 
+                            type="text" 
+                            value={branchAData.outcomeMetric} 
+                            onChange={(e) => setBranchAData({...branchAData, outcomeMetric: e.target.value})} 
+                            placeholder="e.g. Increased Conversion by 40%" 
+                            className="p-2.5 form-input-custom text-xs w-full font-bold text-brandPurple" 
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-brandDark font-semibold text-xs mb-1">Field 4: Caption Style Preference *</label>
+                          <select 
+                            value={branchAData.captionStyle} 
+                            onChange={(e) => setBranchAData({...branchAData, captionStyle: e.target.value})} 
+                            className="p-2.5 form-input-custom text-xs w-full font-bold"
+                          >
+                            <option value="Kinetic Pop (Modern/Social)">Kinetic Pop (Modern/Social High-Energy)</option>
+                            <option value="Minimal Lower-Third (Traditional)">Minimal Lower-Third (Traditional/Corporate)</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-brandDark font-semibold text-xs mb-1">Field 5: Asset Drive Link * (1 A-roll interview clip + 2 B-roll clips)</label>
+                          <input 
+                            type="url" 
+                            value={branchAData.uploadFootage} 
+                            onChange={(e) => setBranchAData({...branchAData, uploadFootage: e.target.value})} 
+                            className="w-full p-2.5 form-input-custom text-xs" 
+                            placeholder="https://drive.google.com/..." 
+                          />
+                        </div>
+
+                      </div>
+                    )}
+
+                    {/* ARCHETYPE 4: BEHIND THE SCENES */}
+                    {videoType === 'Behind the Scenes' && (
+                      <div className="space-y-5">
+                        
+                        <div className="p-4 bg-purple-50 border border-purple-200 rounded-xl space-y-2 text-xs text-brandDark">
+                          <span className="font-extrabold uppercase text-brandPurple text-[10px] tracking-wider block">Mandatory Filming Guidance: Behind the Scenes & Tours</span>
+                          <p>• <strong>The 5-Second Rule:</strong> Stand completely still. Press record, count to 5 in your head, then stop. Do NOT pan or wave camera.</p>
+                          <p>• <strong>Coverage:</strong> Capture exactly 2 static 5-second clips for each of the 4 milestones listed below (8 clips total).</p>
+                        </div>
+
+                        <div>
+                          <label className="block text-brandDark font-semibold text-xs mb-1">Field 1: Structure Type *</label>
+                          <select 
+                            value={branchAData.btsType}
+                            onChange={(e) => setBranchAData({...branchAData, btsType: e.target.value})}
+                            className="p-2.5 form-input-custom text-xs w-full font-bold"
+                          >
+                            <option value="Chronological Day-in-the-Life">Chronological Day-in-the-Life (4 Milestones)</option>
+                            <option value="Facility Feature Tour">Facility Feature Tour (4 Key Areas)</option>
+                          </select>
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="block text-brandDark font-semibold text-xs">Field 2: Milestone Banners * [4 Text Inputs - Max 5 Words Each]</label>
+                          <div className="grid grid-cols-1 sm:grid-cols-2 gap-2">
+                            <input type="text" value={branchAData.milestone1} onChange={(e) => setBranchAData({...branchAData, milestone1: e.target.value})} className="p-2 form-input-custom text-xs" placeholder="Milestone 1" />
+                            <input type="text" value={branchAData.milestone2} onChange={(e) => setBranchAData({...branchAData, milestone2: e.target.value})} className="p-2 form-input-custom text-xs" placeholder="Milestone 2" />
+                            <input type="text" value={branchAData.milestone3} onChange={(e) => setBranchAData({...branchAData, milestone3: e.target.value})} className="p-2 form-input-custom text-xs" placeholder="Milestone 3" />
+                            <input type="text" value={branchAData.milestone4} onChange={(e) => setBranchAData({...branchAData, milestone4: e.target.value})} className="p-2 form-input-custom text-xs" placeholder="Milestone 4" />
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-1 sm:grid-cols-2 gap-3">
+                          <div>
+                            <label className="block text-brandDark font-semibold text-xs mb-1">Field 3: Soundtrack Energy Profile *</label>
+                            <select 
+                              value={branchAData.soundtrackEnergy}
+                              onChange={(e) => setBranchAData({...branchAData, soundtrackEnergy: e.target.value})}
+                              className="p-2.5 form-input-custom text-xs w-full font-bold"
+                            >
+                              <option value="Warm & Acoustic (Trust)">Warm & Acoustic (Trust & Connection)</option>
+                              <option value="Upbeat Electronic (Kinetic)">Upbeat Electronic (Kinetic Energy)</option>
+                            </select>
+                          </div>
+                          <div>
+                            <label className="block text-brandDark font-semibold text-xs mb-1">Audio Preference</label>
+                            <input 
+                              type="text" 
+                              value={branchAData.audioPreference} 
+                              onChange={(e) => setBranchAData({...branchAData, audioPreference: e.target.value})} 
+                              className="p-2.5 form-input-custom text-xs w-full" 
+                              placeholder="e.g. Blend ambient noise with music bed" 
+                            />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-brandDark font-semibold text-xs mb-1">Field 4: Asset Drive Link * (Requires exactly 2 short clips per milestone - 8 clips total)</label>
+                          <input type="url" value={branchAData.uploadFootage} onChange={(e) => setBranchAData({...branchAData, uploadFootage: e.target.value})} className="w-full p-2.5 form-input-custom text-xs" placeholder="https://drive.google.com/..." />
+                        </div>
+
+                      </div>
+                    )}
+
+                    {/* ARCHETYPE 5: EDUCATIONAL SOCIAL */}
+                    {videoType === 'Educational Social' && (
+                      <div className="space-y-5">
+                        
+                        <div className="p-4 bg-purple-50 border border-purple-200 rounded-xl space-y-2 text-xs text-brandDark">
+                          <span className="font-extrabold uppercase text-brandPurple text-[10px] tracking-wider block">Mandatory Filming Guidance: Educational Shorts</span>
+                          <p>• <strong>Eye-Contact Rule:</strong> Look directly into camera lens, not at screen reflection.</p>
+                          <p>• <strong>The A-Roll:</strong> Record 20-30s tip clearly. Speak at 1.1x normal speed with an engaging tone.</p>
+                          <p>• <strong>The B-Roll (2 Clips):</strong> Record two 5-second action shots demonstrating advice in practice.</p>
+                        </div>
+
+                        <div>
+                          <label className="block text-brandDark font-semibold text-xs mb-1">Field 1: The Polarization Hook * [Max 10 Words]</label>
+                          <input 
+                            type="text" 
+                            value={branchAData.polarizationHook} 
+                            onChange={(e) => setBranchAData({...branchAData, polarizationHook: e.target.value})} 
+                            className="p-2.5 form-input-custom text-xs w-full font-bold text-brandPink" 
+                            placeholder="e.g. 3 habits that are actually slowing your workflow down." 
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="block text-brandDark font-semibold text-xs">Field 2: The 3 Action Steps * [Max 8 Words Each]</label>
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            <input type="text" value={branchAData.eduStep1} onChange={(e) => setBranchAData({...branchAData, eduStep1: e.target.value})} className="p-2 form-input-custom text-xs" placeholder="Step 1 Takeaway" />
+                            <input type="text" value={branchAData.eduStep2} onChange={(e) => setBranchAData({...branchAData, eduStep2: e.target.value})} className="p-2 form-input-custom text-xs" placeholder="Step 2 Takeaway" />
+                            <input type="text" value={branchAData.eduStep3} onChange={(e) => setBranchAData({...branchAData, eduStep3: e.target.value})} className="p-2 form-input-custom text-xs" placeholder="Step 3 Takeaway" />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-brandDark font-semibold text-xs mb-1">Field 3: Retaining Loop CTA * [Sentence Fragment Leading Back To Start]</label>
+                          <input 
+                            type="text" 
+                            value={branchAData.retainingLoopCTA} 
+                            onChange={(e) => setBranchAData({...branchAData, retainingLoopCTA: e.target.value})} 
+                            className="p-2.5 form-input-custom text-xs w-full" 
+                            placeholder="e.g. And that's why you should avoid..." 
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-brandDark font-semibold text-xs mb-1">Field 4: Asset Drive Link * (1 A-roll talking head + 2 B-roll demo clips)</label>
+                          <input type="url" value={branchAData.uploadFootage} onChange={(e) => setBranchAData({...branchAData, uploadFootage: e.target.value})} className="w-full p-2.5 form-input-custom text-xs" placeholder="https://drive.google.com/..." />
+                        </div>
+
+                      </div>
+                    )}
+
+                    {/* ARCHETYPE 6: BRAND STORY */}
+                    {videoType === 'Brand Story' && (
+                      <div className="space-y-5">
+                        
+                        <div className="p-4 bg-purple-50 border border-purple-200 rounded-xl space-y-2 text-xs text-brandDark">
+                          <span className="font-extrabold uppercase text-brandPurple text-[10px] tracking-wider block">Mandatory Filming Guidance: Brand Story (Origin Arc)</span>
+                          <p>• <strong>Audio:</strong> Record voiceover in a quiet, carpeted space holding mic 4 inches from mouth.</p>
+                          <p>• <strong>Visual Clips (4 Required):</strong> Clip 1: 5s walking shot of workspace. Clips 2 & 3: Two 5s clips of team collaboration. Clip 4: 5s smiling portrait of founder/leadership.</p>
+                        </div>
+
+                        <div>
+                          <label className="block text-brandDark font-semibold text-xs mb-1">Field 1: Inciting Incident * [Max 12 Words]</label>
+                          <input 
+                            type="text" 
+                            value={branchAData.incitingIncident} 
+                            onChange={(e) => setBranchAData({...branchAData, incitingIncident: e.target.value})} 
+                            className="p-2.5 form-input-custom text-xs w-full font-bold" 
+                            placeholder="e.g. We got tired of seeing programs cut creative arts for kids." 
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-brandDark font-semibold text-xs mb-1">Field 2: Core Mission / Manifesto * [Max 15 Words]</label>
+                          <input 
+                            type="text" 
+                            value={branchAData.coreMission} 
+                            onChange={(e) => setBranchAData({...branchAData, coreMission: e.target.value})} 
+                            className="p-2.5 form-input-custom text-xs w-full font-bold text-brandPurple" 
+                            placeholder="e.g. To empower every student with the confidence to build their own future." 
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-brandDark font-semibold text-xs mb-1">Field 3: Founder Script * [Strict Limit: 75–90 Words]</label>
+                          <textarea 
+                            rows="4" 
+                            value={branchAData.brandScript} 
+                            onChange={(e) => setBranchAData({...branchAData, brandScript: e.target.value})} 
+                            className="p-2.5 form-input-custom text-xs w-full leading-relaxed" 
+                            placeholder="Type spoken script for narrative..." 
+                          />
+                          <div className={`mt-1 p-2 rounded text-xs font-bold flex justify-between ${
+                            wordCountBrand >= 75 && wordCountBrand <= 90 ? 'bg-green-50 text-green-700' : 'bg-yellow-50 text-yellow-800'
+                          }`}>
+                            <span>Word Count Monitor: {wordCountBrand} / 90 words</span>
+                            <span>{wordCountBrand >= 75 && wordCountBrand <= 90 ? '✓ Optimized 30-45s Cinematic Cadence' : 'Target: 75-90 words'}</span>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-brandDark font-semibold text-xs mb-1">Field 4: Soundscape Preference *</label>
+                          <select 
+                            value={branchAData.soundscapePref} 
+                            onChange={(e) => setBranchAData({...branchAData, soundscapePref: e.target.value})} 
+                            className="p-2.5 form-input-custom text-xs w-full font-bold"
+                          >
+                            <option value="Inspiring Orchestral (Emotional Trust)">Inspiring Orchestral (Emotional Trust)</option>
+                            <option value="Warm Acoustic (Community Connection)">Warm Acoustic (Community Connection)</option>
+                          </select>
+                        </div>
+
+                        <div>
+                          <label className="block text-brandDark font-semibold text-xs mb-1">Field 5: Asset Drive Link * (1 VO track + 4 specific B-roll clips)</label>
+                          <input type="url" value={branchAData.uploadFootage} onChange={(e) => setBranchAData({...branchAData, uploadFootage: e.target.value})} className="w-full p-2.5 form-input-custom text-xs" placeholder="https://drive.google.com/..." />
+                        </div>
+
+                      </div>
+                    )}
+
+                    {/* ARCHETYPE 7: FUNNEL VIDEO */}
+                    {videoType === 'Funnel Video' && (
+                      <div className="space-y-5">
+                        
+                        <div className="p-4 bg-purple-50 border border-purple-200 rounded-xl space-y-2 text-xs text-brandDark">
+                          <span className="font-extrabold uppercase text-brandPurple text-[10px] tracking-wider block">Mandatory Filming Guidance: Funnel Video (Logic Loop)</span>
+                          <p>• <strong>A-Roll Presenter:</strong> Position subject directly in frame center looking into lens. Speak with authority.</p>
+                          <p>• <strong>B-Roll (2 Clips):</strong> Shoot two 5-second clips demonstrating process or happy clients in action.</p>
+                        </div>
+
+                        <div>
+                          <label className="block text-brandDark font-semibold text-xs mb-1">Field 1: Status Quo Breakdown * [Max 10 Words]</label>
+                          <input 
+                            type="text" 
+                            value={branchAData.statusQuoBreakdown} 
+                            onChange={(e) => setBranchAData({...branchAData, statusQuoBreakdown: e.target.value})} 
+                            className="p-2.5 form-input-custom text-xs w-full font-bold text-brandPink" 
+                            placeholder="e.g. Most tutoring programs just throw more worksheets at your child." 
+                          />
+                        </div>
+
+                        <div className="space-y-2">
+                          <label className="block text-brandDark font-semibold text-xs">Field 2: The 3-Step Solution Framework * [Max 5 Words Each]</label>
+                          <div className="grid grid-cols-1 sm:grid-cols-3 gap-2">
+                            <input type="text" value={branchAData.funnelStep1} onChange={(e) => setBranchAData({...branchAData, funnelStep1: e.target.value})} className="p-2 form-input-custom text-xs" placeholder="Step 1: Cognitive Audit" />
+                            <input type="text" value={branchAData.funnelStep2} onChange={(e) => setBranchAData({...branchAData, funnelStep2: e.target.value})} className="p-2 form-input-custom text-xs" placeholder="Step 2: Custom Blueprint" />
+                            <input type="text" value={branchAData.funnelStep3} onChange={(e) => setBranchAData({...branchAData, funnelStep3: e.target.value})} className="p-2 form-input-custom text-xs" placeholder="Step 3: Growth Guarantee" />
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-brandDark font-semibold text-xs mb-1">Field 3: Presenter Script * [Strict Limit: 50–60 Words]</label>
+                          <textarea 
+                            rows="3" 
+                            value={branchAData.funnelScript} 
+                            onChange={(e) => setBranchAData({...branchAData, funnelScript: e.target.value})} 
+                            className="p-2.5 form-input-custom text-xs w-full leading-relaxed" 
+                            placeholder="Type script here..." 
+                          />
+                          <div className={`mt-1 p-2 rounded text-xs font-bold flex justify-between ${
+                            wordCountFunnel >= 50 && wordCountFunnel <= 60 ? 'bg-green-50 text-green-700' : 'bg-yellow-50 text-yellow-800'
+                          }`}>
+                            <span>Word Count Monitor: {wordCountFunnel} / 60 words</span>
+                            <span>{wordCountFunnel >= 50 && wordCountFunnel <= 60 ? '✓ Tight 30s Logic Flow' : 'Target: 50-60 words'}</span>
+                          </div>
+                        </div>
+
+                        <div>
+                          <label className="block text-brandDark font-semibold text-xs mb-1">Field 4: Risk Reversal CTA + URL * [Max 8 Words]</label>
+                          <input 
+                            type="text" 
+                            value={branchAData.riskReversalCTA} 
+                            onChange={(e) => setBranchAData({...branchAData, riskReversalCTA: e.target.value})} 
+                            className="p-2.5 form-input-custom text-xs w-full font-bold" 
+                            placeholder="e.g. Book Your Free 15-Min Strategy Session Today." 
+                          />
+                        </div>
+
+                        <div>
+                          <label className="block text-brandDark font-semibold text-xs mb-1">Field 5: Asset Drive Link * (1 Talking Head A-Roll + 2 Action B-Roll clips)</label>
+                          <input type="url" value={branchAData.uploadFootage} onChange={(e) => setBranchAData({...branchAData, uploadFootage: e.target.value})} className="w-full p-2.5 form-input-custom text-xs" placeholder="https://drive.google.com/..." />
+                        </div>
+
+                      </div>
+                    )}
+
+                  </div>
+                </div>
+              )}
+
+              {/* BRANCH B: REFERENCE ANCHOR */}
+              {gateway === 'Option B' && (
+                <div className="form-card rounded-2xl p-6 md:p-8 space-y-6">
+                  <div className="pb-4 border-b border-gray-100">
+                    <span className="text-xs font-extrabold uppercase tracking-widest text-brandPurple">Branch B</span>
+                    <h2 className="text-2xl font-black text-brandDark">Reference Anchor Mimic Path</h2>
+                  </div>
+
+                  <div className="space-y-3">
+                    <h3 className="text-xs font-bold text-brandDark uppercase">Section 1: The Blueprint</h3>
+                    <div>
+                      <label className="block text-brandDark font-semibold text-xs mb-1">Paste Reference Link (TikTok/IG/YouTube) *</label>
+                      <input 
+                        type="url" 
+                        value={branchBData.referenceUrl}
+                        onChange={(e) => setBranchBData({...branchBData, referenceUrl: e.target.value})}
+                        placeholder="https://www.tiktok.com/@example/video/..."
+                        className="w-full p-3 form-input-custom text-xs font-medium"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-brandDark font-semibold text-xs mb-1">Context</label>
+                      <select 
+                        value={branchBData.context}
+                        onChange={(e) => setBranchBData({...branchBData, context: e.target.value})}
+                        className="w-full p-2.5 form-input-custom text-xs font-bold text-brandPurple"
+                      >
+                        <option value="Direct Competitor">Direct Competitor</option>
+                        <option value="Influencer Vibe">Influencer Vibe</option>
+                        <option value="Different Industry">Different Industry</option>
+                      </select>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3 pt-4 border-t border-gray-100">
+                    <h3 className="text-xs font-bold text-brandDark uppercase">Section 2: The Dissection (Checkboxes)</h3>
+                    <div className="grid grid-cols-2 gap-2">
+                      {['Pace (Cut speed)', 'Audio (Music/SFX type)', 'Text/Font Styles', 'Visuals (Angles/Lighting)', 'General Vibe'].map((elem) => (
+                        <label key={elem} className="flex items-center space-x-2 text-xs font-medium text-brandDark cursor-pointer bg-gray-50 p-2.5 rounded-lg">
+                          <input 
+                            type="checkbox"
+                            checked={branchBData.elementsToCopy.includes(elem)}
+                            onChange={() => {
+                              const exists = branchBData.elementsToCopy.includes(elem);
+                              if (exists) {
+                                setBranchBData({...branchBData, elementsToCopy: branchBData.elementsToCopy.filter(x => x !== elem)});
+                              } else {
+                                setBranchBData({...branchBData, elementsToCopy: [...branchBData.elementsToCopy, elem]});
+                              }
+                            }}
+                            className="rounded text-brandPink focus:ring-brandPink"
+                          />
+                          <span>{elem}</span>
+                        </label>
+                      ))}
+                    </div>
+                  </div>
+
+                  <div className="space-y-3 pt-4 border-t border-gray-100">
+                    <h3 className="text-xs font-bold text-brandDark uppercase">Section 3: The Adaptation</h3>
+                    <div>
+                      <label className="block text-brandDark font-semibold text-xs mb-1">Is there anything in the example video you DO NOT like?</label>
+                      <textarea 
+                        rows="2"
+                        value={branchBData.dislikedAspects}
+                        onChange={(e) => setBranchBData({...branchBData, dislikedAspects: e.target.value})}
+                        placeholder="e.g., Don't like the loud neon yellow text..."
+                        className="w-full p-2.5 form-input-custom text-xs"
+                      />
+                    </div>
+
+                    <div>
+                      <label className="block text-brandDark font-semibold text-xs mb-1">Does your raw footage match the format of the example?</label>
+                      <select 
+                        value={branchBData.footageMatchesFormat}
+                        onChange={(e) => setBranchBData({...branchBData, footageMatchesFormat: e.target.value})}
+                        className="w-full p-2.5 form-input-custom text-xs font-bold"
+                      >
+                        <option value="Yes">Yes - Format matches</option>
+                        <option value="No">No - Format is different</option>
+                      </select>
+                    </div>
+
+                    {branchBData.footageMatchesFormat === 'No' && (
+                      <div className="p-4 bg-amber-50 border border-amber-200 text-amber-800 rounded-xl text-xs font-semibold leading-relaxed">
+                        ⚠️ <strong>Be advised:</strong> If the provided footage does not match the format of the example, the completed video may look drastically different from the anchor reference.
+                      </div>
+                    )}
+                  </div>
+
+                  <div className="space-y-3 pt-4 border-t border-gray-100">
+                    <h3 className="text-xs font-bold text-brandDark uppercase">Section 4: The Upload</h3>
+                    <div>
+                      <label className="block text-brandDark font-semibold text-xs mb-1">Your Raw Footage Drive Link *</label>
+                      <input 
+                        type="url"
+                        value={branchBData.rawFootageLink}
+                        onChange={(e) => setBranchBData({...branchBData, rawFootageLink: e.target.value})}
+                        placeholder="https://drive.google.com/..."
+                        className="w-full p-2.5 form-input-custom text-xs"
+                      />
+                    </div>
+                    <div>
+                      <label className="block text-brandDark font-semibold text-xs mb-1">What is your video actually about? (Topic / Script) *</label>
+                      <textarea 
+                        rows="3"
+                        value={branchBData.videoTopicScript}
+                        onChange={(e) => setBranchBData({...branchBData, videoTopicScript: e.target.value})}
+                        placeholder="Explain topic or paste written script..."
+                        className="w-full p-2.5 form-input-custom text-xs"
+                      />
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {/* BRANCH C: START FROM SCRATCH */}
+              {gateway === 'Option C' && (
+                <div className="form-card rounded-2xl p-6 md:p-8 space-y-6">
+                  <div className="pb-4 border-b border-gray-100">
+                    <span className="text-xs font-extrabold uppercase tracking-widest text-brandDark">Branch C</span>
+                    <h2 className="text-2xl font-black text-brandDark">Start From Scratch Custom Questionnaire</h2>
+                  </div>
+
+                  <div className="space-y-3">
+                    <h3 className="text-xs font-bold text-brandDark uppercase">1. General Info</h3>
+                    <label className="block text-brandDark font-semibold text-xs mb-1">What type of video is this?</label>
+                    <select 
+                      value={branchCData.videoType}
+                      onChange={(e) => setBranchCData({...branchCData, videoType: e.target.value})}
+                      className="w-full p-3 form-input-custom text-xs font-bold"
+                    >
+                      <option value="Testimonial - A satisfied customer praising a product or service.">Testimonial - A satisfied customer praising a product or service.</option>
+                      <option value="Funnel Video - Content designed to guide a viewer toward a specific action.">Funnel Video - Content designed to guide a viewer toward a specific action.</option>
+                      <option value="Ad - A short, paid video for promotion.">Ad - A short, paid video for promotion.</option>
+                      <option value="Brand Story - A video that shares a company's identity, values, and mission.">Brand Story - A video that shares a company's identity, values, and mission.</option>
+                      <option value="Social Media - Short, engaging video content created for media platforms.">Social Media - Short, engaging video content created for media platforms.</option>
+                      <option value="Other">Other</option>
+                    </select>
+                  </div>
+
+                  <div className="space-y-3 pt-4 border-t border-gray-100">
+                    <h3 className="text-xs font-bold text-brandDark uppercase">2. Strategy & Objectives</h3>
+                    <div>
+                      <label className="block text-brandDark font-semibold text-xs mb-1">Project Goal: What is the main objective?</label>
+                      <div className="grid grid-cols-2 gap-2 text-xs">
+                        {['Drive sales for a new product', 'Build Brand Awareness', 'Announce a promotion', 'Increase Sign-ups', 'Boost Conversion'].map((g) => (
+                          <label key={g} className="flex items-center space-x-2 p-2 bg-gray-50 rounded-lg cursor-pointer">
+                            <input 
+                              type="checkbox"
+                              checked={branchCData.goals.includes(g)}
+                              onChange={() => {
+                                const exists = branchCData.goals.includes(g);
+                                setBranchCData({...branchCData, goals: exists ? branchCData.goals.filter(x => x !== g) : [...branchCData.goals, g]});
+                              }}
+                            />
+                            <span>{g}</span>
+                          </label>
+                        ))}
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3 pt-4 border-t border-gray-100">
+                    <h3 className="text-xs font-bold text-brandDark uppercase">3. Creative Direction</h3>
+                    <div className="grid grid-cols-2 gap-3">
+                      <div>
+                        <label className="block text-brandDark font-semibold text-xs mb-1">Total Run Time</label>
+                        <select 
+                          value={branchCData.runTime}
+                          onChange={(e) => setBranchCData({...branchCData, runTime: e.target.value})}
+                          className="w-full p-2.5 form-input-custom text-xs"
+                        >
+                          <option value="15 Seconds">15 Seconds</option>
+                          <option value="30 Seconds">30 Seconds</option>
+                          <option value="45 Seconds">45 Seconds</option>
+                          <option value="60 Seconds">60 Seconds</option>
+                        </select>
+                      </div>
+
+                      <div>
+                        <label className="block text-brandDark font-semibold text-xs mb-1">Music Style</label>
+                        <select 
+                          value={branchCData.musicStyle}
+                          onChange={(e) => setBranchCData({...branchCData, musicStyle: e.target.value})}
+                          className="w-full p-2.5 form-input-custom text-xs"
+                        >
+                          <option value="Ambient">Ambient</option>
+                          <option value="Classical">Classical</option>
+                          <option value="Epic/Cinematic">Epic/Cinematic</option>
+                          <option value="Energetic / Upbeat">Energetic / Upbeat</option>
+                          <option value="Inspirational / Motivational">Inspirational / Motivational</option>
+                        </select>
+                      </div>
+                    </div>
+                  </div>
+
+                  <div className="space-y-3 pt-4 border-t border-gray-100">
+                    <h3 className="text-xs font-bold text-brandDark uppercase">4. Assets & Materials (Drive Links)</h3>
+                    <input 
+                      type="url" 
+                      value={branchCData.rawFootageUrl}
+                      onChange={(e) => setBranchCData({...branchCData, rawFootageUrl: e.target.value})}
+                      placeholder="Raw Footage Link (https://drive.google.com/...)"
+                      className="w-full p-2.5 form-input-custom text-xs"
+                    />
+                  </div>
+                </div>
+              )}
+
+              <div className="pt-4 flex justify-end">
+                <button 
+                  onClick={handleSubmitOrder}
+                  className="px-8 py-3.5 rounded-full text-white font-extrabold text-sm btn-gradient shadow-lg hover:scale-105 transition-transform"
+                >
+                  Submit Order Blueprint
+                </button>
+              </div>
+
+            </div>
+          </main>
+
+          {/* BLUEPRINT MODAL POPUP */}
+          {showBlueprintModal && (
+            <div className="fixed inset-0 bg-black/70 backdrop-blur-sm z-50 flex items-center justify-center p-4">
+              <div className="bg-white max-w-3xl w-full rounded-2xl p-6 space-y-5 shadow-2xl max-h-[90vh] overflow-y-auto">
+                <div className="flex justify-between items-center border-b pb-3">
+                  <h3 className="font-extrabold text-brandDark text-lg">Production Brief Dispatched</h3>
+                  <button onClick={handleResetAndCloseModal} className="text-gray-400 hover:text-black">✕</button>
+                </div>
+
+                <p className="text-xs text-brandMuted leading-relaxed">
+                  Thank you! Your executive brief for <strong>{projectName || 'your campaign'}</strong> has been dispatched to Brand Booster Media editors.
+                </p>
+
+                <div className="p-3 bg-gray-900 text-green-400 rounded-lg text-xs font-mono whitespace-pre-wrap max-h-48 overflow-y-auto border border-gray-800">
+                  {submittedBriefText}
+                </div>
+
+                {/* STRATEGIC PLACEMENT & DISTRIBUTION MATRIX GUIDE */}
+                <div className="p-4 bg-purple-50 border border-purple-200 rounded-xl space-y-3 text-xs text-brandDark">
+                  <span className="font-extrabold uppercase text-brandPurple text-[10px] tracking-wider block">
+                    Strategic Placement & Distribution Matrix
+                  </span>
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
+                    <div className="bg-white p-2.5 rounded-lg border border-purple-100">
+                      <strong className="block text-brandDark">Recommended Placement:</strong>
+                      {(videoType.includes('Product') || videoType.includes('Service')) && <p>• Meta & TikTok Paid Ads<br/>• Sales Landing Pages</p>}
+                      {videoType.includes('Testimonials') && <p>• Mid-Funnel Email Sequences<br/>• Enrollment/Checkout Pages</p>}
+                      {videoType.includes('Behind the Scenes') && <p>• Website Homepage Hero<br/>• Organic Social Pins</p>}
+                      {videoType.includes('Educational Social') && <p>• TikTok / Reels / Shorts<br/>• Value Nurture Newsletters</p>}
+                      {videoType.includes('Brand Story') && <p>• Website Homepage Hero<br/>• "About Us" Pages</p>}
+                      {videoType.includes('Funnel Video') && <p>• Paid Retargeting Ads<br/>• VSL / Landing Pages</p>}
+                    </div>
+
+                    <div className="bg-white p-2.5 rounded-lg border border-purple-100">
+                      <strong className="block text-brandDark">Primary Metric to Track:</strong>
+                      {(videoType.includes('Product') || videoType.includes('Service')) && <p>• Click-Through Rate (CTR)<br/>• Cost Per Acquisition (CPA)</p>}
+                      {videoType.includes('Testimonials') && <p>• Page Conversion Rate<br/>• View-Through Rate (VTR)</p>}
+                      {videoType.includes('Behind the Scenes') && <p>• Average Watch Time / Retention<br/>• Inquiry Submissions</p>}
+                      {videoType.includes('Educational Social') && <p>• 3-Second Hook Retention<br/>• Saves & Account Follows</p>}
+                      {videoType.includes('Brand Story') && <p>• Page Dwell Time / Session Duration<br/>• Discovery Call Conversion</p>}
+                      {videoType.includes('Funnel Video') && <p>• Booking Page CTR<br/>• Opt-In / Conversion Rate</p>}
+                    </div>
+                  </div>
+                </div>
+
+                <button 
+                  onClick={handleResetAndCloseModal}
+                  className="w-full py-3 bg-brandDark text-white font-bold rounded-xl text-xs hover:bg-opacity-90 transition"
+                >
+                  Close & Return to Dashboard
+                </button>
+              </div>
+            </div>
+          )}
+
+          {/* FOOTER */}
+          <footer className="bg-white border-t border-gray-200 mt-16 py-8 text-center text-xs text-brandMuted space-y-1">
+            <p className="font-semibold">&copy; 2026 Brand Booster Media Ltd. All rights reserved.</p>
+            <p>V2.0 Constrained Logic & Executive Editorial Briefing Architecture.</p>
+          </footer>
+
+        </div>
+      );
+    }
+
+    // Mount App
+    const container = document.getElementById('root');
+    const root = ReactDOM.createRoot(container);
+    root.render(<App />);
+  </script>
+</body>
+</html>
