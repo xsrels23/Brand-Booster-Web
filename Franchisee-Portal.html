@@ -51,10 +51,10 @@
       <div class="flex items-center gap-1.5 sm:gap-3">
         <button onclick="showView('index')" class="p-2 sm:px-3.5 sm:py-2 rounded-xl text-xs font-bold text-brandGray hover:text-brandPurple bg-purple-50/80 sm:bg-gray-100 hover:bg-purple-100 transition flex items-center gap-1.5">
           <i data-lucide="layout-grid" class="w-4 h-4 text-brandPurple sm:text-brandGray"></i>
-          <span class="hidden sm:inline">Portal Directory</span>
+          <span class="hidden sm:inline">Home</span>
         </button>
 
-        <div class="relative">
+        <div class="relative" id="bb-quick">
           <select id="quick-form-select" onchange="showView(this.value)" class="px-2.5 sm:px-3 py-2 text-[11px] sm:text-xs font-bold bg-white border border-gray-200 rounded-xl text-brandDark focus:outline-none focus:border-brandPurple max-w-[130px] sm:max-w-none truncate">
             <option value="" disabled selected>Switch Objective...</option>
             <option value="form-1">1. Day in the Life</option>
@@ -81,18 +81,21 @@
         <span class="text-[10px] font-black uppercase tracking-widest text-brandPink bg-pink-50 px-3 py-1 rounded-full inline-block mb-3">Production Engine Portal</span>
         <h1 class="text-3xl font-black text-brandDark tracking-tight">Interactive Video Order Portal</h1>
         <p class="text-sm text-brandMuted mt-1 max-w-2xl">Select a video objective below to access its mandatory filming standards, strict input constraints, and automated editor blueprint generator.</p>
+        <p class="text-sm text-brandMuted mt-1 max-w-2xl">Your weekly video plan, your orders, and every order form in one place. Each form shows exactly how to film, then sends your order straight to our editor.</p>
         <div class="mt-5 p-4 bg-purple-50/60 border border-purple-100 rounded-2xl text-xs flex items-center gap-3">
           <i data-lucide="send" class="w-4 h-4 text-brandPurple shrink-0"></i>
           <span class="text-brandDark"><strong>Where your videos go:</strong> every video you order is edited and delivered ready to post on your site's <strong>Band</strong> community.</span>
         </div>
       </div>
 
-      <h2 class="text-xs font-black text-brandDark uppercase tracking-widest mb-6 flex items-center gap-2">
+      <div id="bb-home" class="mb-10"></div>
+
+      <h2 id="bb-grid-heading" class="text-xs font-black text-brandDark uppercase tracking-widest mb-6 flex items-center gap-2" style="display:none">
         <i data-lucide="film" class="w-4 h-4 text-brandPink"></i>
-        Select Video Archetype
+        Order another video
       </h2>
 
-      <div class="grid md:grid-cols-2 gap-6">
+      <div id="bb-grid" class="grid md:grid-cols-2 gap-6" style="display:none">
         <!-- Card 1 -->
         <div class="card-editorial p-6 rounded-2xl flex flex-col justify-between h-full shadow-sm">
           <div>
@@ -2093,9 +2096,15 @@
 })(window);
 
 
+    const BB = { key: null, profile: null, slot: null, slotTitle: '', ready: false };
+
     // View Switcher Router & Select Dropdown Sync
-    function showView(viewId) {
+    function showView(viewId, plan) {
       clearTimeout(window.bbRedirectTimer);
+      BB.slot = plan && plan.slot ? plan.slot : null;
+      BB.slotTitle = plan && plan.title ? plan.title : '';
+      updatePlanNotes();
+      if (viewId === 'index' && typeof loadHome === 'function' && BB.ready) loadHome();
       document.querySelectorAll('.view-container').forEach(view => {
         view.classList.remove('active');
       });
@@ -2182,6 +2191,203 @@
       return problems;
     }
 
+
+    // ---- Personal link, saved profile & weekly plan (Phase 5) ----
+    // The personal link (…?s=KEY from the welcome email) identifies the site. The key is kept in this
+    // browser so the portal still knows the site when opened without it. The back end sends back the
+    // site's saved details (filled in and locked on every form) and its weekly plan.
+    function bbEsc(v) { return String(v == null ? '' : v).replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c])); }
+    function bbStore(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }
+    function bbRead(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+    const CARD = 'bg-white rounded-3xl border border-gray-100 shadow-xl p-6 sm:p-8';
+    const PILL = 'text-[10px] font-black uppercase tracking-widest px-3 py-1 rounded-full inline-block';
+    const BTN = 'px-6 py-3 rounded-xl font-bold text-white text-xs text-center btn-gradient shadow-sm uppercase tracking-wider';
+
+    function setSignedIn(on) {
+      ['bb-grid', 'bb-grid-heading'].forEach(id => { const el = document.getElementById(id); if (el) el.style.display = on ? '' : 'none'; });
+      const q = document.getElementById('bb-quick'); if (q) q.style.visibility = on ? '' : 'hidden';
+    }
+
+    function applyProfile(p) {
+      BB.profile = p;
+      document.querySelectorAll('.video-order-form').forEach(form => {
+        const map = { name: p.name, email: p.email, siteName: p.site };
+        Object.keys(map).forEach(n => {
+          const el = form.querySelector('[name="' + n + '"]');
+          if (!el) return;
+          el.value = map[n] || '';
+          el.readOnly = true;
+          const wrap = el.parentElement;
+          wrap.style.display = 'none';
+          if (wrap.parentElement && /grid-cols-2/.test(wrap.parentElement.className)) {
+            Array.from(wrap.parentElement.children).forEach(ch => { if (ch !== wrap) ch.style.gridColumn = '1 / -1'; });
+          }
+        });
+        let as = form.querySelector('.bb-as');
+        if (!as) {
+          as = document.createElement('div');
+          as.className = 'bb-as p-3 rounded-xl bg-purple-50 border border-purple-100 text-xs text-brandDark leading-relaxed';
+          form.insertBefore(as, form.firstChild);
+        }
+        as.innerHTML = 'Ordering as <strong>' + bbEsc(p.name) + '</strong> (' + bbEsc(p.email) + ') for <strong>' + bbEsc(p.site) + '</strong>.'
+          + '<span class="bb-plan-note block mt-1 font-bold text-brandPurple"></span>';
+      });
+      updatePlanNotes();
+    }
+    function clearProfile() {
+      BB.profile = null;
+      document.querySelectorAll('.video-order-form').forEach(form => {
+        ['name', 'email', 'siteName'].forEach(n => {
+          const el = form.querySelector('[name="' + n + '"]');
+          if (!el) return;
+          el.readOnly = false; el.value = '';
+          el.parentElement.style.display = '';
+          if (el.parentElement.parentElement) Array.from(el.parentElement.parentElement.children).forEach(ch => { ch.style.gridColumn = ''; });
+        });
+        const as = form.querySelector('.bb-as'); if (as) as.remove();
+      });
+    }
+    function updatePlanNotes() {
+      document.querySelectorAll('.bb-plan-note').forEach(el => {
+        el.textContent = BB.slot ? 'This is your planned video: ' + BB.slot + '.' : '';
+      });
+    }
+    function startPlanned(view, slot, title) { showView(view, { slot: slot, title: title }); }
+    function signOut() {
+      bbStore('bbSiteKey', null); bbStore('bbProfile', null);
+      BB.key = null; clearProfile(); loadHome();
+    }
+
+    function renderSignedOut(msg) {
+      setSignedIn(false);
+      document.getElementById('bb-home').innerHTML = '<div class="' + CARD + '">'
+        + '<span class="' + PILL + ' text-brandPurple bg-purple-50 mb-3">Get started</span>'
+        + '<h2 class="text-2xl font-black text-brandDark tracking-tight">Request your personal portal link</h2>'
+        + '<p class="text-sm text-brandMuted mt-1">Every site gets its own link. It signs you in, fills in your details on every order and shows the video to film each week. Once we approve your site, we\'ll email it to you.</p>'
+        + (msg ? '<p class="mt-4 p-3 rounded-xl bg-red-50 border border-red-100 text-xs text-red-700">' + bbEsc(msg) + '</p>' : '')
+        + '<form id="bb-signup" class="space-y-4 mt-5">'
+        + '<input type="hidden" name="action" value="signup">'
+        + '<input type="text" name="bb_hp" tabindex="-1" autocomplete="off" aria-hidden="true" class="hidden">'
+        + '<div><label class="block text-xs font-black text-brandDark uppercase tracking-wider mb-2">Site / Campus Name</label><input type="text" name="siteName" required placeholder="e.g., Monterey" class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm"></div>'
+        + '<div class="grid sm:grid-cols-2 gap-4"><div><label class="block text-xs font-black text-brandDark uppercase tracking-wider mb-2">Your Name</label><input type="text" name="name" required class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm"></div>'
+        + '<div><label class="block text-xs font-black text-brandDark uppercase tracking-wider mb-2">Your Email</label><input type="email" name="email" required class="w-full px-4 py-3 rounded-xl border border-gray-200 text-sm"></div></div>'
+        + '<button type="submit" class="' + BTN + ' w-full">Request access</button>'
+        + '<p class="bb-signup-msg hidden text-sm"></p>'
+        + '</form>'
+        + '<p class="text-xs text-brandMuted mt-5">Already approved? Open the link in your welcome email ("Your Brand Booster video portal"). Bookmark it, or add it to your home screen, so it\'s always one tap away.</p>'
+        + '</div>';
+      const f = document.getElementById('bb-signup');
+      f.addEventListener('submit', e => {
+        e.preventDefault();
+        const btn = f.querySelector('button'), out = f.querySelector('.bb-signup-msg');
+        btn.disabled = true; out.classList.remove('hidden'); out.style.color = '#e67e22'; out.textContent = 'Sending…';
+        fetch(scriptURL, { method: 'POST', body: new FormData(f) })
+          .then(r => r.json())
+          .then(d => {
+            if (d.result !== 'success') throw Object.assign(new Error(d.message || 'Please try again.'), { fromServer: true });
+            const email = f.querySelector('[name=email]').value;
+            f.outerHTML = '<p class="mt-5 p-4 rounded-2xl bg-green-50 border border-green-100 text-sm text-green-800">Thanks! We\'ll email your personal link to <strong>' + bbEsc(email) + '</strong> once your site is approved.</p>';
+          })
+          .catch(err => { out.style.color = '#c0392b'; out.textContent = err.fromServer ? err.message : 'That didn\'t go through. Please check your connection and try again.'; btn.disabled = false; });
+      });
+    }
+
+    function itemCard(it) {
+      const tag = it.overdue ? '<span class="' + PILL + ' text-red-600 bg-red-50">Overdue</span>' : '<span class="' + PILL + ' text-brandPink bg-pink-50">This week</span>';
+      const when = it.overdue ? 'Was due to post the week of ' + bbEsc(it.postWeekOf) + '. Film it as soon as you can.'
+                              : 'Film this week · posts the week of ' + bbEsc(it.postWeekOf);
+      const action = it.done
+        ? '<span class="' + PILL + ' text-green-700 bg-green-50">' + bbEsc(it.status) + '</span> <span class="text-xs text-brandMuted ml-1">' + bbEsc(it.orderId) + '</span>'
+        : '<button class="' + BTN + ' bb-start" data-view="' + bbEsc(it.view) + '" data-slot="' + bbEsc(it.slot) + '" data-title="' + bbEsc(it.title) + '">Start this video</button>';
+      return '<div class="card-editorial p-5 rounded-2xl shadow-sm">' + tag
+        + '<h3 class="text-lg font-black text-brandDark mt-2">' + bbEsc(it.title) + '</h3>'
+        + '<p class="text-xs text-brandMuted mt-1 mb-4">' + when + '</p>' + action + '</div>';
+    }
+
+    function renderHome(d) {
+      setSignedIn(true);
+      const p = d.profile, sem = d.semester, first = String(p.name || '').split(' ')[0] || 'there';
+      let semLine = 'Your weekly plan appears here once your semester dates are set.';
+      if (sem && sem.upcoming) semLine = bbEsc(sem.name) + ' starts ' + bbEsc(sem.start) + '. Your first video shows up two weeks before.';
+      else if (sem && sem.week <= 0) semLine = bbEsc(sem.name) + ' starts ' + bbEsc(sem.start) + '. Time to film your first videos.';
+      else if (sem) semLine = bbEsc(sem.name) + ' · week ' + sem.week + ' of ' + sem.weeks;
+      let h = '<div class="' + CARD + ' mb-6">'
+        + '<div class="flex justify-between items-start gap-3"><div>'
+        + '<span class="' + PILL + ' text-brandPink bg-pink-50 mb-3">' + bbEsc(p.site) + '</span>'
+        + '<h2 class="text-2xl font-black text-brandDark tracking-tight">Hi ' + bbEsc(first) + '</h2>'
+        + '<p class="text-sm text-brandMuted mt-1">' + semLine + '</p></div>'
+        + '<button onclick="signOut()" class="text-[11px] font-bold text-brandMuted underline shrink-0">Not ' + bbEsc(p.site) + '?</button></div>';
+      if (sem && !sem.upcoming) {
+        h += '<h3 class="text-xs font-black text-brandDark uppercase tracking-widest mt-6 mb-3">This week</h3>';
+        h += d.todo.length ? '<div class="grid md:grid-cols-2 gap-4">' + d.todo.map(itemCard).join('') + '</div>'
+                           : '<p class="text-sm text-brandMuted">Nothing new to film this week.</p>';
+        d.reposts.forEach(r => {
+          h += '<div class="mt-4 p-4 rounded-2xl bg-purple-50/60 border border-purple-100 text-sm text-brandDark"><strong>Re-post this week: ' + bbEsc(r.title) + '.</strong> '
+            + (r.videoUrl ? 'Post it again on Band with its original caption. <a class="text-brandPurple font-bold underline" target="_blank" rel="noopener" href="' + bbEsc(r.videoUrl) + '">Open the video</a>'
+                          : 'Post the one we delivered earlier this semester again on Band, with its original caption.') + '</div>';
+        });
+      }
+      h += '</div>';
+      if (d.contentDay) {
+        h += '<div class="' + CARD + ' mb-6"><span class="' + PILL + ' text-brandPurple bg-purple-50 mb-3">Content Day</span>'
+          + '<h3 class="text-lg font-black text-brandDark">Film the next ' + d.contentDay.videos.length + ' videos in one session</h3>'
+          + '<p class="text-xs text-brandMuted mt-1 mb-4">It\'s the first week of the month. Film everything below in one go and save each clip with the name shown. Then order each video in its own week, using the clips you already have. Each order form has the full filming standard.</p>';
+        d.contentDay.videos.forEach(v => {
+          h += '<details class="border border-gray-100 rounded-xl p-3 mb-2"><summary class="text-sm font-bold text-brandDark cursor-pointer">' + bbEsc(v.title)
+            + ' <span class="text-xs font-normal text-brandMuted">· posts the week of ' + bbEsc(v.postWeekOf) + '</span></summary><ul class="mt-2 space-y-1 text-xs text-brandDark">'
+            + v.shots.map(s => '<li><code class="bg-gray-100 px-1.5 py-0.5 rounded">' + bbEsc(s.name) + '</code> ' + bbEsc(s.label) + '</li>').join('') + '</ul>'
+            + (v.note ? '<p class="text-[11px] text-brandMuted mt-2">' + bbEsc(v.note) + '</p>' : '') + '</details>';
+        });
+        h += '</div>';
+      }
+      if (d.next.length) {
+        h += '<div class="' + CARD + ' mb-6"><h3 class="text-xs font-black text-brandDark uppercase tracking-widest mb-3">Coming up</h3><ul class="divide-y divide-gray-100">'
+          + d.next.map(it => '<li class="py-2 flex justify-between gap-3 text-sm"><span><span class="text-brandMuted text-xs">Film week of ' + bbEsc(it.filmWeekOf) + '</span><br><strong class="text-brandDark">' + bbEsc(it.title) + '</strong></span>'
+            + (it.done ? '<span class="' + PILL + ' text-green-700 bg-green-50 self-center">' + bbEsc(it.status) + '</span>'
+                       : '<button class="text-xs font-bold text-brandPurple underline self-center bb-start" data-view="' + bbEsc(it.view) + '" data-slot="' + bbEsc(it.slot) + '" data-title="' + bbEsc(it.title) + '">Start early</button>') + '</li>').join('')
+          + '</ul></div>';
+      }
+      if (d.orders.length) {
+        h += '<div class="' + CARD + ' mb-6"><h3 class="text-xs font-black text-brandDark uppercase tracking-widest mb-3">Your orders</h3><ul class="divide-y divide-gray-100">'
+          + d.orders.map(o => '<li class="py-2 flex justify-between gap-3 text-sm"><span><strong class="text-brandDark">' + bbEsc(o.video) + '</strong><br><span class="text-xs text-brandMuted">' + bbEsc(o.orderId) + ' · ' + bbEsc(o.received) + '</span></span>'
+            + '<span class="text-right self-center"><span class="' + PILL + ' text-brandDark bg-gray-100">' + bbEsc(o.label) + '</span>'
+            + (o.videoUrl ? '<br><a class="text-xs font-bold text-brandPurple underline" target="_blank" rel="noopener" href="' + bbEsc(o.videoUrl) + '">Watch</a>' : '') + '</span></li>').join('')
+          + '</ul></div>';
+      }
+      const box = document.getElementById('bb-home');
+      box.innerHTML = h;
+      box.querySelectorAll('.bb-start').forEach(b => b.addEventListener('click', () => startPlanned(b.dataset.view, b.dataset.slot, b.dataset.title)));
+    }
+
+    function loadHome() {
+      const box = document.getElementById('bb-home');
+      if (!box) return;
+      if (!BB.key) { renderSignedOut(); return; }
+      if (!box.innerHTML) box.innerHTML = '<div class="' + CARD + '"><p class="text-sm text-brandMuted">Loading your plan…</p></div>';
+      fetch(scriptURL + '?api=home&s=' + encodeURIComponent(BB.key))
+        .then(r => r.json())
+        .then(d => {
+          if (d.result !== 'ok') { bbStore('bbSiteKey', null); bbStore('bbProfile', null); BB.key = null; clearProfile(); renderSignedOut(d.message); return; }
+          bbStore('bbProfile', JSON.stringify(d.profile));
+          applyProfile(d.profile);
+          renderHome(d);
+        })
+        .catch(() => {
+          if (BB.profile) { setSignedIn(true); if (!document.querySelector('#bb-home .bb-start, #bb-home h2')) box.innerHTML = '<div class="' + CARD + '"><p class="text-sm text-brandMuted">Your plan couldn\'t load right now (check your connection). You can still order any video below.</p></div>'; }
+          else box.innerHTML = '<div class="' + CARD + '"><p class="text-sm text-brandMuted">We couldn\'t load your portal right now. Check your connection and refresh the page.</p></div>';
+        });
+    }
+
+    (function initSite() {
+      const fromUrl = new URLSearchParams(location.search).get('s');
+      BB.key = (fromUrl || bbRead('bbSiteKey') || '').trim() || null;
+      if (fromUrl) bbStore('bbSiteKey', BB.key);
+      const cached = BB.key && bbRead('bbProfile');
+      if (cached) { try { applyProfile(JSON.parse(cached)); setSignedIn(true); } catch (e) {} }
+      BB.ready = true;
+      loadHome();
+    })();
+
     // ---- Form submission ----
     document.querySelectorAll('.video-order-form').forEach(form => {
       form.addEventListener('submit', e => {
@@ -2223,6 +2429,8 @@
         const data = Object.fromEntries(formData.entries());
         const briefText = BBBriefs.buildBrief(formType, data);
         formData.append('compiledBrief', briefText);
+        if (BB.key) formData.append('siteKey', BB.key);
+        if (BB.slot) formData.append('planSlot', BB.slot);
 
         fetch(scriptURL, { method: 'POST', body: formData })
           .then(response => {
@@ -2241,6 +2449,8 @@
             form.reset();
             form.querySelectorAll('input, textarea').forEach(el => { el.style.borderColor = ''; });
             resetConditionals();
+            if (BB.profile) applyProfile(BB.profile);
+            BB.slot = null; updatePlanNotes();
             if (statusText) statusText.classList.add('hidden');
             submitBtn.disabled = false;
 
