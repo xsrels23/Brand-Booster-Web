@@ -1,0 +1,236 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Brand Booster Media · Upload test</title>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Nunito+Sans:wght@400;700&family=Poppins:wght@600;700&display=swap">
+<style>
+  /* Brand Booster Media design system tokens */
+  :root {
+    --bg:#f7f2f7; --surface:#ffffff; --surface-sunken:#f1e9f1; --border:#e3d7e3; --border-strong:#9c869e;
+    --ink:#241726; --ink-muted:#6b5a6e; --primary:#9f298d; --on-primary:#ffffff; --primary-tint:#f6e8f4; --link:#8a2380; --focus:#92278f;
+    --good:#1e7047; --good-tint:#e3f2e9; --warning:#8f5000; --warning-tint:#fbefdc; --critical:#b4233a; --critical-tint:#fbe7ea;
+    --font-display: Poppins, "Avenir Next", system-ui, sans-serif; --font-sans: "Nunito Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  }
+  @media (prefers-color-scheme: dark) { :root {
+    --bg:#140d15; --surface:#1f1520; --surface-sunken:#170f18; --border:#3b2c3d; --border-strong:#8a728d;
+    --ink:#f6eef6; --ink-muted:#bca9bf; --primary:#e58ad6; --on-primary:#2a0f28; --primary-tint:#3a1a38; --link:#f08bdf; --focus:#f4679d;
+    --good:#6fd39f; --good-tint:#173325; --warning:#f0b05a; --warning-tint:#3a2810; --critical:#ff8a9b; --critical-tint:#3d1820; color-scheme: dark; } }
+  body { margin:0; background:var(--bg); color:var(--ink); font:16px/24px var(--font-sans); }
+  main { max-width:520px; margin:0 auto; padding:20px max(16px, env(safe-area-inset-right)) 48px max(16px, env(safe-area-inset-left)); display:flex; flex-direction:column; gap:20px; }
+  h1 { margin:0; font:700 26px/32px var(--font-display); }
+  h2 { margin:0; font:600 17px/24px var(--font-display); }
+  .muted { color:var(--ink-muted); font-size:14px; line-height:20px; margin:0; }
+  .notice { margin:0; padding:12px 16px; border-radius:8px; background:var(--primary-tint); font-size:15px; line-height:22px; }
+  .notice.warn { background:var(--warning-tint); }
+  .notice.bad { background:var(--critical-tint); color:var(--critical); }
+  .btn { font:600 15px/20px var(--font-display); min-height:48px; padding:0 20px; border-radius:14px; border:1.5px solid var(--border-strong); background:var(--surface); color:var(--ink); cursor:pointer; display:inline-flex; align-items:center; justify-content:center; }
+  .btn.primary { background:var(--primary); border-color:var(--primary); color:var(--on-primary); }
+  .btn.text { border-color:transparent; background:transparent; color:var(--link); text-decoration:underline; padding:0 4px; min-height:44px; }
+  .btn:focus-visible, label.btn:focus-within { outline:2px solid var(--focus); outline-offset:2px; }
+  .slots { display:flex; flex-direction:column; gap:10px; }
+  .shot { background:var(--surface); border:1px solid var(--border); border-radius:14px; padding:12px 16px; display:grid; grid-template-columns:1fr auto; gap:2px 12px; align-items:center; }
+  .shot.done { background:var(--surface-sunken); }
+  .shot.failed { border-color:var(--critical); }
+  .shot-name { font:600 15px/20px var(--font-display); margin:0; }
+  .shot-what { margin:0; font-size:14px; line-height:20px; color:var(--ink-muted); }
+  .shot.failed .shot-what { color:var(--critical); }
+  .shot .act { grid-row:1 / span 2; grid-column:2; }
+  .bar { grid-column:1 / -1; height:4px; border-radius:999px; background:var(--surface-sunken); overflow:hidden; margin-top:8px; }
+  .bar span { display:block; height:100%; width:0; background:var(--primary); }
+  .pill { font-size:13px; line-height:18px; font-weight:700; padding:3px 10px; border-radius:999px; background:var(--good-tint); color:var(--good); }
+  input[type=file] { position:absolute; width:1px; height:1px; opacity:0; }
+  .row { display:flex; flex-wrap:wrap; gap:10px; }
+  pre { margin:0; white-space:pre-wrap; word-break:break-word; font:12px/18px ui-monospace, Menlo, monospace; background:var(--surface-sunken); border-radius:8px; padding:12px; max-height:320px; overflow:auto; }
+  .stat { font-variant-numeric: tabular-nums; }
+</style>
+</head>
+<body>
+<main>
+  <section>
+    <h1>Upload test</h1>
+    <p class="muted" id="who">Checking your personal link…</p>
+  </section>
+  <p class="notice">This page tests sending clips straight from your phone to our Google Drive. Pick any videos from your camera roll; they go into a test folder, not an order. Keep this screen open while clips upload.</p>
+  <p class="notice bad" id="nolink" hidden>Open this page from your portal link first (the same browser), or add ?s=your-key to the address.</p>
+
+  <section class="slots" id="slots"></section>
+
+  <div class="row">
+    <button class="btn" id="check" type="button">Check what reached Drive</button>
+    <button class="btn text" id="reset" type="button">Start a new test</button>
+  </div>
+
+  <section style="display:flex; flex-direction:column; gap:8px;">
+    <div style="display:flex; justify-content:space-between; align-items:center;"><h2>Test report</h2><button class="btn text" id="copy" type="button">Copy report</button></div>
+    <p class="muted">When you're done, copy the report and paste it to Claude.</p>
+    <pre id="log" aria-live="polite"></pre>
+  </section>
+</main>
+
+<script>
+(function () {
+  'use strict';
+  var SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbxXiwABau7QxKkupOCxl5SgUWcW31i9_Z-dvTZ6aAnIX09MQR3_CbW9X-SMLqpX_sprhg/exec';
+  var CHUNK = 32 * 256 * 1024;   // 8 MiB, a multiple of 256 KiB as Drive requires
+  var SHOTS = ['Arrival & Snack, first angle', 'Arrival & Snack, second angle', 'Homework Hour, first angle', 'Homework Hour, second angle',
+               'STEM Lab, first angle', 'STEM Lab, second angle', 'Pickup Time, first angle', 'Pickup Time, second angle'];
+  var $ = function (id) { return document.getElementById(id); };
+  var t0 = Date.now(), lines = [];
+  function store(k, v) { try { if (v == null) localStorage.removeItem(k); else localStorage.setItem(k, v); } catch (e) {} }
+  function read(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function log(msg) {
+    var s = ((Date.now() - t0) / 1000).toFixed(1).padStart(7) + 's  ' + msg;
+    lines.push(s); $('log').textContent = lines.join('\n'); $('log').scrollTop = 1e9;
+  }
+  function mb(n) { return (n / 1048576).toFixed(1) + ' MB'; }
+
+  var key = (new URLSearchParams(location.search).get('s') || read('bbSiteKey') || '').trim();
+  var draft = read('bbUploadTestDraft');
+  if (!draft) { draft = Array.from(crypto.getRandomValues(new Uint8Array(8)), function (b) { return ('0' + b.toString(16)).slice(-2); }).join(''); store('bbUploadTestDraft', draft); }
+
+  log('Device: ' + navigator.userAgent);
+  var conn = navigator.connection; if (conn) log('Network: ' + (conn.effectiveType || '?') + (conn.type ? ' / ' + conn.type : '') + (conn.downlink ? ', ~' + conn.downlink + ' Mbps' : ''));
+  log('Draft: ' + draft + (key ? '' : ' · NO PERSONAL LINK'));
+  document.addEventListener('visibilitychange', function () { log('Page ' + (document.hidden ? 'hidden (locked or switched away)' : 'visible again')); if (!document.hidden && active > 0) wake(); });
+  window.addEventListener('online', function () { log('Back online'); });
+  window.addEventListener('offline', function () { log('Went offline'); });
+
+  if (!key) { $('nolink').hidden = false; $('who').textContent = 'No personal link found.'; }
+  else fetch(SCRIPT_URL + '?api=home&s=' + encodeURIComponent(key)).then(function (r) { return r.json(); }).then(function (d) {
+    $('who').textContent = d.result === 'ok' ? 'Testing as ' + d.profile.name + ' · ' + d.profile.site : (d.message || 'Link not active.');
+  }).catch(function () { $('who').textContent = 'Could not reach the portal.'; });
+
+  // Keep the screen awake while uploading, where the phone allows it
+  var lock = null, active = 0;
+  function wake() {
+    if (!('wakeLock' in navigator)) { if (!wake.warned) { log('Screen wake lock: not supported on this browser'); wake.warned = true; } return; }
+    navigator.wakeLock.request('screen').then(function (l) { lock = l; log('Screen wake lock: on'); }).catch(function (e) { log('Screen wake lock refused: ' + e.message); });
+  }
+  function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+  // ---- Slots ----
+  var slots = SHOTS.map(function (what, i) {
+    var n = i + 1, shot = 'Obj-1_Shot_' + n;
+    var el = document.createElement('div');
+    el.className = 'shot';
+    el.innerHTML = '<p class="shot-name">Shot ' + n + '</p><p class="shot-what"></p>'
+      + '<label class="btn act"><span>Add clip</span><input type="file" accept="video/*"></label><div class="bar"><span></span></div>';
+    $('slots').appendChild(el);
+    var s = { n: n, shot: shot, what: what, el: el, info: el.querySelector('.shot-what'), btn: el.querySelector('label span'), bar: el.querySelector('.bar span') };
+    s.info.textContent = what;
+    el.querySelector('input').addEventListener('change', function (e) { var f = e.target.files[0]; e.target.value = ''; if (f) upload(s, f); });
+    var saved = read('bbUp_' + draft + '_' + n);
+    if (saved) { try { var j = JSON.parse(saved); s.info.textContent = 'Stopped at ' + Math.round(100 * j.offset / j.size) + '%. Pick the same clip to carry on.'; } catch (e) {} }
+    return s;
+  });
+
+  function state(s, cls, info, btn, pct) {
+    s.el.className = 'shot' + (cls ? ' ' + cls : '');
+    if (info != null) s.info.textContent = info;
+    if (btn != null) s.btn.textContent = btn;
+    if (pct != null) s.bar.style.width = pct + '%';
+  }
+
+  function startSession(s, f) {
+    var fd = new FormData();
+    fd.append('action', 'uploadStart'); fd.append('siteKey', key); fd.append('draftId', draft);
+    fd.append('shot', s.shot); fd.append('fileName', f.name); fd.append('mimeType', f.type || 'video/quicktime'); fd.append('size', String(f.size));
+    return fetch(SCRIPT_URL, { method: 'POST', body: fd }).then(function (r) { return r.json(); }).then(function (d) {
+      if (d.result !== 'success') throw new Error(d.message || 'Could not start the upload');
+      return d.uploadUrl;
+    });
+  }
+
+  // Ask Drive how much it has. Returns the next byte to send, or -1 if the file is complete.
+  function status(url, size) {
+    return fetch(url, { method: 'PUT', headers: { 'Content-Range': 'bytes */' + size, 'X-GUploader-No-308': 'yes' } }).then(function (r) {
+      var code = Number(r.headers.get('X-Http-Status-Code-Override')) || r.status;
+      if (code === 200 || code === 201) return -1;
+      var range = r.headers.get('Range');
+      log('  status ' + code + ', Range header ' + (range ? 'readable: ' + range : 'NOT readable'));
+      if (code !== 308) throw new Error('status ' + code);
+      return range ? Number(range.split('-')[1]) + 1 : null;
+    });
+  }
+
+  function upload(s, f) {
+    if (!key) { state(s, 'failed', 'Open this page from your personal link first.'); return; }
+    var id = 'bbUp_' + draft + '_' + s.n, saved = null;
+    try { saved = JSON.parse(read(id) || 'null'); } catch (e) {}
+    var resume = saved && saved.size === f.size && saved.name === f.name;
+    var started = Date.now(), url, offset = 0, sentAtStart = 0, retries = 0, rangeSeen = false;
+    active++; if (active === 1) wake();
+    log('Shot ' + s.n + ': ' + f.name + ', ' + mb(f.size) + ', ' + (f.type || 'no type') + (resume ? ' (resuming)' : ''));
+    state(s, '', 'Starting…', '0%', 0);
+
+    (resume ? Promise.resolve(saved.url) : startSession(s, f)).then(function (u) {
+      url = u;
+      store(id, JSON.stringify({ url: url, size: f.size, name: f.name, offset: 0 }));
+      return resume ? status(url, f.size).then(function (o) { offset = o == null ? saved.offset : o; sentAtStart = offset; }) : null;
+    }).then(function loop() {
+      if (offset === -1 || offset >= f.size) return finish();
+      var end = Math.min(offset + CHUNK, f.size);
+      return fetch(url, { method: 'PUT', headers: { 'Content-Range': 'bytes ' + offset + '-' + (end - 1) + '/' + f.size, 'X-GUploader-No-308': 'yes' }, body: f.slice(offset, end) })
+        .then(function (r) {
+          var code = Number(r.headers.get('X-Http-Status-Code-Override')) || r.status;
+          if (code === 200 || code === 201) { offset = f.size; return finish(); }
+          if (code !== 308) throw new Error('Drive answered ' + code);
+          var range = r.headers.get('Range');
+          if (range && !rangeSeen) { rangeSeen = true; log('  Range header readable'); }
+          if (!range && !rangeSeen) { rangeSeen = true; log('  Range header NOT readable (using sent bytes)'); }
+          offset = range ? Number(range.split('-')[1]) + 1 : end;
+          retries = 0;
+          store(id, JSON.stringify({ url: url, size: f.size, name: f.name, offset: offset }));
+          var secs = (Date.now() - started) / 1000, pct = Math.floor(100 * offset / f.size);
+          state(s, '', mb(offset) + ' of ' + mb(f.size) + ' · ' + ((offset - sentAtStart) / 1048576 / secs).toFixed(1) + ' MB/s', pct + '%', pct);
+          return loop();
+        })
+        .catch(function (err) {
+          if (++retries > 6) throw err;
+          var wait = Math.min(30, Math.pow(2, retries - 1));
+          log('  Shot ' + s.n + ': ' + err.message + ' at ' + mb(offset) + '. Retry ' + retries + ' in ' + wait + ' s');
+          state(s, '', 'Connection dropped. Retrying in ' + wait + ' s…');
+          return sleep(wait * 1000).then(function () { return status(url, f.size); }).then(function (o) {
+            if (o === -1) offset = f.size; else if (o != null) offset = o;
+            return loop();
+          }, function (e2) { log('  status check failed: ' + e2.message); return loop(); });
+        });
+    }).catch(function (err) {
+      log('Shot ' + s.n + ' FAILED: ' + err.message);
+      state(s, 'failed', 'Upload stopped: ' + err.message + '. Tap Try again.', 'Try again');
+      done();
+    });
+
+    function finish() {
+      var secs = (Date.now() - started) / 1000;
+      store(id, null);
+      log('Shot ' + s.n + ' DONE in ' + secs.toFixed(0) + ' s (' + ((f.size - sentAtStart) / 1048576 / secs).toFixed(1) + ' MB/s)');
+      state(s, 'done', mb(f.size) + ' · uploaded in ' + secs.toFixed(0) + ' s', 'Replace', 100);
+      done();
+    }
+    function done() { active--; if (active === 0 && lock) { lock.release().catch(function () {}); lock = null; } }
+  }
+
+  $('check').addEventListener('click', function () {
+    var fd = new FormData(); fd.append('action', 'uploadList'); fd.append('siteKey', key); fd.append('draftId', draft);
+    fetch(SCRIPT_URL, { method: 'POST', body: fd }).then(function (r) { return r.json(); }).then(function (d) {
+      if (d.result !== 'success') throw new Error(d.message);
+      log('In Drive: ' + (d.files.length ? d.files.map(function (x) { return x.name + ' (' + mb(x.size) + ')'; }).join(', ') : 'nothing yet'));
+    }).catch(function (e) { log('Check failed: ' + e.message); });
+  });
+  $('reset').addEventListener('click', function () {
+    slots.forEach(function (s) { store('bbUp_' + draft + '_' + s.n, null); });
+    store('bbUploadTestDraft', null); location.reload();
+  });
+  $('copy').addEventListener('click', function () {
+    var text = lines.join('\n'), b = $('copy');
+    (navigator.clipboard ? navigator.clipboard.writeText(text) : Promise.reject()).then(function () { b.textContent = 'Copied'; }, function () {
+      var r = document.createRange(); r.selectNodeContents($('log')); var sel = getSelection(); sel.removeAllRanges(); sel.addRange(r); b.textContent = 'Selected: copy it';
+    });
+  });
+})();
+</script>
+</body>
+</html>
