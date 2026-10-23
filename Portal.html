@@ -146,7 +146,7 @@ details.shotlist { border:1px solid var(--border); border-radius:var(--radius-md
 details.shotlist summary { font-weight:700; cursor:pointer; }
 details.shotlist ul { margin:8px 0 0; padding-left:18px; font-size:15px; }
 code { font-size:13px; background:var(--surface-sunken); padding:1px 6px; border-radius:6px; }
-.toast { position:fixed; left:50%; transform:translateX(-50%); bottom:calc(24px + env(safe-area-inset-bottom, 0px)); background:var(--ink); color:var(--bg); padding:10px 18px; border-radius:999px; font-weight:700; font-size:15px; z-index:20; }
+.toast { position:fixed; left:50%; transform:translateX(-50%); bottom:calc(24px + env(safe-area-inset-bottom, 0px)); width:max-content; max-width:calc(100% - 32px); text-align:center; background:var(--ink); color:var(--bg); padding:10px 18px; border-radius:16px; font-weight:700; font-size:15px; line-height:22px; z-index:20; box-shadow:0 4px 16px rgba(0,0,0,.2); }
 @media (prefers-reduced-motion: reduce) { .bbm-shot-bar span { transition:none; } }
 @media (min-width: 600px) { .bbm-card { padding:var(--space-5); } }
 </style>
@@ -970,10 +970,11 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
   var toastTimer;
   function toast(msg) {
     var t = document.getElementById('toast'); t.textContent = msg; t.hidden = false;
-    clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.hidden = true; }, 2600);
+    clearTimeout(toastTimer); toastTimer = setTimeout(function () { t.hidden = true; }, Math.max(2600, 70 * String(msg).length));
   }
   function copyText(text, btn) {
-    var done = function () { toast('Copied'); if (btn) { btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = 'Copy'; }, 2000); } };
+    var label = btn && btn.textContent;
+    var done = function () { toast('Copied'); if (btn) { btn.textContent = 'Copied'; setTimeout(function () { btn.textContent = label; }, 2000); } };
     if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(text).then(done, fallback); else fallback();
     function fallback() {
       var ta = document.createElement('textarea'); ta.value = text; ta.setAttribute('readonly', ''); ta.style.position = 'fixed'; ta.style.opacity = '0';
@@ -981,9 +982,9 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
       if (ok) done(); else toast('Press and hold the text to copy it');
     }
   }
+  function formData(fields) { var fd = new FormData(); Object.keys(fields).forEach(function (k) { if (fields[k] != null) fd.append(k, fields[k]); }); return fd; }
   function post(fields) {
-    var fd = new FormData(); Object.keys(fields).forEach(function (k) { if (fields[k] != null) fd.append(k, fields[k]); });
-    return fetch(SCRIPT_URL, { method: 'POST', body: fd }).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
+    return fetch(SCRIPT_URL, { method: 'POST', body: formData(fields) }).then(function (r) { if (!r.ok) throw new Error('HTTP ' + r.status); return r.json(); });
   }
   function get(q) {
     var qs = Object.keys(q).map(function (k) { return k + '=' + encodeURIComponent(q[k]); }).join('&');
@@ -1141,67 +1142,134 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
     }
     function done() { running--; if (!running && !queue.length && wakeLock) { wakeLock.release().catch(function () {}); wakeLock = null; } pump(); }
   }
+  // Upload log, kept on the phone so a franchisee can copy it for support ("Copy upload details").
+  var LOG = readJSON('bbUpLog') || [];
+  function ulog(msg) {
+    var now = new Date();
+    LOG.push(now.toISOString().slice(5, 19).replace('T', ' ') + '  ' + msg);
+    if (LOG.length > 200) LOG = LOG.slice(-200);
+    storeJSON('bbUpLog', LOG);
+  }
+  function logText() {
+    var c = navigator.connection;
+    return ['Device: ' + navigator.userAgent, 'Network now: ' + (navigator.onLine ? 'online' : 'offline') + (c ? ' · ' + (c.effectiveType || '?') + (c.downlink ? ' ~' + c.downlink + ' Mbps' : '') : ''), ''].concat(LOG).join('\n');
+  }
+  function waitOnline() {
+    if (navigator.onLine !== false) return Promise.resolve();
+    return new Promise(function (res) {
+      var t = setTimeout(done, 10 * 60 * 1000);
+      function done() { clearTimeout(t); window.removeEventListener('online', done); res(); }
+      window.addEventListener('online', done);
+    });
+  }
+  // fetch with a time limit, so a stalled connection is retried instead of hanging forever
+  function fetchT(url, opts, ms) {
+    if (!window.AbortController) return fetch(url, opts);
+    var ac = new AbortController(), t = setTimeout(function () { ac.abort(); }, ms);
+    return fetch(url, Object.assign({}, opts, { signal: ac.signal })).then(function (r) { clearTimeout(t); return r; }, function (e) {
+      clearTimeout(t); throw new Error(e && e.name === 'AbortError' ? 'no response for ' + Math.round(ms / 1000) + ' s' : (e && e.message) || 'network error');
+    });
+  }
   function runUpload(job) {
-    var k = upKey(job.draft, job.shot), f = job.file, rec = 'bbUp_' + job.draft + '_' + job.shot;
-    var saved = readJSON(rec), resume = saved && saved.size === f.size && saved.name === f.name && saved.url;
-    var url, offset = 0, base = 0, retries = 0, started = Date.now();
+    var k = upKey(job.draft, job.shot), f = job.file, rec = 'bbUp_' + job.draft + '_' + job.shot, tag = job.shot.replace(/^Obj-\d+_/, '');
+    var saved = readJSON(rec), resume = !!(saved && saved.size === f.size && saved.name === f.name && saved.url);
+    var url, offset = 0, base = 0, retries = 0, restarts = 0, chunk = CHUNK, started = Date.now();
     function set(o) { Object.assign(UP[k], o); notify(job.draft, job.shot); }
+    function pct() { return Math.floor(100 * Math.max(0, offset) / f.size); }
     set({ state: 'uploading', pct: 0, msg: resume ? 'Carrying on where it stopped…' : 'Starting…' });
+    ulog(tag + ': ' + f.name + ', ' + mb(f.size) + ', ' + (f.type || 'no type') + (resume ? ', resuming' : ''));
 
+    function codeOf(r) { return Number(r.headers.get('X-Http-Status-Code-Override')) || r.status; }
+    function driveErr(code) { var e = new Error('Drive answered ' + code); e.code = code; return e; }
+    // Ask Drive how much it has: -1 = complete, otherwise the next byte to send.
     function status() {
-      return fetch(url, { method: 'PUT', headers: { 'Content-Range': 'bytes */' + f.size, 'X-GUploader-No-308': 'yes' } }).then(function (r) {
-        var code = Number(r.headers.get('X-Http-Status-Code-Override')) || r.status;
+      return fetchT(url, { method: 'PUT', headers: { 'Content-Range': 'bytes */' + f.size, 'X-GUploader-No-308': 'yes' } }, 30000).then(function (r) {
+        var code = codeOf(r);
         if (code === 200 || code === 201) return -1;
-        if (code !== 308) { var e = new Error('Drive answered ' + code); e.code = code; throw e; }
+        if (code !== 308) throw driveErr(code);
         var range = r.headers.get('Range');
         return range ? Number(range.split('-')[1]) + 1 : 0;
       });
     }
-    function start() {
-      return post({ action: 'uploadStart', siteKey: KEY, draftId: job.draft, shot: job.shot, fileName: f.name, mimeType: f.type || 'video/quicktime', size: String(f.size) })
+    function start(attempt) {
+      attempt = attempt || 1;
+      return fetchT(SCRIPT_URL, { method: 'POST', body: formData({ action: 'uploadStart', siteKey: KEY, draftId: job.draft, shot: job.shot, fileName: f.name, mimeType: f.type || 'video/quicktime', size: String(f.size) }) }, 45000)
+        .then(function (r) { return r.json().catch(function () { throw new Error('portal busy (HTTP ' + r.status + ')'); }); })
         .then(function (d) {
           if (d.result !== 'success') throw serverError(d.message || 'The upload could not start.');
           if (job.onStarted) job.onStarted(d);
+          ulog(tag + ': upload opened');
           return d.uploadUrl;
+        })
+        .catch(function (e) {
+          ulog(tag + ': could not open the upload (try ' + attempt + '): ' + e.message);
+          if (e.fromServer || attempt >= 4) throw e;
+          set({ msg: 'Connecting… (try ' + (attempt + 1) + ')' });
+          return sleep(2000 * attempt).then(waitOnline).then(function () { return start(attempt + 1); });
         });
+    }
+    function startOver(why) {
+      if (++restarts > 2) throw new Error(why);
+      ulog(tag + ': ' + why + ', starting this clip again');
+      store(rec, null); offset = 0; base = 0;
+      return start().then(function (u) { url = u; storeJSON(rec, { url: url, size: f.size, name: f.name, offset: 0 }); });
     }
     function loop() {
       if (offset === -1 || offset >= f.size) return finish();
-      var end = Math.min(offset + CHUNK, f.size);
-      return fetch(url, { method: 'PUT', headers: { 'Content-Range': 'bytes ' + offset + '-' + (end - 1) + '/' + f.size, 'X-GUploader-No-308': 'yes' }, body: f.slice(offset, end) })
+      var end = Math.min(offset + chunk, f.size), len = end - offset;
+      return fetchT(url, { method: 'PUT', headers: { 'Content-Range': 'bytes ' + offset + '-' + (end - 1) + '/' + f.size, 'X-GUploader-No-308': 'yes' }, body: f.slice(offset, end) },
+                    30000 + Math.round(len / 40))   // allow ~40 KB/s before calling it stalled
         .then(function (r) {
-          var code = Number(r.headers.get('X-Http-Status-Code-Override')) || r.status;
-          if (code === 200 || code === 201) { offset = f.size; return finish(); }
-          if (code !== 308) { var e = new Error('Drive answered ' + code); e.code = code; throw e; }
+          var code = codeOf(r);
+          if (code === 200 || code === 201) { offset = f.size; return 'done'; }
+          if (code !== 308) throw driveErr(code);
           var range = r.headers.get('Range');
           offset = range ? Number(range.split('-')[1]) + 1 : end;
           retries = 0;
           storeJSON(rec, { url: url, size: f.size, name: f.name, offset: offset });
-          var secs = Math.max(1, (Date.now() - started) / 1000), pct = Math.floor(100 * offset / f.size);
-          set({ pct: pct, msg: 'Uploading · ' + mb(offset) + ' of ' + mb(f.size) + ' · ' + ((offset - base) / 1048576 / secs).toFixed(1) + ' MB/s' });
-          return loop();
-        }, function (err) { throw err; })
-        .catch(function (err) {
-          if (err.fromServer || (err.code && err.code >= 400 && err.code < 500 && err.code !== 408 && err.code !== 429)) throw err;
-          if (++retries > 8) throw err;
-          var wait = Math.min(30, Math.pow(2, retries - 1));
-          set({ msg: 'Connection dropped. Retrying in ' + wait + ' s…' });
-          return sleep(wait * 1000).then(status).then(function (o) { offset = o === -1 ? f.size : o; return loop(); }, function () { return loop(); });
-        });
+          var secs = Math.max(1, (Date.now() - started) / 1000);
+          set({ pct: pct(), msg: 'Uploading · ' + mb(offset) + ' of ' + mb(f.size) + ' · ' + ((offset - base) / 1048576 / secs).toFixed(1) + ' MB/s' });
+          return 'next';
+        }, function (err) { return { err: err }; })
+        .then(function (r) {
+          if (r === 'done') return finish();
+          if (r === 'next') return loop();
+          var err = r.err || r;
+          return recover(err);
+        }, recover);
+    }
+    // Something went wrong mid-clip: wait, ask Drive how much arrived, and carry on from there.
+    function recover(err) {
+      if (err && (err.code === 404 || err.code === 410)) return startOver('upload link expired').then(loop);
+      if (++retries > 10) throw err;
+      if (chunk > 2 * 1048576) { chunk = 2 * 1048576; ulog(tag + ': switching to smaller pieces'); }
+      var wait = Math.min(30, Math.pow(2, retries - 1));
+      ulog(tag + ': ' + (err && err.message) + ' at ' + mb(Math.max(0, offset)) + ', retry ' + retries + ' in ' + wait + ' s' + (navigator.onLine === false ? ' (offline)' : ''));
+      set({ msg: navigator.onLine === false ? 'Waiting for a connection…' : 'Connection dropped at ' + pct() + '%. Retrying in ' + wait + ' s…' });
+      return sleep(wait * 1000).then(waitOnline).then(status).then(function (o) {
+        offset = o === -1 ? f.size : o; return loop();
+      }, function (e2) {
+        ulog(tag + ': progress check failed: ' + e2.message);
+        if (e2.code === 404 || e2.code === 410) return startOver('upload link expired').then(loop);
+        return loop();
+      });
     }
     function finish() {
       store(rec, null);
+      var secs = Math.max(1, (Date.now() - started) / 1000);
+      ulog(tag + ': done in ' + Math.round(secs) + ' s (' + ((f.size - base) / 1048576 / secs).toFixed(1) + ' MB/s)');
       set({ state: 'done', pct: 100, msg: 'Added' });
     }
     return (resume ? Promise.resolve(saved.url) : start()).then(function (u) {
       url = u;
-      if (!resume) storeJSON(rec, { url: url, size: f.size, name: f.name, offset: 0 });
-      return resume ? status().then(function (o) { offset = o === -1 ? f.size : o; base = offset; }, function () {
-        store(rec, null); resume = false; return start().then(function (u2) { url = u2; offset = 0; storeJSON(rec, { url: url, size: f.size, name: f.name, offset: 0 }); });
-      }) : null;
+      if (!resume) { storeJSON(rec, { url: url, size: f.size, name: f.name, offset: 0 }); return; }
+      return status().then(function (o) { offset = o === -1 ? f.size : o; base = Math.max(0, offset); ulog(tag + ': Drive already had ' + mb(base)); },
+        function (e) { return startOver('could not resume (' + e.message + ')'); });
     }).then(loop).catch(function (err) {
-      if (err && err.code === 404) store(rec, null);   // the upload link expired: start fresh next time
-      set({ state: 'failed', msg: err && err.fromServer ? err.message : 'Upload stopped. Check your signal, then tap Try again.' });
+      var why = err && err.fromServer ? err.message : (err && err.message) || 'unknown error';
+      ulog(tag + ': STOPPED at ' + pct() + '%: ' + why);
+      set({ state: 'failed', msg: err && err.fromServer ? err.message
+        : 'Upload stopped at ' + pct() + '% (' + why + '). Tap Try again and pick the same clip: it carries on from there.' });
     });
   }
 
@@ -1339,6 +1407,13 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
     h += '<section class="group"><div class="plan-top"><span class="bbm-pill bbm-pill-primary">' + esc(p.site) + '</span><a class="bbm-btn bbm-btn-text" href="#switch">Not ' + esc(p.site) + '?</a></div>'
       + '<h1>Hi ' + esc(first(p.name)) + '</h1><p class="meta">' + esc(semLine) + '</p></section>';
 
+    if (d.followUps && d.followUps.length) {
+      h += '<section class="group"><h2>Follow-up post' + (d.followUps.length > 1 ? 's' : '') + ' ready</h2>' + d.followUps.map(function (f) {
+        return '<div class="bbm-card"><span class="bbm-pill bbm-pill-primary">Follow-up ready</span><p class="card-title">' + esc(f.video) + '</p>'
+          + '<p class="meta">It\'s been up on Band for two days. Tell us which poll answer got the most votes and we\'ll give you the follow-up post to match.</p>'
+          + '<a class="bbm-btn bbm-btn-primary bbm-btn-block" href="#order/' + encodeURIComponent(f.orderId) + '">Get my follow-up post</a></div>';
+      }).join('') + '</section>';
+    }
     if (sem && !sem.upcoming) {
       h += '<section class="group"><h2>This week</h2>';
       if (!d.todo.length) h += '<p class="meta">Nothing new to film this week.</p>';
@@ -1512,7 +1587,8 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
       h += '<div class="stack-8"><button class="bbm-btn bbm-btn-primary bbm-btn-block" id="next">Next: ' + (stepsFor(t, d.vals).indexOf('details') >= 0 ? 'details' : 'check & send') + '</button>'
         + '<p class="meta center" id="nextnote">You can carry on while clips finish uploading.</p></div>';
       h += '<details class="shotlist"><summary>Trouble uploading?</summary><p class="meta" style="margin-top:8px">Put your clips in a Google Drive folder and paste its link instead.</p>'
-        + '<button class="bbm-btn bbm-btn-sm" id="mode" style="margin-top:8px">Use a Drive folder link</button></details>';
+        + '<button class="bbm-btn bbm-btn-sm" id="mode" style="margin-top:8px">Use a Drive folder link</button>'
+        + '<p class="meta" style="margin-top:12px">Still stuck? Copy the upload details and send them to us.</p><button class="bbm-btn bbm-btn-sm" id="uplog" style="margin-top:8px">Copy upload details</button></details>';
       app.innerHTML = h;
       s.req.concat(s.opt).forEach(function (x) {
         bindSlot(app, x, {
@@ -1530,6 +1606,7 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
       });
       notify.any = function () { syncDone(t, d); count(); };
       document.getElementById('mode').addEventListener('click', function () { d.mode = 'drive'; saveDraft(t, d); window.scrollTo(0, 0); paint(); });
+      document.getElementById('uplog').addEventListener('click', function () { copyText(logText(), this); });
       document.getElementById('next').addEventListener('click', next);
       count();
     }
@@ -1678,6 +1755,7 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
   }
 
   // ---------- order screens ----------
+  var FLASH = null;   // the result of the last button tap, shown at the top of the order (stays until you leave it)
   function renderOrder(id) {
     topBack('#home', 'Your order');
     app.innerHTML = '<p class="meta">Loading your order…</p>';
@@ -1685,6 +1763,7 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
       if (r.result !== 'ok') throw serverError(r.message || 'We couldn\'t find that order.');
       if (location.hash !== '#order/' + encodeURIComponent(id) && location.hash !== '#order/' + id) return;
       paintOrder(r.order);
+      if (FLASH) { app.insertAdjacentHTML('afterbegin', '<p class="bbm-notice ' + FLASH.cls + '" id="flash" role="status">' + esc(FLASH.text) + '</p>'); FLASH = null; }
     }).catch(function (e) {
       app.innerHTML = '<p class="bbm-notice ' + (e.fromServer ? 'bad' : 'warn') + '">' + esc(netMsg(e, 'Loading this order')) + '</p><a class="bbm-btn bbm-btn-block" href="#home">Back to Home</a>';
     });
@@ -1694,9 +1773,15 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
     return post(Object.assign({ action: 'orderAct', siteKey: KEY, orderId: o.orderId, act: what }, extra || {})).then(function (r) {
       if (r.result !== 'success') throw serverError(r.message);
       store('bbHome', null); HOME = null;
-      toast(r.message || 'Done');
+      FLASH = { cls: 'good', text: r.message || 'Done' };
       return r;
-    }).catch(function (e) { btn.disabled = false; btn.textContent = label; toast(netMsg(e, 'That')); throw e; });
+    }).catch(function (e) {
+      btn.disabled = false; btn.textContent = label;
+      var box = document.getElementById('flash'); if (box) box.remove();
+      app.insertAdjacentHTML('afterbegin', '<p class="bbm-notice bad" id="flash" role="alert">' + esc(netMsg(e, 'That')) + '</p>');
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+      throw e;
+    });
   }
   function paintOrder(o) {
     var V = VIDEOS[o.formType], name = V ? V.name : o.video, status = o.status;
@@ -1726,7 +1811,8 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
         }).join('') + '</div>';
       }
       if (!o.draftId && o.footageFolder) h += '<a class="bbm-btn bbm-btn-block" href="' + esc(o.footageFolder) + '" target="_blank" rel="noopener">Open your footage folder</a>';
-      h += '<div class="stack-8"><button class="bbm-btn bbm-btn-primary bbm-btn-block" id="recheck">Check my clips again</button><p class="meta center" id="recheck-note">Questions? Reply to the email about this order.</p></div>';
+      h += '<div class="stack-8"><button class="bbm-btn bbm-btn-primary bbm-btn-block" id="recheck">Check my clips again</button><p class="meta center" id="recheck-note">Questions? Reply to the email about this order.</p></div>'
+        + (o.draftId ? '<button class="bbm-btn bbm-btn-text" id="uplog" style="align-self:center">Trouble uploading? Copy upload details</button>' : '');
       after = function () {
         var replaced = {};
         fixable.forEach(function (s) {
@@ -1748,6 +1834,7 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
             bindSlot(app, x, { draft: o.draftId, emptyText: '2 s or more', uploaded: function () { return replaced[x.shot]; }, doneText: function () { return 'Added'; }, onFile: function (f) { enqueue(o.draftId, x.shot, f); } });
           });
         }).catch(function () {});
+        var ul = document.getElementById('uplog'); if (ul) ul.addEventListener('click', function () { copyText(logText(), ul); });
         var btn = document.getElementById('recheck'), note = document.getElementById('recheck-note');
         notify.any = function () {
           Object.keys(UP).forEach(function (k) { var p = k.split('|'); if (p[0] === o.draftId && UP[k].state === 'done') replaced[p[1]] = true; });
@@ -1766,7 +1853,10 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
     if (['Delivered', 'Posted', 'Complete'].indexOf(status) >= 0) {
       if (o.videoUrl) h += '<div class="bbm-card" style="flex-direction:row;align-items:center;gap:16px"><a class="video-tile" href="' + esc(o.videoUrl) + '" target="_blank" rel="noopener" aria-label="Watch the video">' + ICON.play + '</a>'
         + '<div class="stack-8"><strong>Your finished video</strong><a class="bbm-btn bbm-btn-sm" href="' + esc(o.videoUrl) + '" target="_blank" rel="noopener">Watch & download</a></div></div>';
-      if (status !== 'Delivered') h += '<p class="bbm-notice good">Posted' + (o.postedOn ? ' on ' + esc(o.postedOn) : '') + '. Thank you!' + (o.pollResult ? ' Poll result: ' + esc(o.pollResult) + '.' : ' Two days after posting we\'ll send you a follow-up that matches your poll result.') + '</p>';
+      var fu = o.followUp;
+      if (status !== 'Delivered') h += '<p class="bbm-notice good">Posted' + (o.postedOn ? ' on ' + esc(o.postedOn) : '') + '. Thank you!'
+        + (fu && !fu.ready ? ' Your follow-up post will be ready here ' + (fu.readyOn ? 'on ' + esc(fu.readyOn) : 'two days after posting') + '.' : '') + '</p>';
+      if (fu && fu.ready) h += followUpHtml(fu);
       var k = o.kit;
       if (k) {
         var pollText = k.question + '\n' + k.options.map(function (x, i) { return (i + 1) + '. ' + x; }).join('\n');
@@ -1786,6 +1876,7 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
         return function () {
           if (prev) prev();
           app.querySelectorAll('[data-copy]').forEach(function (b) { b.addEventListener('click', function () { copyText(b.dataset.copy === 'cap' ? k.caption : pollText, b); }); });
+          bindFollowUp(o);
           var p = document.getElementById('posted');
           if (p) p.addEventListener('click', function () { act(o, 'posted', null, p).then(function () { renderOrder(o.orderId); }, function () {}); });
           var c = document.getElementById('change');
@@ -1800,6 +1891,29 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
     h += '<a class="bbm-btn bbm-btn-text" href="#home" style="align-self:center">Back to Home</a>';
     app.innerHTML = h;
     if (after) after();
+  }
+  function followUpHtml(fu) {
+    var h = '<section class="bbm-card" id="followup"><span class="eyebrow">Follow-up post</span>';
+    if (fu.chosen && fu.post) {
+      h += '<p class="card-title">Most votes: ' + esc(fu.options[fu.chosen - 1]) + '</p>'
+        + '<div class="plan-top"><p class="meta">Post this in your Band as a new post.</p><button class="bbm-btn bbm-btn-sm" id="fucopy">Copy</button></div>'
+        + '<p class="copy-box" id="fupost">' + esc(fu.post) + '</p>'
+        + '<button class="bbm-btn bbm-btn-text" id="fuchange" style="align-self:flex-start">Picked the wrong answer?</button>';
+    }
+    h += '<div class="stack-8" id="fuopts"' + (fu.chosen && fu.post ? ' hidden' : '') + '><p class="card-title">Which poll answer got the most votes?</p>'
+      + '<p class="meta">' + esc(fu.question) + '</p>'
+      + fu.options.map(function (x, i) { return '<button class="bbm-btn bbm-btn-block" data-opt="' + (i + 1) + '">' + esc(x) + '</button>'; }).join('')
+      + '<p class="meta">Tap it and we\'ll show the follow-up post that matches.</p></div>';
+    return h + '</section>';
+  }
+  function bindFollowUp(o) {
+    var c = document.getElementById('fucopy'); if (c) c.addEventListener('click', function () { copyText(o.followUp.post, c); });
+    var ch = document.getElementById('fuchange'); if (ch) ch.addEventListener('click', function () { document.getElementById('fuopts').hidden = false; ch.hidden = true; });
+    app.querySelectorAll('[data-opt]').forEach(function (b) {
+      b.addEventListener('click', function () {
+        act(o, 'poll', { opt: b.dataset.opt }, b).then(function () { FLASH = null; renderOrder(o.orderId); setTimeout(function () { var f = document.getElementById('followup'); if (f) f.scrollIntoView({ block: 'start' }); }, 600); }, function () {});
+      });
+    });
   }
   function humanize(text) {
     if (/^Missing: /.test(text)) return 'Missing. Please add this clip.';
