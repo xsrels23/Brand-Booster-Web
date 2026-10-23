@@ -1892,27 +1892,66 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
     app.innerHTML = h;
     if (after) after();
   }
+  function statsHtml(st) {
+    st = st || {};
+    var num = function (id, label, val) {
+      return '<div class="bbm-field"><label for="' + id + '">' + label + '</label><input id="' + id + '" type="text" inputmode="numeric" autocomplete="off" value="' + esc(val == null ? '' : val) + '"></div>';
+    };
+    return '<div class="stack-8"><p class="eyebrow">For your monthly report (optional)</p>'
+      + '<div style="display:grid;grid-template-columns:repeat(3,minmax(0,1fr));gap:8px">' + num('fu_votes', 'Poll votes', st.votes) + num('fu_comments', 'Comments', st.comments) + num('fu_views', 'Views', st.views) + '</div>'
+      + '<div class="bbm-field"><label for="fu_best">Best comment</label><textarea id="fu_best" rows="3" maxlength="500">' + esc(st.bestComment || '') + '</textarea>'
+      + '<div class="bbm-field-foot"><span>Type [Student] in place of any child\'s name, and leave out who wrote it.</span></div></div></div>';
+  }
+  function readStats() {
+    var v = function (id) { var e = document.getElementById(id); return e ? e.value.trim() : ''; };
+    return { votes: v('fu_votes'), comments: v('fu_comments'), views: v('fu_views'), bestComment: v('fu_best') };
+  }
+  function statsProblem(st) {
+    var bad = ['votes', 'comments', 'views'].filter(function (k) { return st[k] && !/^\d[\d,]*$/.test(st[k]); });
+    return bad.length ? 'Please use whole numbers for ' + bad.join(' and ') + ' (or leave them blank).' : '';
+  }
   function followUpHtml(fu) {
     var h = '<section class="bbm-card" id="followup"><span class="eyebrow">Follow-up post</span>';
-    if (fu.chosen && fu.post) {
+    var chosen = fu.chosen && fu.post;
+    if (chosen) {
       h += '<p class="card-title">Most votes: ' + esc(fu.options[fu.chosen - 1]) + '</p>'
         + '<div class="plan-top"><p class="meta">Post this in your Band as a new post.</p><button class="bbm-btn bbm-btn-sm" id="fucopy">Copy</button></div>'
         + '<p class="copy-box" id="fupost">' + esc(fu.post) + '</p>'
         + '<button class="bbm-btn bbm-btn-text" id="fuchange" style="align-self:flex-start">Picked the wrong answer?</button>';
     }
-    h += '<div class="stack-8" id="fuopts"' + (fu.chosen && fu.post ? ' hidden' : '') + '><p class="card-title">Which poll answer got the most votes?</p>'
-      + '<p class="meta">' + esc(fu.question) + '</p>'
-      + fu.options.map(function (x, i) { return '<button class="bbm-btn bbm-btn-block" data-opt="' + (i + 1) + '">' + esc(x) + '</button>'; }).join('')
-      + '<p class="meta">Tap it and we\'ll show the follow-up post that matches.</p></div>';
+    h += '<div class="stack-8" id="fuopts"' + (chosen ? ' hidden' : '') + '><p class="card-title">Which poll answer got the most votes?</p>'
+      + '<fieldset class="bbm-options"><legend class="meta">' + esc(fu.question) + '</legend>'
+      + fu.options.map(function (x, i) {
+        return '<label class="bbm-option"><input type="radio" name="fuopt" value="' + (i + 1) + '"><span class="bbm-option-name">' + esc(x) + '</span></label>';
+      }).join('') + '</fieldset>'
+      + (chosen ? '' : statsHtml(fu.stats))
+      + '<button class="bbm-btn bbm-btn-primary bbm-btn-block" id="fusend">Show my follow-up post</button></div>';
+    if (chosen) h += '<div class="stack-8" id="fustats" style="margin-top:8px">' + statsHtml(fu.stats) + '<button class="bbm-btn bbm-btn-block" id="fusave">Save numbers</button>'
+      + '<p class="meta">You can come back and update these as more families vote.</p></div>';
     return h + '</section>';
   }
   function bindFollowUp(o) {
     var c = document.getElementById('fucopy'); if (c) c.addEventListener('click', function () { copyText(o.followUp.post, c); });
     var ch = document.getElementById('fuchange'); if (ch) ch.addEventListener('click', function () { document.getElementById('fuopts').hidden = false; ch.hidden = true; });
-    app.querySelectorAll('[data-opt]').forEach(function (b) {
-      b.addEventListener('click', function () {
-        act(o, 'poll', { opt: b.dataset.opt }, b).then(function () { FLASH = null; renderOrder(o.orderId); setTimeout(function () { var f = document.getElementById('followup'); if (f) f.scrollIntoView({ block: 'start' }); }, 600); }, function () {});
-      });
+    app.querySelectorAll('input[name=fuopt]').forEach(function (r) {
+      r.addEventListener('change', function () { app.querySelectorAll('input[name=fuopt]').forEach(function (x) { x.closest('.bbm-option').classList.toggle('is-checked', x.checked); }); });
+    });
+    function flashBad(msg) { var f = document.getElementById('flash'); if (f) f.remove(); document.getElementById('followup').insertAdjacentHTML('afterbegin', '<p class="bbm-notice bad" id="flash" role="alert">' + esc(msg) + '</p>'); }
+    var send = document.getElementById('fusend');
+    if (send) send.addEventListener('click', function () {
+      var pick = app.querySelector('input[name=fuopt]:checked');
+      if (!pick) { flashBad('Please choose the answer that got the most votes.'); return; }
+      var st = document.getElementById('fu_votes') && !document.getElementById('fustats') ? readStats() : {};
+      var bad = statsProblem(st); if (bad) { flashBad(bad); return; }
+      act(o, 'poll', Object.assign({ opt: pick.value }, st), send).then(function () {
+        FLASH = null; renderOrder(o.orderId);
+        setTimeout(function () { var f = document.getElementById('followup'); if (f) f.scrollIntoView({ block: 'start' }); }, 600);
+      }, function () {});
+    });
+    var save = document.getElementById('fusave');
+    if (save) save.addEventListener('click', function () {
+      var st = readStats(), bad = statsProblem(st); if (bad) { flashBad(bad); return; }
+      act(o, 'stats', st, save).then(function () { renderOrder(o.orderId); }, function () {});
     });
   }
   function humanize(text) {
