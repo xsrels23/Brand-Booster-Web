@@ -3,8 +3,8 @@
 <head>
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-<meta name="theme-color" content="#f7f2f7" media="(prefers-color-scheme: light)">
-<meta name="theme-color" content="#140d15" media="(prefers-color-scheme: dark)">
+<meta name="theme-color" content="#f7f2f7">
+<meta name="color-scheme" content="light only">
 <title>Brand Booster Media · Video portal</title>
 <link rel="icon" href="Brand Boosters Logo Icon - COLOR.png">
 <link rel="apple-touch-icon" href="Brand Boosters Logo Icon - COLOR.png">
@@ -22,13 +22,8 @@
   --space-1:4px; --space-2:8px; --space-3:12px; --space-4:16px; --space-5:24px; --space-6:32px;
   --radius-sm:8px; --radius-md:14px; --radius-lg:22px; --radius-pill:999px;
   --shadow-card: 0 1px 2px rgba(36,23,38,0.06), 0 4px 16px rgba(36,23,38,0.06);
-  color-scheme: light;
+  color-scheme: light only;
 }
-@media (prefers-color-scheme: dark) { :root {
-  --bg:#140d15; --surface:#1f1520; --surface-sunken:#170f18; --border:#3b2c3d; --border-strong:#8a728d;
-  --ink:#f6eef6; --ink-muted:#bca9bf; --primary:#e58ad6; --on-primary:#2a0f28; --primary-tint:#3a1a38; --link:#f08bdf; --focus:#f4679d;
-  --good:#6fd39f; --good-tint:#173325; --warning:#f0b05a; --warning-tint:#3a2810; --critical:#ff8a9b; --critical-tint:#3d1820;
-  --shadow-card: none; color-scheme: dark; } }
 * { box-sizing: border-box; }
 html { -webkit-text-size-adjust: 100%; }
 body { margin:0; font-family:var(--font-sans); font-size:16px; line-height:24px; background:var(--bg); color:var(--ink); }
@@ -1000,7 +995,7 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
   var HOME = readJSON('bbHome');
 
   // ---------- topbar ----------
-  var LOGO = '<picture><source srcset="assets/bbm-logo-white.png" media="(prefers-color-scheme: dark)"><img class="logo" src="assets/bbm-logo-color.png" alt="Brand Booster Media"></picture>';
+  var LOGO = '<img class="logo" src="assets/bbm-logo-color.png" alt="Brand Booster Media">';
   function topHome() { bar.innerHTML = LOGO + '<span class="spacer"></span>'; }
   function topBack(href, title) {
     bar.innerHTML = '<a class="icon-btn" href="' + href + '" aria-label="Back">' + ICON.back + '</a><span class="title">' + esc(title) + '</span>';
