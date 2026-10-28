@@ -141,6 +141,11 @@ details.shotlist { border:1px solid var(--border); border-radius:var(--radius-md
 details.shotlist summary { font-weight:700; cursor:pointer; }
 details.shotlist ul { margin:8px 0 0; padding-left:18px; font-size:15px; }
 code { font-size:13px; background:var(--surface-sunken); padding:1px 6px; border-radius:6px; }
+.sheet-wrap { position:fixed; inset:0; z-index:30; background:rgba(36,23,38,0.45); display:flex; align-items:flex-end; justify-content:center; }
+.sheet { background:var(--bg); width:100%; max-width:640px; max-height:88vh; border-radius:var(--radius-lg) var(--radius-lg) 0 0; display:flex; flex-direction:column; box-shadow:0 -8px 32px rgba(36,23,38,0.2); }
+.sheet-head { display:flex; align-items:center; justify-content:space-between; gap:8px; padding:12px 8px 12px 16px; border-bottom:1px solid var(--border); background:var(--surface); border-radius:var(--radius-lg) var(--radius-lg) 0 0; }
+.sheet-body { overflow-y:auto; -webkit-overflow-scrolling:touch; padding:16px 16px calc(32px + env(safe-area-inset-bottom, 0px)); display:flex; flex-direction:column; gap:24px; }
+@media (min-width: 640px) { .sheet-wrap { align-items:center; } .sheet { border-radius:var(--radius-lg); max-height:85vh; } }
 .toast { position:fixed; left:50%; transform:translateX(-50%); bottom:calc(24px + env(safe-area-inset-bottom, 0px)); width:max-content; max-width:calc(100% - 32px); text-align:center; background:var(--ink); color:var(--bg); padding:10px 18px; border-radius:16px; font-weight:700; font-size:15px; line-height:22px; z-index:20; box-shadow:0 4px 16px rgba(0,0,0,.2); }
 @media (prefers-reduced-motion: reduce) { .bbm-shot-bar span { transition:none; } }
 @media (min-width: 600px) { .bbm-card { padding:var(--space-5); } }
@@ -697,23 +702,32 @@ code { font-size:13px; background:var(--surface-sunken); padding:1px 6px; border
 <script>
 // ---- The 10 videos: what to film, the fields and the shots (from the approved order forms + filming standards) ----
 var EVERY = {
-  upright: 'Hold your phone upright.',
+  upright: 'Hold your phone upright (portrait), never sideways. The finished videos are made for phone screens.',
   still: 'Stand still. Press record, count to 6, then stop.',
-  nopan: "Don't pan or move the phone during a clip.",
-  close: 'Walk up close to the action instead of zooming in.',
-  quiet: 'Film speaking clips in a quiet room, away from wind and hallways.',
-  sound: 'Keep the sound on: laughter and punchlines are the point.'
+  nopan: "Keep the phone steady during a clip: don't pan or sweep across the room.",
+  close: 'Walk closer instead of zooming in. Zooming makes the picture grainy.',
+  quiet: 'Record speaking clips in a quiet room, away from wind and busy hallways, so every word is clear.',
+  sound: 'Keep the sound on: the laughter and punchlines are the point.'
 };
 function after(s) { var t = String(s || '').trim(), m = t.match(/\s[-–—]\s(.+)$/); return (m ? m[1] : t).trim(); }
 function nameOnly(s) { return String(s || '').split(/\s*[|–—]\s*|\s+-\s+/)[0].trim(); }
-function shotsRange(obj, from, to, min, label) {
-  var out = []; for (var i = from; i <= to; i++) out.push({ shot: 'Obj-' + obj + '_Shot_' + i, n: i, what: typeof label === 'function' ? label(i) : label, min: min });
+function shotsRange(obj, from, to, min, label, lo, hi, group, ex) {
+  var out = []; for (var i = from; i <= to; i++) out.push({ shot: 'Obj-' + obj + '_Shot_' + i, n: i, what: typeof label === 'function' ? label(i) : label, min: min,
+    lo: lo, hi: hi, group: typeof group === 'function' ? group(i) : group, ex: typeof ex === 'function' ? ex(i) : ex });
   return out;
+}
+function one(obj, n, what, min, lo, hi, ex, extra) { return Object.assign({ shot: 'Obj-' + obj + '_Shot_' + n, n: n, what: what, min: min, lo: lo, hi: hi, ex: ex }, extra || {}); }
+function secs(x) {   // "4–6 seconds", "up to 30 seconds", "15 seconds or more"
+  if (x.lo && x.hi) return x.lo + '–' + x.hi + ' seconds';
+  if (x.hi) return 'up to ' + x.hi + ' seconds';
+  if (x.lo) return x.lo + ' seconds or more';
+  return '';
 }
 var STYLE_STORY = 'The Storyteller (Voiceover + Captions)';
 
 var VIDEOS = {
   day_in_the_life: {
+    count: function () { return ['8 clips', '8 clips: 2 for each of 4 moments']; },
     name: 'Day in the Life', blurb: "A student's day at your site, from arrival to pickup.", short: 'Day in the Life',
     film: [
       { name: 'activity1', label: 'Moment 1', example: 'e.g. 2:30 PM - Arrival & Snack', words: [1, 5] },
@@ -732,23 +746,29 @@ var VIDEOS = {
         { value: 'Warm & Acoustic (Trust & Warmth)', label: 'Warm & acoustic', desc: 'Builds trust and a sense of safety.' },
         { value: 'Upbeat Electronic (Kinetic Drive)', label: 'Upbeat electronic', desc: 'Quick, energetic pacing.' }] }
     ],
-    shots: function (v) {
-      var m = [v.activity1, v.activity2, v.activity3, v.activity4].map(after);
-      return shotsRange(1, 1, 8, 4, function (i) { var k = Math.ceil(i / 2) - 1; return (m[k] || 'Moment ' + (k + 1)) + ', ' + (i % 2 ? 'first' : 'second') + ' angle'; });
+    guide: { need: ['4 moments from a normal day, in the order they happen', 'Only children covered by a signed media release'],
+             notes: ['Film two angles of each moment, for example one wide and one close.'] },
+    shots: function () {
+      var ex = ['arrival and snack', 'homework hour', 'a STEM activity', 'pickup time'];
+      return shotsRange(1, 1, 8, 4, function (i) { return (i % 2 ? 'First' : 'Second') + ' angle'; }, 4, 6,
+        function (i) { return 'Moment ' + Math.ceil(i / 2); }, function (i) { return i % 2 ? 'For example: ' + ex[Math.ceil(i / 2) - 1] : ''; });
     }
   },
   testimonials: {
+    count: function () { return ['4 clips', '4 clips: 1 interview + 3 supporting clips']; },
     name: 'Parent & Student Testimonial', short: 'Testimonial', blurb: 'A parent or student shares, in their own words, what changed.',
     filmIntro: 'The speaker says these three lines to camera, in order, in one take.',
     film: [
       { name: 'videoOrientation', label: 'Shape', type: 'choice', options: [
-        { value: 'Use Vertical (9:16) for social platform posting', label: 'Upright (for Band)', desc: 'Hold the phone upright, as usual.' },
+        { value: 'Use Vertical (9:16) for social platform posting', label: 'Upright (for social posts)', desc: 'Hold the phone upright, as usual.' },
         { value: 'Horizontal (16:9) for website homepages', label: 'Sideways (for a website)', desc: 'Only if the video is for a website.' }] },
       { name: 'beforeObstacle', label: 'Line 1: before', type: 'textarea', words: [25, 30], example: 'About 12 seconds. "Before joining, we…" (what was hard)' },
       { name: 'sinceStarting', label: 'Line 2: since starting', type: 'textarea', words: [17, 20], example: 'About 8 seconds. "Since starting, …" (the change you have seen)' },
       { name: 'recommendationLine', label: 'Line 3: recommendation', type: 'textarea', words: [15, 17], example: 'About 7 seconds. "I\'d recommend [program] to any parent who…"' }
     ],
-    rules: ['quiet'], extraRules: ['Set the phone at eye level. The speaker looks just beside the lens.', 'Stand about 3 feet from the speaker.'],
+    rules: ['quiet'],
+    guide: { need: ['One parent or student who is happy to speak on camera', 'Their three lines, written in the next step (they say them in their own words)', 'Only children covered by a signed media release'],
+             notes: ['Set the phone at eye level, about 3 feet from the speaker. They look just beside the lens.', 'The interview is one take; the other clips play over it.'] },
     details: [
       { name: 'speakerName', label: 'Name shown on screen', example: 'e.g. The Miller Family | 2nd Grade Parent' },
       { name: 'outcomeMetric', label: 'The big result, in a few words', words: [1, 8], example: 'e.g. Reading Confidence Doubled in 90 Days' },
@@ -757,9 +777,13 @@ var VIDEOS = {
         { value: 'Minimal Lower-Third (Traditional Subtitles)', label: 'Minimal', desc: 'Traditional subtitles.' }] },
       { name: 'programWebsite', label: "Your program's website (shown at the end of the video)", type: 'url', example: 'e.g. https://yourprogram.com' }
     ],
-    shots: function () { return [{ shot: 'Obj-2_Shot_1', n: 1, what: 'The interview: all three lines, one take', min: 25 }].concat(shotsRange(2, 2, 4, 4, 'Your child learning, playing or arriving happily')); }
+    shots: function () {
+      return [one(2, 1, 'The interview', 25, 25, 40, 'For example: a parent saying their three lines in one take', { group: 'The interview' })]
+        .concat(shotsRange(2, 2, 4, 4, 'Supporting clip', 6, 8, 'Supporting clips', function (i) { return i === 2 ? 'For example: the child reading, playing or arriving happily' : ''; }));
+    }
   },
   staff_spotlight: {
+    count: function (v) { return isStaff(v) ? ['8 clips', '8 clips with 4 staff members'] : ['3 clips', '3 clips: 1 statement + 2 teaching clips']; },
     name: 'Teacher or Staff Spotlight', short: 'Spotlight', blurb: 'Introduce a teacher, or four staff in a 90s sitcom-style intro.',
     film: [
       { name: 'spotlightType', label: 'Which spotlight?', type: 'choice', options: [
@@ -771,21 +795,26 @@ var VIDEOS = {
       { name: 'staff3', label: 'Staff 3 (name – role)', words: [1, 5], example: 'e.g. Mrs. Neeman – STEM', showIf: isStaff },
       { name: 'staff4', label: 'Staff 4 (name – role)', words: [1, 5], example: 'e.g. Mrs. Abigale – Literacy', showIf: isStaff }
     ],
-    rules: ['upright'], extraRulesFn: function (v) { return isStaff(v) ? ['No talking needed: music replaces the sound.', 'Staff 1 & 4 are one pair, Staff 2 & 3 the other.', 'Hold each action shot steady for 6–8 seconds.'] : ['Sit in a quiet room, phone about 4 inches from your mouth.', 'Frame from the chest up, with a clean classroom behind.']; },
+    rules: ['upright'],
+    variant: { field: 'spotlightType' },
+    guide: { needFn: function (v) { return isStaff(v) ? ['Four staff members, in two pairs (Staff 1 & 4, Staff 2 & 3)', 'Only children covered by a signed media release'] : ['One teacher, and a statement they will read (written in the next step)', 'Only children covered by a signed media release']; },
+             notesFn: function (v) { return isStaff(v) ? ['No talking needed: music replaces the sound.', 'Two of the shots are a pair waving and smiling at the camera.'] : ['Record the statement in a quiet room, framed from the chest up, with a tidy classroom behind.']; } },
     details: [
       { name: 'staffName', label: 'Name and role shown on screen', example: 'e.g. Mr. Davis | Head STEM Instructor (8 Years)', showIf: function (v) { return !isStaff(v); } },
       { name: 'teacherSummary', label: 'Teaching philosophy, in a few words', words: [1, 12], example: 'e.g. Every mistake is the start of a great experiment.', showIf: function (v) { return !isStaff(v); } },
       { name: 'showName', label: 'Show title', words: [1, 5], example: "e.g. Monterey's ELA Staff", showIf: isStaff }
     ],
     shots: function (v) {
-      if (!isStaff(v)) return [{ shot: 'Obj-3_Shot_1', n: 1, what: 'The statement to camera', min: 20 }].concat(shotsRange(3, 2, 3, 4, 'The teacher with students or preparing materials'));
-      var s = [v.staff1, v.staff2, v.staff3, v.staff4].map(function (x, i) { return nameOnly(x) || 'Staff ' + (i + 1); });
-      var L = { 1: 'Arrival: ' + s[0] + ' & ' + s[3], 2: 'Active play: ' + s[0], 3: 'Homework help: ' + s[1] + ' & ' + s[2], 4: 'Wave and smile: ' + s[1] + ' & ' + s[2],
-                5: 'Hands-on experiment: ' + s[1] + ' & ' + s[2], 6: 'Dismissal: ' + s[3], 7: 'Wave and smile: ' + s[0] + ' & ' + s[3], 8: 'Group finale: all four with students' };
-      return shotsRange(3, 1, 8, 4, function (i) { return L[i]; });
+      if (!isStaff(v)) return [one(3, 1, 'Statement to camera', 20, 20, 30, 'For example: the teacher reading their statement to the lens')]
+        .concat(shotsRange(3, 2, 3, 4, 'Teaching clip', 6, 8, null, function (i) { return i === 2 ? 'For example: the teacher helping a student' : ''; }));
+      var L = { 1: 'Staff 1 & 4 in action', 2: 'Staff 1 in action', 3: 'Staff 2 & 3 in action', 4: 'Staff 2 & 3 wave and smile',
+                5: 'Staff 2 & 3 in action', 6: 'Staff 4 in action', 7: 'Staff 1 & 4 wave and smile', 8: 'All four together' };
+      var E = { 1: 'For example: greeting students at arrival', 2: 'For example: leading a game', 4: 'Looking at the camera, no talking', 8: 'For example: a group pose with students' };
+      return shotsRange(3, 1, 8, 4, function (i) { return L[i]; }, 6, 8, null, function (i) { return E[i] || ''; });
     }
   },
   highlight_reel: {
+    count: function () { return ['9–15 clips', '9–15 clips: 3 for each of 3 activities, plus up to 6 extras']; },
     name: 'Program Highlight Reel', short: 'Highlight Reel', blurb: 'High-energy action from three activity categories.',
     filmIntro: 'Pick 3 activity categories. Each becomes a badge in the video.',
     film: [
@@ -793,19 +822,23 @@ var VIDEOS = {
       { name: 'badge2', label: 'Category 2', example: 'e.g. STEM LABS' },
       { name: 'badge3', label: 'Category 3', example: 'e.g. CREATIVE ARTS' }
     ],
-    rules: ['upright', 'close'], extraRules: ['No talking needed: the sound is replaced with music.', '3–5 seconds each, with the action in the middle (a ball going in, a brush on canvas).'],
+    rules: ['upright', 'close'],
+    guide: { need: ['3 kinds of activity, for example sports, STEM and art', 'Only children covered by a signed media release'],
+             notes: ['No talking needed: music replaces the sound.', 'Catch the action in the middle of the clip, for example a ball going into the hoop.'] },
     details: [
       { name: 'musicTempo', label: 'Music', type: 'choice', options: [
         { value: 'Modern, Driving Electronic Beat (Ultra-fast dynamic edit pacing)', label: 'Driving electronic', desc: 'Ultra-fast, dynamic cuts.' },
         { value: 'Upbeat Corporate-Pop (Inspiring, joyful, community-centric pacing)', label: 'Upbeat pop', desc: 'Joyful and community-centred.' }] }
     ],
-    shots: function (v) {
-      var c = [v.badge1, v.badge2, v.badge3].map(function (x, i) { return String(x || '').trim() || 'Category ' + (i + 1); });
-      return shotsRange(4, 1, 9, 2, function (i) { return c[Math.ceil(i / 3) - 1] + ', action ' + (((i - 1) % 3) + 1) + ' of 3'; });
+    shots: function () {
+      var ex = ['sports and play', 'a STEM lab', 'creative arts'];
+      return shotsRange(4, 1, 9, 2, function (i) { return 'Action clip'; }, 3, 5, function (i) { return 'Activity ' + Math.ceil(i / 3); },
+        function (i) { return (i - 1) % 3 === 0 ? 'For example: ' + ex[Math.ceil(i / 3) - 1] : ''; });
     },
-    optional: function () { return [1, 2, 3, 4, 5, 6].map(function (i) { return { shot: 'Obj-4_Extra_' + i, n: 'Extra ' + i, what: 'Any extra action clip (optional)', min: 2 }; }); }
+    optional: function () { return [1, 2, 3, 4, 5, 6].map(function (i) { return { shot: 'Obj-4_Extra_' + i, n: 'Extra ' + i, what: 'Any extra action clip', min: 2, lo: 3, hi: 5, group: 'Optional extras' }; }); }
   },
   campus_tour: {
+    count: function () { return ['13 clips', '13 clips: 1 welcome + 3 for each of 4 areas']; },
     name: 'Virtual Campus Tour', short: 'Campus Tour', blurb: 'A welcome from you, then a guided look at four areas.',
     filmIntro: 'Pick the 4 areas to show. Each gets a label in the video.',
     film: [
@@ -814,27 +847,33 @@ var VIDEOS = {
       { name: 'area3', label: 'Area 3', words: [1, 4], example: 'e.g. Secure Access Entry' },
       { name: 'area4', label: 'Area 4', words: [1, 4], example: 'e.g. Cafeteria & Commons' }
     ],
-    rules: ['upright', 'nopan'], extraRules: ['Shot 1: by the building sign, film yourself in selfie mode saying "Welcome to [your site]! Come take a look around."', 'In each area: a wide view, a detail and an activity space, 6–7 seconds each. No talking.'],
+    rules: ['upright', 'nopan'],
+    guide: { need: ['Your building sign, for the welcome', '4 areas of your site to show', 'Only children covered by a signed media release'],
+             notes: ['Shot 1 is a short selfie welcome by your sign, for example "Welcome to Monterey! Come take a look around."', 'In each area, film three views: wide, a detail and the space in use. No talking.'] },
     details: [
       { name: 'visualVibe', label: 'Style', type: 'choice', options: [
         { value: 'High-Energy Vibe: Dynamic transitions, colorful label bubbles, emoji pop-ups, and fun SFX', label: 'High energy', desc: 'Dynamic transitions, colourful labels, fun sound effects.' },
         { value: 'Clean & Standard Vibe: Professional fade cross-dissolves with simple lower third labels', label: 'Clean & simple', desc: 'Soft fades and simple labels.' }] }
     ],
-    shots: function (v) {
-      var a = [v.area1, v.area2, v.area3, v.area4].map(function (x, i) { return String(x || '').trim() || 'Area ' + (i + 1); });
-      var kinds = ['wide view', 'detail', 'activity space'];
-      return [{ shot: 'Obj-5_Shot_1', n: 1, what: 'Your selfie welcome by the sign', min: 4 }]
-        .concat(shotsRange(5, 2, 13, 3, function (i) { return a[Math.ceil((i - 1) / 3) - 1] + ', ' + kinds[(i - 2) % 3]; }));
+    shots: function () {
+      var kinds = ['Wide view', 'Detail', 'In use'], ex = ['classrooms', 'the outdoor space', 'the entrance', 'the cafeteria'];
+      return [one(5, 1, 'Welcome by the sign', 4, 4, 8, 'For example: a selfie welcome at the front sign', { group: 'Welcome' })]
+        .concat(shotsRange(5, 2, 13, 3, function (i) { return kinds[(i - 2) % 3]; }, 6, 7, function (i) { return 'Area ' + Math.ceil((i - 1) / 3); },
+          function (i) { return (i - 2) % 3 === 0 ? 'For example: ' + ex[Math.ceil((i - 1) / 3) - 1] : ''; }));
     }
   },
   brand_story: {
+    count: function (v) { return proVO(v) ? ['5 clips', '5 clips'] : ['5 clips + voiceover', '5 clips + your voiceover recording']; },
     name: '"Mission Moment" Brand Story', short: 'Brand Story', blurb: 'Why your program exists, told over five slow, steady shots.',
     film: [
       { name: 'voOption', label: 'Who reads the voiceover?', type: 'choice', options: [
         { value: 'Provide Script for Professional VO', label: 'A professional voice actor', desc: 'You write the script in the details step.' },
         { value: 'Uploading Own Audio File', label: 'I\'ll record it myself', desc: 'Record it in a silent room, 30 seconds or less.' }] }
     ],
-    rules: ['upright'], extraRules: ['5 slow, steady shots, 8–10 seconds each, in the order below.'],
+    rules: ['upright'],
+    variant: { field: 'voOption' },
+    guide: { needFn: function (v) { return (proVO(v) ? ['A short script, written in the details step (a voice actor reads it)'] : ['A quiet room to record your own voiceover']).concat(['Your program leader, for the last shot', 'Only children covered by a signed media release']); },
+             notes: ['These are slow, calm shots: move gently or hold still, never rush.'] },
     details: [
       { name: 'coreMission', label: 'Your mission, in one sentence', type: 'textarea', words: [1, 15], example: 'e.g. Empowering curious kids through hands-on discovery and creative play.' },
       { name: 'coreDifferentiator', label: 'What makes you different', words: [1, 10], example: 'e.g. Small groups led by certified instructors.' },
@@ -843,13 +882,15 @@ var VIDEOS = {
       { name: 'storyApart', label: 'What sets you apart?', type: 'textarea', words: [18, 22], example: '"What makes us different is…"', showIf: proVO }
     ],
     shots: function (v) {
-      var B = { 1: 'A slow walk through your facility', 2: 'A slow pan across people working together', 3: 'Students absorbed in learning', 4: 'A second slow pan of people working together', 5: 'Your leader smiling at the camera, standing still' };
-      var s = shotsRange(6, 1, 5, 5, function (i) { return B[i]; });
-      if (!proVO(v)) s.push({ shot: 'Obj-6_Voiceover', n: 'Voiceover', what: 'Your recorded voiceover (a voice memo or video is fine)', min: 0, accept: 'audio/*,video/*' });
+      var B = { 1: 'Walk-through', 2: 'People working together', 3: 'Students learning', 4: 'People working together', 5: 'Leader portrait' };
+      var E = { 1: 'For example: walking slowly down the main hallway', 2: 'For example: a slow move across a group project', 3: 'For example: a student focused on a task', 5: 'For example: your director smiling at the camera, standing still' };
+      var s = shotsRange(6, 1, 5, 5, function (i) { return B[i]; }, 8, 10, null, function (i) { return E[i] || ''; });
+      if (!proVO(v)) s.push({ shot: 'Obj-6_Voiceover', n: 'Voiceover', what: 'Your recorded voiceover', min: 0, hi: 30, accept: 'audio/*,video/*', ex: 'A voice memo or a video is fine' });
       return s;
     }
   },
   program_explainer: {
+    count: function () { return ['4 clips', '4 clips: 1 instructor + 3 close-ups']; },
     name: 'Enrichment Program Explainer', short: 'Program Explainer', blurb: 'An instructor explains one program and three benefits.',
     filmIntro: 'The instructor says the program name and who it is for, then these three benefits, in order.',
     film: [
@@ -858,23 +899,27 @@ var VIDEOS = {
       { name: 'benefit2', label: 'Benefit 2', words: [1, 6], example: 'e.g. Problem Solving Resilience' },
       { name: 'benefit3', label: 'Benefit 3', words: [1, 6], example: 'e.g. Team Competition Skills' }
     ],
-    rules: ['upright'], extraRules: ['Shot 1: the instructor, chest up, energetic, one take of 15–20 seconds.', 'Then one close-up of students for each benefit, 6–7 seconds each.'],
+    rules: ['upright'],
+    guide: { need: ['The instructor who runs the program', 'The program\'s 3 benefits (written in the next step)', 'Only children covered by a signed media release'],
+             notes: ['The instructor is framed from the chest up and speaks with energy, in one take.', 'Then one close-up of students for each benefit.'] },
     details: [
       { name: 'ctaOffer', label: 'Offer or call to action', example: 'e.g. Enroll for Spring - Limited Spots' }
     ],
-    shots: function (v) {
-      var b = [v.benefit1, v.benefit2, v.benefit3].map(function (x, i) { return String(x || '').trim() || 'Benefit ' + (i + 1); });
-      return [{ shot: 'Obj-7_Shot_1', n: 1, what: 'The instructor explaining the program', min: 12 }]
-        .concat(shotsRange(7, 2, 4, 4, function (i) { return 'Students: ' + b[i - 2]; }));
+    shots: function () {
+      return [one(7, 1, 'Instructor explanation', 12, 15, 20, 'For example: the instructor naming the program, who it is for and its 3 benefits')]
+        .concat(shotsRange(7, 2, 4, 4, function (i) { return 'Benefit ' + (i - 1) + ' close-up'; }, 6, 7, null, function (i) { return i === 2 ? 'For example: students coding a robot' : ''; }));
     }
   },
   alumni_success: {
+    count: function () { return ['3–4 clips', '3–4: 1 statement + 2–3 photos or clips']; },
     name: 'Alumni Success Story', short: 'Alumni Story', blurb: 'A graduate shares how your program set them up for success.',
     filmIntro: 'The graduate says this in their own words, looking at the lens, for 15–20 seconds.',
     film: [
       { name: 'coreSoundbite', label: 'What they\'ll say', type: 'textarea', words: [1, 35], example: 'Their name and class year, where they are now, and how your program prepared them.' }
     ],
-    rules: ['upright', 'quiet'], extraRules: ['Then 2–3 photos or clips: where they are now, and throwback program photos.'],
+    rules: ['upright', 'quiet'],
+    guide: { need: ['A graduate of your program, in person or recording themselves', '2–3 photos or short clips: where they are now, and from their time in your program'],
+             notes: ['The graduate looks at the lens and speaks in their own words.'] },
     details: [
       { name: 'alumnusName', label: 'Name and class year', example: 'e.g. Sarah Jenkins, Class of 2021' },
       { name: 'currentSuccess', label: 'Where they are now', example: 'e.g. Computer Science Sophomore, UC Davis' },
@@ -883,13 +928,14 @@ var VIDEOS = {
         { value: 'Minimal & Traditional', label: 'Minimal', desc: 'Traditional subtitles.' }] }
     ],
     shots: function () {
-      return [{ shot: 'Obj-8_Shot_1', n: 1, what: 'The graduate\'s statement', min: 12 },
-              { shot: 'Obj-8_Shot_2', n: 2, what: 'A photo or clip: where they are now', min: 0, accept: 'image/*,video/*' },
-              { shot: 'Obj-8_Shot_3', n: 3, what: 'A photo or clip: a throwback from your program', min: 0, accept: 'image/*,video/*' }];
+      return [one(8, 1, 'Graduate\'s statement', 12, 15, 20, 'For example: their name, where they are now, and how the program helped'),
+              one(8, 2, 'Where they are now', 0, 4, 6, 'For example: a photo on their college campus', { accept: 'image/*,video/*', photo: true }),
+              one(8, 3, 'Throwback', 0, 4, 6, 'For example: a photo from their time in your program', { accept: 'image/*,video/*', photo: true })];
     },
-    optional: function () { return [{ shot: 'Obj-8_Shot_4', n: 4, what: 'One more photo or clip (optional)', min: 0, accept: 'image/*,video/*' }]; }
+    optional: function () { return [one(8, 4, 'One more photo or clip', 0, 4, 6, '', { accept: 'image/*,video/*', photo: true, group: 'Optional extras' })]; }
   },
   bts_fun: {
+    count: function () { return ['4–8 clips', '4–8 clips']; },
     name: 'Behind the Scenes & Fun Moments', short: 'Behind the Scenes', blurb: 'Candid, unscripted moments that show your culture.',
     film: [
       { name: 'btsTheme', label: 'Theme', type: 'choice', options: [
@@ -897,7 +943,9 @@ var VIDEOS = {
         { value: 'Staff Preparing for Event', label: 'Staff preparing for an event', desc: 'Setting up decor, moving tables, coffee before the rush.' },
         { value: 'Unscripted Campus Fun', label: 'Unscripted campus fun', desc: 'Whatever is fun today.' }] }
     ],
-    rules: ['upright', 'sound'], extraRules: ['Film 4 to 8 clips, 3–15 seconds each.'],
+    rules: ['upright', 'sound'],
+    guide: { need: ['A fun, unplanned moment at your site', 'Only children covered by a signed media release'],
+             notes: ['Film 4 to 8 short clips. Keep filming through the laughter.'] },
     details: [
       { name: 'audioTreatment', label: 'Sound', type: 'choice', options: [
         { value: 'Keep Full Organic Sound', label: 'Keep the real sound', desc: 'Voices and laughter as filmed.' },
@@ -905,9 +953,10 @@ var VIDEOS = {
         { value: 'Mix of Both (Dialog + Low Playful Bed)', label: 'Both', desc: 'Real sound with quiet music underneath.' }] }
     ],
     shots: function () { return []; }, atLeast: 4,
-    optional: function () { return shotsRange(9, 1, 8, 2, function (i) { return i <= 4 ? 'A candid moment' : 'A candid moment (optional)'; }); }
+    optional: function () { return shotsRange(9, 1, 8, 2, function (i) { return i <= 4 ? 'Candid moment' : 'Candid moment (optional)'; }, 3, 15, null, function (i) { return i === 1 ? 'For example: a student telling a joke at recess' : ''; }); }
   },
   parent_how_to: {
+    count: function (v) { return /voiceover/i.test(v.presentationFormat || '') ? ['5 clips', '5 clips: 1 tip + 4 demo clips'] : ['3 clips', '3 clips: 1 tip + 2 demo clips']; },
     name: 'Parent How-To', short: 'Parent How-To', blurb: 'An educator shares one practical tip parents can use tonight.',
     film: [
       { name: 'howToTopic', label: 'The parent concern', example: 'e.g. Managing the Homework Environment' },
@@ -916,13 +965,16 @@ var VIDEOS = {
         { value: 'Talking Head (Educator Direct)', label: 'Educator to camera', desc: 'The educator says the tip to camera. 3 clips.' },
         { value: 'Voiceover + Visual Demonstrations', label: 'Voiceover with demos', desc: 'The tip over demonstration clips. 5 clips.' }] }
     ],
-    rules: ['upright', 'quiet'], extraRules: ['Shot 1: about 15 seconds to the lens: the problem in one sentence, then the tip.'],
+    rules: ['upright', 'quiet'],
+    variant: { field: 'presentationFormat' },
+    guide: { need: ['An educator to share the tip', 'A child to show the tip in action', 'Only children covered by a signed media release'],
+             notes: ['In shot 1 the educator names the problem in one sentence, then gives the tip.'] },
     details: [],
     shots: function (v) {
-      var s = [{ shot: 'Obj-10_Shot_1', n: 1, what: 'The educator saying the tip', min: 12 },
-               { shot: 'Obj-10_Shot_2', n: 2, what: 'The finished result (e.g. the tidy desk with the timer)', min: 4 },
-               { shot: 'Obj-10_Shot_3', n: 3, what: 'A child doing the tip', min: 4 }];
-      if (/voiceover/i.test(v.presentationFormat || '')) s = s.concat(shotsRange(10, 4, 5, 4, 'Another demo angle'));
+      var s = [one(10, 1, 'The tip, to camera', 12, 15, 20, 'For example: the educator explaining a homework routine'),
+               one(10, 2, 'The result', 4, 4, 6, 'For example: a tidy desk with a timer'),
+               one(10, 3, 'Child doing the tip', 4, 4, 6, 'For example: a child starting the timer')];
+      if (/voiceover/i.test(v.presentationFormat || '')) s = s.concat(shotsRange(10, 4, 5, 4, 'Another demo angle', 4, 6, null, ''));
       return s;
     }
   }
@@ -960,6 +1012,7 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
     back: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M15 18l-6-6 6-6"/></svg>',
     chev: '<svg class="chev" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M9 18l6-6-6-6"/></svg>',
     check: '<svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 6L9 17l-5-5"/></svg>',
+    close: '<svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" aria-hidden="true"><path d="M6 6l12 12M18 6L6 18"/></svg>',
     play: '<svg width="40" height="40" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true"><path d="M8 5v14l11-7z"/></svg>'
   };
   var toastTimer;
@@ -1022,14 +1075,75 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
     var V = VIDEOS[t], req = V.shots(v), opt = V.optional ? V.optional(v) : [];
     return { req: req, opt: opt, atLeast: V.atLeast || 0 };
   }
-  function stepsFor(t, v) { var s = ['film', 'clips']; if (visible(VIDEOS[t].details, v).length) s.push('details'); s.push('send'); return s; }
-  var STEP_TITLE = { film: 'What to film', clips: 'Add your clips', details: 'Details', send: 'Check & send' };
+  function stepsFor(t, v) { var s = ['guide', 'film', 'clips']; if (visible(VIDEOS[t].details, v).length) s.push('details'); s.push('send'); return s; }
+  var STEP_TITLE = { guide: 'Filming guide', film: 'Plan your video', clips: 'Add your clips', details: 'Details', send: 'Check & send' };
   function rulesFor(t, v) {
     var V = VIDEOS[t];
     return (V.rules || []).map(function (k) { return EVERY[k]; }).concat(V.extraRules || []).concat(V.extraRulesFn ? V.extraRulesFn(v) : []);
   }
-  function clipCount(t) { var s = shotsFor(t, {}); return s.req.length + s.atLeast; }
+  function clipCount(t) { return VIDEOS[t].count({})[0]; }
   function shotTitle(s) { return typeof s.n === 'number' ? 'Shot ' + s.n : s.n; }
+  function lengthText(x) { var r = secs(x); return x.photo ? 'A photo, or a clip of ' + r : r || (x.accept ? 'Photo or clip' : ''); }
+  function longNote(x, rec) { return rec && rec.dur != null && x.hi && rec.dur > x.hi + 0.5 ? ' · A little long, that\'s fine: the editor will trim it' : ''; }
+  // Shots in their groups (Moment 1, Area 2…): the group is a heading; the label stays general.
+  function grouped(list, render) {
+    var out = '', cur = null;
+    list.forEach(function (x) {
+      if ((x.group || '') !== cur) { if (cur !== null) out += '</div>'; cur = x.group || ''; out += (cur ? '<p class="eyebrow" style="margin-top:8px">' + esc(cur) + '</p>' : '') + '<div class="stack-8">'; }
+      out += render(x);
+    });
+    return out + (cur !== null ? '</div>' : '');
+  }
+  // ---------- the filming guide (step 1, and the "Check the guide" pop-up) ----------
+  function guideHtml(t, v) {
+    var V = VIDEOS[t], g = V.guide || {}, s = shotsFor(t, v), h = '';
+    var need = g.needFn ? g.needFn(v) : (g.need || []), notes = g.notesFn ? g.notesFn(v) : (g.notes || []);
+    if (V.variant) {
+      var f = V.film.filter(function (x) { return x.name === V.variant.field; })[0], cur = v[f.name] || f.options[0].value;
+      h += '<section class="group"><p class="eyebrow">Show the shots for</p><div class="bbm-options">' + f.options.map(function (o) {
+        var on = cur === o.value;
+        return '<label class="bbm-option' + (on ? ' is-checked' : '') + '"><input type="radio" name="gv_' + f.name + '" data-variant="' + f.name + '" value="' + esc(o.value) + '"' + (on ? ' checked' : '') + '><span class="bbm-option-name">' + esc(o.label) + '</span>'
+          + (o.desc ? '<span class="bbm-option-desc">' + esc(o.desc) + '</span>' : '') + '</label>';
+      }).join('') + '</div><p class="meta">You choose for real in the next step.</p></section>';
+    }
+    if (need.length) h += '<section class="group"><h2>Before you film</h2><ul class="steps-list" style="list-style:disc">' + need.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></section>';
+    h += '<section class="group"><h2>How to film</h2><div class="stack-8">' + (V.rules || []).map(function (k) { return EVERY[k]; }).concat(notes)
+      .map(function (r) { return '<div class="rule">' + ICON.check + '<span>' + esc(r) + '</span></div>'; }).join('') + '</div></section>';
+    var list = s.req.length ? s.req : s.opt, c = V.count(v);
+    h += '<section class="group"><h2>Your shots: ' + esc(c[1]) + '</h2>'
+      + '<p class="meta">What you film will vary with each video; the examples are only ideas.</p>'
+      + grouped(list.concat(s.req.length ? s.opt : []), guideShot) + '</section>';
+    return h;
+  }
+  function guideShot(x) {
+    return '<div class="bbm-shot check-shot"><p class="bbm-shot-name">' + esc(shotTitle(x) + ' · ' + x.what) + '</p>'
+      + '<p class="bbm-shot-what">' + esc(lengthText(x)) + (x.ex ? '<br>' + esc(x.ex) : '') + '</p></div>';
+  }
+  function bindVariant(root, t, d, repaint) {
+    root.querySelectorAll('input[data-variant]').forEach(function (r) {
+      r.addEventListener('change', function () { d.vals[r.dataset.variant] = r.value; saveDraft(t, d); repaint(); });
+    });
+  }
+  var GUIDE_BTN = '<button class="bbm-btn bbm-btn-sm" id="openguide" type="button" style="align-self:flex-start">Check the guide</button>';
+  var CUR = null;   // the video + draft on screen, for the "Check the guide" button (works after any repaint)
+  function bindGuideButton() {}
+  app.addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('#openguide'); if (b && CUR) openGuide(CUR.t, CUR.d, b); });
+  function openGuide(t, d, opener) {
+    var V = VIDEOS[t], wrap = document.createElement('div');
+    wrap.className = 'sheet-wrap';
+    wrap.innerHTML = '<div class="sheet" role="dialog" aria-modal="true" aria-labelledby="sheet-title"><div class="sheet-head"><h2 id="sheet-title">Filming guide · ' + esc(V.short) + '</h2>'
+      + '<button class="icon-btn" id="sheet-close" aria-label="Close the guide">' + ICON.close + '</button></div><div class="sheet-body" id="sheet-body"></div></div>';
+    document.body.appendChild(wrap); document.body.style.overflow = 'hidden';
+    var body = wrap.querySelector('#sheet-body');
+    function paint() { body.innerHTML = guideHtml(t, d.vals); bindVariant(body, t, d, paint); }
+    paint();
+    function close() { wrap.remove(); document.body.style.overflow = ''; document.removeEventListener('keydown', esc_); window.removeEventListener('hashchange', close); if (opener) opener.focus(); }
+    function esc_(e) { if (e.key === 'Escape') close(); }
+    wrap.querySelector('#sheet-close').addEventListener('click', close);
+    wrap.addEventListener('click', function (e) { if (e.target === wrap) close(); });
+    document.addEventListener('keydown', esc_); window.addEventListener('hashchange', close);
+    wrap.querySelector('#sheet-close').focus();
+  }
   function isImageOnly(s) { return /image/.test(s.accept || '') && !/video/.test(s.accept || ''); }
 
   // ---------- field rendering + validation ----------
@@ -1297,7 +1411,7 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
         btn.textContent = 'Replace';
       } else {
         var saved = readJSON('bbUp_' + opts.draft + '_' + s.shot);
-        what.textContent = saved && saved.size ? 'Stopped at ' + Math.round(100 * saved.offset / saved.size) + '%. Pick the same clip to carry on.' : (opts.emptyText || (s.min ? s.min + ' s or more' : 'Photo or clip'));
+        what.textContent = saved && saved.size ? 'Stopped at ' + Math.round(100 * saved.offset / saved.size) + '%. Pick the same clip to carry on.' : (opts.emptyText || lengthText(s));
         if (opts.problem) { el.classList.add('is-problem'); what.textContent = opts.problem; }
         btn.textContent = opts.problem ? 'Replace' : 'Add clip';
       }
@@ -1317,7 +1431,7 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
   // ---------- router ----------
   window.addEventListener('hashchange', route);
   function route() {
-    notify.listeners = {}; notify.any = null;
+    notify.listeners = {}; notify.any = null; CUR = null;
     var h = location.hash.replace(/^#\/?/, ''), parts = h.split('/').map(decodeURIComponent);
     window.scrollTo(0, 0);
     if (!KEY) return renderSignUp();
@@ -1415,7 +1529,7 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
       d.todo.forEach(function (it) {
         var V = VIDEOS[it.formType];
         h += '<div class="bbm-card"><div class="plan-top">' + (it.overdue ? '<span class="bbm-pill bbm-pill-critical">Overdue</span>' : '<span class="bbm-pill bbm-pill-primary">This week</span>')
-          + (V ? '<span class="meta">' + clipCount(it.formType) + ' clips</span>' : '') + '</div>'
+          + (V ? '<span class="meta">' + esc(clipCount(it.formType)) + '</span>' : '') + '</div>'
           + '<p class="card-title">' + esc(V ? V.name : it.title) + '</p>'
           + '<p class="meta">' + (it.overdue ? 'Was due to post the week of ' + esc(it.postWeekOf) + '. Film it as soon as you can.' : 'Film this week · posts the week of ' + esc(it.postWeekOf)) + '</p>'
           + (it.done ? '<a class="list-row" href="#order/' + encodeURIComponent(it.orderId) + '"><span class="main"><strong>Ordered</strong><span class="meta">' + esc(it.orderId) + '</span></span>' + pillFor(it.status) + '</a>'
@@ -1492,40 +1606,46 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
     var head = '<div class="bbm-steps"><div class="bbm-steps-label"><strong>' + STEP_TITLE[kind] + '</strong><span>Step ' + n + ' of ' + steps.length + '</span></div>'
       + '<div class="bbm-steps-bar" style="grid-template-columns:repeat(' + steps.length + ',1fr)">' + steps.map(function (s, i) { return '<span' + (i < n ? ' class="is-done"' : '') + '></span>'; }).join('') + '</div></div>';
     var next = function () { go('#v/' + t + '/' + (n + 1)); };
-    ({ film: stepFilm, clips: stepClips, details: stepDetails, send: stepSend })[kind](t, V, d, head, next, n, steps);
+    if (kind !== 'guide') head += GUIDE_BTN;
+    CUR = { t: t, d: d };
+    ({ guide: stepGuide, film: stepFilm, clips: stepClips, details: stepDetails, send: stepSend })[kind](t, V, d, head, next, n, steps);
+    bindGuideButton(t, d);
   }
   function rerenderKeepScroll(fn) { var y = window.scrollY; fn(); window.scrollTo(0, y); }
 
-  function stepFilm(t, V, d, head, next, n) {
-    function paint(errs) {
-      errs = errs || {};
-      var v = d.vals, fields = visible(V.film, v), s = shotsFor(t, v);
-      var h = head + '<p class="meta">' + (d.slot ? 'Planned' + (d.postWeekOf ? ' · posts the week of ' + esc(d.postWeekOf) : '') + '. ' : '') + esc(V.blurb) + '</p>';
-      h += '<section class="group"><h2>Plan it</h2>' + (V.filmIntro ? '<p class="meta">' + esc(V.filmIntro) + '</p>' : '') + '<div class="form">' + fields.map(function (f) { return fieldHtml(f, v, errs[f.name]); }).join('') + '</div></section>';
-      h += '<section class="group"><h2>For every shot</h2><div class="stack-8">' + rulesFor(t, v).map(function (r) { return '<div class="rule">' + ICON.check + '<span>' + esc(r) + '</span></div>'; }).join('') + '</div></section>';
-      h += '<section class="group" id="shotlist">' + shotList() + '</section>';
-      h += '<div class="stack-8"><button class="bbm-btn bbm-btn-primary bbm-btn-block" id="next">Next: add your clips</button><p class="meta center">Your answers are saved on this phone, so you can come back after filming.</p></div>';
+  function stepGuide(t, V, d, head, next) {
+    function paint(msg) {
+      var h = head + '<p class="meta">' + (d.slot ? 'Planned' + (d.postWeekOf ? ' · posts the week of ' + esc(d.postWeekOf) : '') + '. ' : '') + esc(V.blurb) + '</p>'
+        + '<p>Read this before you film. You can film now and come back: your progress is saved on this phone.</p>'
+        + guideHtml(t, d.vals)
+        + '<label class="bbm-check" id="gok_box"><input type="checkbox" id="gok"' + (d.guideOk ? ' checked' : '') + '><span>I have read and understood how the videos should be captured.</span></label>'
+        + (msg ? '<p class="bbm-field-error" id="gerr">' + esc(msg) + '</p>' : '')
+        + '<button class="bbm-btn bbm-btn-primary bbm-btn-block" id="next">Next: plan your video</button>';
       app.innerHTML = h;
-      bindFields(app, fields, t, d, function () { rerenderKeepScroll(function () { paint(); }); }, function () { document.getElementById('shotlist').innerHTML = shotList(); bindTicks(); });
-      bindTicks();
+      bindVariant(app, t, d, function () { rerenderKeepScroll(function () { paint(); }); });
+      document.getElementById('gok').addEventListener('change', function () { d.guideOk = this.checked; saveDraft(t, d); var e = document.getElementById('gerr'); if (e && this.checked) e.remove(); });
       document.getElementById('next').addEventListener('click', function () {
-        var e = validate(visible(V.film, d.vals), d.vals);
-        if (Object.keys(e).length) { paint(e); focusFirstError(); return; }
+        if (!d.guideOk) { paint('Please tick the box to confirm you have read the guide.'); document.getElementById('gok_box').scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
         next();
       });
     }
-    function bindTicks() { app.querySelectorAll('input[data-tick]').forEach(function (c) { c.addEventListener('change', function () { d.ticks[c.dataset.tick] = c.checked; saveDraft(t, d); }); }); }
-    function shotList() {
-      var s = shotsFor(t, d.vals), list = s.req.length ? s.req : s.opt;
-      return '<h2>' + (s.atLeast ? 'Your ' + s.atLeast + ' to ' + s.opt.length + ' clips' : 'Your ' + list.length + ' shot' + (list.length === 1 ? '' : 's')) + '</h2><p class="meta">Tick them off as you film.</p><div class="stack-8">'
-        + list.map(function (x) { return checkRow(x, d); }).join('')
-        + (s.req.length && s.opt.length ? '<p class="meta" style="margin-top:8px">Optional extras</p>' + s.opt.map(function (x) { return checkRow(x, d); }).join('') : '') + '</div>';
-    }
     paint();
   }
-  function checkRow(x, d) {
-    return '<label class="bbm-check check-shot"><input type="checkbox" data-tick="' + esc(x.shot) + '"' + (d.ticks[x.shot] ? ' checked' : '') + '>'
-      + '<span><strong>' + esc(shotTitle(x)) + ' · ' + esc(x.what) + '</strong><br><span class="meta">' + (x.min ? x.min + ' s or more' : (x.accept ? 'Photo or clip' : '')) + '</span></span></label>';
+  function stepFilm(t, V, d, head, next) {
+    function paint(errs) {
+      errs = errs || {};
+      var v = d.vals, fields = visible(V.film, v);
+      var h = head + (V.filmIntro ? '<p class="meta">' + esc(V.filmIntro) + '</p>' : '') + '<div class="form">' + fields.map(function (f) { return fieldHtml(f, v, errs[f.name]); }).join('') + '</div>';
+      h += '<div class="stack-8"><button class="bbm-btn bbm-btn-primary bbm-btn-block" id="next">Next: add your clips</button><p class="meta center">Your answers are saved on this phone, so you can come back after filming.</p></div>';
+      app.innerHTML = h;
+      bindFields(app, fields, t, d, function () { rerenderKeepScroll(function () { paint(); bindGuideButton(t, d); }); });
+      document.getElementById('next').addEventListener('click', function () {
+        var e = validate(visible(V.film, d.vals), d.vals);
+        if (Object.keys(e).length) { paint(e); bindGuideButton(t, d); focusFirstError(); return; }
+        next();
+      });
+    }
+    paint();
   }
 
   function clipStatus(t, d) {
@@ -1542,7 +1662,7 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
     var horizontalOk = /horizontal/i.test(d.vals.videoOrientation || '');
     function warnFor(min) {
       return function (rec) {
-        if (rec.dur != null && min && rec.dur + 0.3 < min) return 'Only ' + Math.round(rec.dur) + ' s. Please film at least ' + min + ' s, then replace it.';
+        if (rec.dur != null && min && rec.dur + 0.3 < min) return 'Only ' + Math.round(rec.dur) + ' second' + (Math.round(rec.dur) === 1 ? '' : 's') + '. Please film at least ' + min + ' seconds, then replace it.';
         if (rec.w && rec.h && rec.w > rec.h && !horizontalOk) return 'Looks sideways. Film with the phone upright, then replace it.';
         return '';
       };
@@ -1575,10 +1695,10 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
         return;
       }
       h += '<p class="meta">Tap <strong>Add clip</strong> and pick each video from your camera roll, or film it now. Keep this screen open while clips upload.</p>';
-      h += '<section class="group"><div class="plan-top"><h2>' + (s.atLeast ? 'Your clips' : 'Your ' + s.req.length + ' shot' + (s.req.length === 1 ? '' : 's')) + '</h2><span class="meta" id="count"></span></div>'
+      h += '<section class="group"><div class="plan-top"><h2>Your shots: ' + esc(V.count(d.vals)[0]) + '</h2><span class="meta" id="count"></span></div>'
         + (s.atLeast ? '<p class="meta">Add at least ' + s.atLeast + '.</p>' : '')
-        + '<div class="stack-8">' + (s.req.length ? s.req : s.opt).map(function (x) { return slotHtml(x, {}); }).join('') + '</div></section>';
-      if (s.req.length && s.opt.length) h += '<section class="group"><h2>Optional extras</h2><div class="stack-8">' + s.opt.map(function (x) { return slotHtml(x, {}); }).join('') + '</div></section>';
+        + grouped(s.req.length ? s.req : s.opt, function (x) { return slotHtml(x, {}); }) + '</section>';
+      if (s.req.length && s.opt.length) h += '<section class="group"><h2>Optional extras</h2>' + grouped(s.opt.map(function (x) { return Object.assign({}, x, { group: '' }); }), function (x) { return slotHtml(x, {}); }) + '</section>';
       h += '<div class="stack-8"><button class="bbm-btn bbm-btn-primary bbm-btn-block" id="next">Next: ' + (stepsFor(t, d.vals).indexOf('details') >= 0 ? 'details' : 'check & send') + '</button>'
         + '<p class="meta center" id="nextnote">You can carry on while clips finish uploading.</p></div>';
       h += '<details class="shotlist"><summary>Trouble uploading?</summary><p class="meta" style="margin-top:8px">Put your clips in a Google Drive folder and paste its link instead.</p>'
@@ -1590,7 +1710,8 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
           draft: d.draftId,
           uploaded: function () { return d.uploads[x.shot]; },
           warnFor: warnFor(x.min),
-          doneText: function (rec) { return (rec.dur ? Math.round(rec.dur) + ' s · ' : '') + 'Added'; },
+          emptyText: lengthText(x),
+          doneText: function (rec) { return (rec.dur ? Math.round(rec.dur) + ' seconds · ' : '') + 'Added' + longNote(x, rec); },
           onFile: function (f, info) {
             if (!d.uploads[x.shot]) {} // keep the old record until the new one finishes
             enqueue(d.draftId, x.shot, f, function (res) { if (res.folderUrl) { d.folderUrl = res.folderUrl; saveDraft(t, d); } });
@@ -1699,7 +1820,7 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
       c1.addEventListener('change', function () { paint.c1 = c1.checked; }); c2.addEventListener('change', function () { paint.c2 = c2.checked; });
       document.getElementById('send').addEventListener('click', function () {
         if (sending) return;
-        var problem = filmErr ? 'Please finish step ' + iFilm + ' (what to film).'
+        var problem = !d.guideOk ? 'Please read the filming guide in step 1 and tick the box.' : filmErr ? 'Please finish step ' + iFilm + ' (what to film).'
           : !clipsOk ? (d.mode === 'drive' ? 'Please add your Google Drive folder link in step ' + iClips + '.' : st.busy ? 'Please wait for your clips to finish uploading.' : 'Please add ' + (st.missing.length ? 'the missing clips' : 'at least ' + st.s.atLeast + ' clips') + ' in step ' + iClips + '.')
           : detErr ? 'Please finish step ' + iDet + ' (details).'
           : !c1.checked || !c2.checked ? 'Please tick both boxes before sending.' : '';
@@ -1800,7 +1921,7 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
       if (general.length) h += '<div class="stack-8">' + general.map(function (p) { return '<p class="bbm-notice bad">' + esc(p.text) + '</p>'; }).join('') + '</div>';
       if (fixable.length) {
         h += '<div class="stack-8">' + fixable.map(function (s) {
-          var x = findShot(o.formType, s); if (!x.what && labels[s]) x.what = labels[s];
+          var x = findShot(o.formType, s);
           return o.draftId ? slotHtml(x, { title: shotTitle(x) + (x.what ? ' · ' + x.what : '') })
             : '<div class="bbm-shot is-problem"><p class="bbm-shot-name">' + esc(shotTitle(x) + (x.what ? ' · ' + x.what : '')) + '</p><p class="bbm-shot-what">' + esc(shots[s]) + '</p></div>';
         }).join('') + '</div>';
@@ -1826,7 +1947,7 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
           var free = (V.optional ? V.optional({}) : []).filter(function (x) { return !have[x.shot]; });
           box.innerHTML = free.map(function (x) { return slotHtml(x, { title: shotTitle(x) + ' · a candid moment' }); }).join('');
           free.forEach(function (x) {
-            bindSlot(app, x, { draft: o.draftId, emptyText: '2 s or more', uploaded: function () { return replaced[x.shot]; }, doneText: function () { return 'Added'; }, onFile: function (f) { enqueue(o.draftId, x.shot, f); } });
+            bindSlot(app, x, { draft: o.draftId, emptyText: lengthText(x), uploaded: function () { return replaced[x.shot]; }, doneText: function () { return 'Added'; }, onFile: function (f) { enqueue(o.draftId, x.shot, f); } });
           });
         }).catch(function () {});
         var ul = document.getElementById('uplog'); if (ul) ul.addEventListener('click', function () { copyText(logText(), ul); });
@@ -1951,7 +2072,7 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
   }
   function humanize(text) {
     if (/^Missing: /.test(text)) return 'Missing. Please add this clip.';
-    var t = String(text).replace(/^Too short: Obj-\S+ is /, 'Too short: ').replace(/^Looks (\w+): \S+\. /, 'Looks $1. ').replace(/Obj-\d+_(Shot_\d+|Extra_\d+|Voiceover)/g, 'this clip');
+    var t = String(text).replace(/(\d+(?:\.\d+)?) s\b/g, '$1 seconds').replace(/^Too short: Obj-\S+ is /, 'Too short: ').replace(/^Looks (\w+): \S+\. /, 'Looks $1. ').replace(/Obj-\d+_(Shot_\d+|Extra_\d+|Voiceover)/g, 'this clip');
     return t.charAt(0).toUpperCase() + t.slice(1);
   }
   function findShot(formType, shot) {
@@ -1962,7 +2083,7 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
         vals = sets[i];
         var all = V.shots(vals).concat(V.optional ? V.optional(vals) : []);
         var hit = all.filter(function (x) { return x.shot === shot; })[0];
-        if (hit) return { shot: hit.shot, n: hit.n, what: i === 1 || /^Moment|^Category|^Area|^Students: Benefit/.test(hit.what) ? '' : hit.what, min: hit.min, accept: hit.accept };
+        if (hit) return { shot: hit.shot, n: hit.n, what: formType === 'staff_spotlight' ? '' : (hit.group && !/extras/i.test(hit.group) ? hit.group + ', ' + hit.what.toLowerCase() : hit.what), min: hit.min, lo: hit.lo, hi: hit.hi, photo: hit.photo, accept: hit.accept };
       }
     }
     var m = shot.match(/_(Shot|Extra)_(\d+)$/);
