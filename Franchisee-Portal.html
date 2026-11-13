@@ -250,6 +250,7 @@ code { font-size:13px; background:var(--surface-sunken); padding:1px 6px; border
     },
 
     testimonials: function (d) {
+      if (has(d, 'testimonialType', 'voices')) return SPECS._parentVoices(d);
       var wide = has(d, 'videoOrientation', '16:9');
       return {
         obj: 'Obj-2', short: 'Testimonial', title: 'Objective 2 — Parent & Student Testimonials',
@@ -372,6 +373,7 @@ code { font-size:13px; background:var(--surface-sunken); padding:1px 6px; border
     },
 
     highlight_reel: function (d) {
+      if (has(d, 'reelType', 'event')) return SPECS._eventRecap(d);
       var site = val(d, 'siteName', 'Site Name');
       var music = has(d, 'musicTempo', 'electronic') ? MUSIC.driving : MUSIC.pop;
       return {
@@ -401,6 +403,94 @@ code { font-size:13px; background:var(--surface-sunken); padding:1px 6px; border
         audio: ['Music: ' + music + ' (form choice: ' + val(d, 'musicTempo', 'Music energy') + '). Add beat markers (M) first, then cut to them.', 'All organic sound muted.'],
         captions: 'None (no speech).',
         rules: ['Every cut on a beat; clips about 1.5–2 s.', 'Whip pan or speed ramp only between categories.'],
+        script: []
+      };
+    },
+
+    // 2B. Parent Voices: 3 parents, unscripted, filmed on the spot at an event (noisy, uncontrolled setting)
+    _parentVoices: function (d) {
+      var ev = val(d, 'eventName', 'Event name');
+      var names = [1, 2, 3, 4, 5].map(function (i) { var n = String(d['parentName' + i] || '').trim(); return n ? n + ' · Parent' : 'Parent'; });
+      var footage = [1, 2, 3, 4].map(function (i) { return ['Obj-2_Shot_' + i, 'pick best 3', 'Parent ' + i + ' answer — label "' + names[i - 1] + '"']; });
+      footage.push(['Obj-2_Shot_5', 'optional', 'Parent 5 answer (if filmed) — label "' + names[4] + '"']);
+      return {
+        obj: 'Obj-2', short: 'ParentVoices', title: 'Objective 2 — Parent & Student Testimonials: Parent Voices',
+        length: '30 s', frame: '9:16', template: 'BB_02_Testimonial_ParentVoices',
+        footage: footage,
+        text: [
+          ['BB_Hook_Title', q(ev + ': hear it from our parents')],
+          ['BB_LowerThird (one per parent used)', 'The label next to that parent\'s clip in the FOOTAGE CHECKLIST'],
+          ['BB_Outro_Logo_4s · CTA line', q('Join our families')],
+          ['BB_Outro_Logo_4s · URL override', q(val(d, 'programWebsite', 'Program website'))]
+        ],
+        timeline: [
+          ['0:00–0:02', 'Strongest 2 s of any answer', 'BB_Hook_Title', 'Speech'],
+          ['0:02–0:09', 'Parent A', 'BB_LowerThird · the change seen in their child', 'Speech'],
+          ['0:09–0:17', 'Parent B', 'BB_LowerThird · what makes the program different', 'Speech'],
+          ['0:17–0:26', 'Parent C', 'BB_LowerThird · why they recommend it', 'Speech'],
+          ['0:26–0:30', 'Outro', 'BB_Outro_Logo_4s (program URL)', 'Warm music bed']
+        ],
+        audio: [
+          'Voice: Enhance Speech (strong; crowd noise expected), then Essential Sound > Dialogue preset.',
+          'Keep a little event sound at about −28 dB under the voices so it feels real.',
+          'Music: ' + MUSIC.warm + ', −22 dB under speech; fit to 30.0 s with Remix.'
+        ],
+        captions: captionPreset(d.captionStyle) + ' (form choice: ' + val(d, 'captionStyle', 'Caption style') + '), set to large size and on for every word: the audio is noisy and most viewers watch muted.',
+        rules: [
+          'Pick the best 3 parents: clearest audio, complete thought, real emotion. Place them by what they say, not by filming order: change seen → what makes the program different → recommendation.',
+          'Cut out the interviewer\'s questions and any interviewer sounds. Each answer must make sense on its own.',
+          'Trim each answer to one complete thought (about 7–9 s). Never cut mid-sentence.',
+          'No B-roll in this version. Hide jump cuts by switching between a wide and a tighter crop of the same parent.',
+          'Crop in on each parent (about 110–120%) to tighten the framing and remove people walking behind them.',
+          'Blur or crop out any identifiable child in the background.',
+          'Fewer than 3 usable parents? Stop and reply to this email before editing.'
+        ],
+        script: [
+          ['Questions the interviewer asked (answers are unscripted)', '1. What have you noticed in your child since they started the program?  2. What makes this program different for your family?  3. Why would you recommend this program to another parent?']
+        ]
+      };
+    },
+
+    // 4B. Event Recap: one event, build-up → the moment → the payoff ("look what we achieved")
+    _eventRecap: function (d) {
+      var site = val(d, 'siteName', 'Site Name'), ev = val(d, 'eventName', 'Event name');
+      var pro = has(d, 'eventMusic', 'professional'), line = String(d.achievementLine || '').trim();
+      return {
+        obj: 'Obj-4', short: 'EventRecap', title: 'Objective 4 — Program Highlight Reel: Event Recap',
+        length: '30 s', frame: '9:16', template: 'BB_04_EventRecap',
+        footage: [
+          ['Obj-4_Shot_1–3', '0:02–0:08', 'Before: getting ready (setup, warm-up, backstage)'],
+          ['Obj-4_Shot_4', '0:08–0:11', 'During: the wide shot of the whole stage or room (use first)'],
+          ['Obj-4_Shot_5–7', '0:11–0:20', 'During: the event in action, audience faces'],
+          ['Obj-4_Extra_1–2', 'optional', 'During: extra moments; swap in if stronger'],
+          ['Obj-4_Shot_8–9', '0:20–0:26', 'After: the big finish (applause, bow, award, hugs, group photo)'],
+          ['Obj-4_Extra_3', 'optional', 'After: extra moment'],
+          ['Best payoff moment', '0:00–0:02', 'From any After shot — the hook (start on the payoff)']
+        ],
+        text: [
+          ['BB_Hook_Title', q(ev + ' · ' + site)],
+          ['BB_Text_Card (0:20–0:26)', line ? q(line) : 'None — the form left "What it took" blank; skip this card'],
+          ['BB_Outro_Logo_4s · CTA line', q('Be part of the next one')]
+        ],
+        timeline: [
+          ['0:00–0:02', 'Peak payoff moment', 'BB_Hook_Title', 'Music hits on frame 1'],
+          ['0:02–0:08', 'Shots 1–3 (build-up)', 'Clean', 'Music builds; cuts every 2–3 s'],
+          ['0:08–0:20', 'Shot 4 wide, then 5–7 (+ Extras)', 'Clean', 'Music; hold key moments 3–4 s'],
+          ['0:20–0:26', 'Shots 8–9 (payoff), slow-mo on the peak', line ? 'BB_Text_Card (what it took)' : 'Clean', 'Real applause/cheer up over the music for ~2 s'],
+          ['0:26–0:30', 'Outro', 'BB_Outro_Logo_4s', 'Music resolves']
+        ],
+        audio: [
+          'Music: ' + (pro ? MUSIC.inspire : MUSIC.pop) + ' (form choice: ' + val(d, 'eventMusic', 'Event music') + '). Fit to 30.0 s with Remix; the build lands on the payoff at 0:20.',
+          'Organic sound muted, except the applause or cheer at the payoff, brought up over the music for about 2 s.'
+        ],
+        captions: 'None (no speech).',
+        rules: [
+          'Story arc: open on the payoff (hook), then build-up → the event → the payoff. Message: "look what we achieved", not "look how much happens".',
+          'Pace: about 2–3 s per clip in the build-up; hold key event moments 3–4 s; a single slow-motion ramp (Time Remapping) into the payoff.',
+          pro ? 'Transitions: soft 10-frame cross-dissolves (professional event).' : 'Transitions: straight cuts on the beat, plus one flash or match cut into the payoff.',
+          'No whip pans, speed ramps between sections or activity badges (those belong to the Program Highlights version).',
+          'Use the wide shot (Shot 4) once, early in the event section, so viewers see the scale.'
+        ],
         script: []
       };
     },
@@ -755,40 +845,86 @@ var VIDEOS = {
     }
   },
   testimonials: {
-    count: function () { return ['4 clips', '4 clips: 1 interview + 3 supporting clips']; },
-    name: 'Parent & Student Testimonial', short: 'Testimonial', blurb: 'A parent or student shares, in their own words, what changed.',
-    filmIntro: 'The speaker says these three lines to camera, in order, in one take.',
+    count: function (v) { return voices(v) ? ['4–5 clips', '4–5 clips: one answer from each parent (we use the best 3)'] : ['4 clips', '4 clips: 1 interview + 3 supporting clips']; },
+    name: 'Parent & Student Testimonial', short: 'Testimonial', blurb: 'Families share, in their own words, what changed for their child.',
+    variant: { field: 'testimonialType', question: 'Which kind of testimonial do you want to make?', options: [
+      { value: 'One Family Story', label: 'One family\'s story',
+        desc: 'One parent or student tells your program\'s before-and-after story, in one take.',
+        more: ['Best for: a planned interview with a family you know well.', 'Where: a quiet room, booked ahead of time.', 'You write their three short lines in this order form first.', 'You film 4 clips: the interview, plus 3 short clips of their child.'] },
+      { value: 'Parent Voices (On the Spot)', label: 'Parent voices',
+        desc: 'Quick, unscripted answers from 3 different parents, filmed on the spot at the end of an event.',
+        more: ['Best for: the end of an event, when lots of parents are there.', 'Where: wherever the parents are. A noisy room is OK: we clean up the sound.', 'Nothing to write ahead of time: you ask each parent 1 or 2 simple questions.', 'You film one answer from each of 4–5 parents. We use the best 3.'] }] },
+    filmIntroFn: function (v) { return voices(v) ? 'Get ready for the interviews: name the event, and make sure the person asking the questions knows them before the event starts.' : 'The speaker says these three lines to camera, in order, in one take.'; },
+    planNote: function (v) {
+      if (!voices(v)) return null;
+      return { title: 'The questions to ask each parent', intro: 'Ask every parent 1 or 2 of these questions, in your own friendly words. Share this list with the person asking the questions before the event, so they know it by heart.',
+        list: PV_QUESTIONS, copy: 'Questions to ask each parent:\n1. ' + PV_QUESTIONS[0] + '\n2. ' + PV_QUESTIONS[1] + '\n3. ' + PV_QUESTIONS[2] +
+          '\n\nBefore you start: ask the parent to begin their answer with your question, for example "Since starting, my son…".\nTell the parent: look at me while you talk, not at the phone.\nStay silent while they answer.' };
+    },
     film: [
-      { name: 'videoOrientation', label: 'Shape', type: 'choice', options: [
+      { name: 'eventName', label: 'Event name', words: [1, 6], example: 'e.g. Spring Showcase. It becomes the title at the start: "Spring Showcase: hear it from our parents".', showIf: function (v) { return voices(v); } },
+      { name: 'questionsReady', label: 'I have shared the questions above with the person who will ask them, and they will read them before the event starts.', type: 'confirm', showIf: function (v) { return voices(v); } },
+      { name: 'videoOrientation', label: 'Shape', type: 'choice', showIf: function (v) { return !voices(v); }, options: [
         { value: 'Use Vertical (9:16) for social platform posting', label: 'Upright (for social posts)', desc: 'Hold the phone upright, as usual.' },
         { value: 'Horizontal (16:9) for website homepages', label: 'Sideways (for a website)', desc: 'Only if the video is for a website.' }] },
-      { name: 'beforeObstacle', label: 'Line 1: before', type: 'textarea', words: [25, 30], example: 'About 12 seconds. "Before joining, we…" (what was hard)' },
-      { name: 'sinceStarting', label: 'Line 2: since starting', type: 'textarea', words: [17, 20], example: 'About 8 seconds. "Since starting, …" (the change you have seen)' },
-      { name: 'recommendationLine', label: 'Line 3: recommendation', type: 'textarea', words: [15, 17], example: 'About 7 seconds. "I\'d recommend [program] to any parent who…"' }
+      { name: 'beforeObstacle', label: 'Line 1: before', type: 'textarea', words: [25, 30], example: 'About 12 seconds. "Before joining, we…" (what was hard)', showIf: function (v) { return !voices(v); } },
+      { name: 'sinceStarting', label: 'Line 2: since starting', type: 'textarea', words: [17, 20], example: 'About 8 seconds. "Since starting, …" (the change you have seen)', showIf: function (v) { return !voices(v); } },
+      { name: 'recommendationLine', label: 'Line 3: recommendation', type: 'textarea', words: [15, 17], example: 'About 7 seconds. "I\'d recommend [program] to any parent who…"', showIf: function (v) { return !voices(v); } }
     ],
-    rules: ['quiet'],
-    guide: { need: ['One parent or student who is happy to speak on camera', 'Their three lines, written in the next step (they say them in their own words)', 'Only children covered by a signed media release'],
-             notes: ['Set the phone at eye level, about 3 feet from the speaker. They look just beside the lens.', 'The interview is one take; the other clips play over it.'] },
+    rulesFn: function (v) { return voices(v) ? ['upright'] : ['quiet']; },
+    guide: {
+      needFn: function (v) {
+        return voices(v) ? ['An event where lots of parents are there, for example the end of a showcase or a family night.',
+          'Two people: one to hold the phone and one to ask the questions. One person can do both, but two is easier.',
+          'The person asking the questions must read the questions below before the event, so they know what to ask.',
+          'Only children covered by a signed media release.']
+          : ['One parent or student who is happy to speak on camera', 'Their three lines, written in this order form (they say them in their own words)', 'Only children covered by a signed media release'];
+      },
+      extraFn: function (v) {
+        if (!voices(v)) return [];
+        return [{ title: 'The questions to ask', intro: 'Ask each parent 1 or 2 of these questions. Use your own friendly words, but keep the meaning the same.', list: PV_QUESTIONS, ordered: true },
+          { title: 'The key tip: the answer must make sense on its own', list: [
+            'Your questions are cut out of the finished video. Only the parent\'s answer is used.',
+            'So before you start, ask the parent to begin their answer with your question. For example, if you ask "What have you noticed in your child since they started?", they answer "Since starting, my son has become so much more confident."',
+            'Stay completely silent while the parent is talking. Don\'t say "mm-hmm", "great" or "wow", because your voice would be in the clip. Smile and nod instead.',
+            'Wait until they have completely finished before you speak again.'] }];
+      },
+      notesFn: function (v) {
+        if (!voices(v)) return ['Set the phone at eye level, about 3 feet from the speaker. They look just beside the lens.', 'The interview is one take; the other clips play over it.'];
+        return ['Where the person asking the questions stands: right beside the phone, with their face at the same height as the lens. If someone else is filming, stand shoulder to shoulder with them. If you are filming and asking, hold the phone at your chin height and talk to the parent over the top of it.',
+          'Tell the parent: "Look at me while you talk, not at the phone." The parent looks at the person asking the questions, never into the camera. On screen this looks natural, like a real conversation.',
+          'Hold the phone 2–3 feet from the parent\'s face. The closer the phone, the louder their voice sounds compared with the noise of the room.',
+          'Find the calmest spot you can: put the parent\'s back to a wall or a quiet corner, facing away from the crowd, so fewer people walk behind them.',
+          'Make sure the parent is not standing in front of a bright window or light.',
+          'Hold the phone with both hands, or rest your elbows on something, so it stays still.',
+          'Press record before you ask the question, and stop a few seconds after the parent finishes.',
+          'Film one clip per parent. Film 4 or 5 different parents: we pick the best 3, so a noisy or interrupted answer doesn\'t spoil the video.'];
+      } },
     details: [
-      { name: 'speakerName', label: 'Name shown on screen', example: 'e.g. The Miller Family | 2nd Grade Parent' },
-      { name: 'outcomeMetric', label: 'The big result, in a few words', words: [1, 8], example: 'e.g. Reading Confidence Doubled in 90 Days' },
+      { name: 'speakerName', label: 'Name shown on screen', example: 'e.g. The Miller Family | 2nd Grade Parent', showIf: function (v) { return !voices(v); } },
+      { name: 'outcomeMetric', label: 'The big result, in a few words', words: [1, 8], example: 'e.g. Reading Confidence Doubled in 90 Days', showIf: function (v) { return !voices(v); } },
+      { name: 'parentName1', label: 'First name of the parent in clip 1 (Shot 1)', optional: true, words: [1, 3], example: 'e.g. Maria. Shown as "Maria · Parent". Leave blank to show just "Parent".', showIf: function (v) { return voices(v); } },
+      { name: 'parentName2', label: 'First name of the parent in clip 2 (Shot 2)', optional: true, words: [1, 3], example: 'Leave blank to show just "Parent".', showIf: function (v) { return voices(v); } },
+      { name: 'parentName3', label: 'First name of the parent in clip 3 (Shot 3)', optional: true, words: [1, 3], example: 'Leave blank to show just "Parent".', showIf: function (v) { return voices(v); } },
+      { name: 'parentName4', label: 'First name of the parent in clip 4 (Shot 4)', optional: true, words: [1, 3], example: 'Leave blank to show just "Parent".', showIf: function (v) { return voices(v); } },
+      { name: 'parentName5', label: 'First name of the parent in clip 5 (Shot 5), if you filmed a fifth parent', optional: true, words: [1, 3], example: 'Leave blank to show just "Parent".', showIf: function (v) { return voices(v); } },
       { name: 'captionStyle', label: 'Caption style', type: 'choice', options: [
         { value: 'Kinetic Pop (Modern Word-by-Word)', label: 'Kinetic pop', desc: 'Modern, word by word.' },
         { value: 'Minimal Lower-Third (Traditional Subtitles)', label: 'Minimal', desc: 'Traditional subtitles.' }] },
       { name: 'programWebsite', label: "Your program's website (shown at the end of the video)", type: 'url', example: 'e.g. https://yourprogram.com' }
     ],
-    shots: function () {
+    shots: function (v) {
+      if (voices(v)) return shotsRange(2, 1, 4, 8, 'One parent\'s answer', 10, 30, 'Parents (one clip per parent)',
+        function (i) { return i === 1 ? 'For example: a parent answering "What have you noticed in your child since they started?"' : (i === 2 ? 'A different parent from clip 1.' : ''); });
       return [one(2, 1, 'The interview', 25, 25, 40, 'For example: a parent saying their three lines in one take', { group: 'The interview' })]
         .concat(shotsRange(2, 2, 4, 4, 'Supporting clip', 6, 8, 'Supporting clips', function (i) { return i === 2 ? 'For example: the child reading, playing or arriving happily' : ''; }));
-    }
+    },
+    optional: function (v) { return voices(v) ? [one(2, 5, 'A fifth parent\'s answer (optional)', 8, 10, 30, '', { group: 'Optional extras' })] : []; }
   },
   staff_spotlight: {
     count: function (v) { return isStaff(v) ? ['8 clips', '8 clips with 4 staff members'] : ['3 clips', '3 clips: 1 statement + 2 teaching clips']; },
     name: 'Teacher or Staff Spotlight', short: 'Spotlight', blurb: 'Introduce a teacher, or four staff in a 90s sitcom-style intro.',
     film: [
-      { name: 'spotlightType', label: 'Which spotlight?', type: 'choice', options: [
-        { value: 'Teacher Spotlight', label: 'Teacher spotlight', desc: 'One teacher talks to camera.' },
-        { value: 'Staff Spotlight (90s Sitcom Intro)', label: 'Staff sitcom intro', desc: 'Four staff, waves and smiles, no talking.' }] },
       { name: 'scriptStatement', label: 'Statement to camera', type: 'textarea', words: [60, 70], example: 'About 25 seconds, read to the lens.', showIf: function (v) { return !isStaff(v); } },
       { name: 'staff1', label: 'Staff 1 (name – role)', words: [1, 5], example: 'e.g. Mrs. Gable – P.E.', showIf: isStaff },
       { name: 'staff2', label: 'Staff 2 (name – role)', words: [1, 5], example: 'e.g. Mr. Rite – Science Lead', showIf: isStaff },
@@ -796,7 +932,11 @@ var VIDEOS = {
       { name: 'staff4', label: 'Staff 4 (name – role)', words: [1, 5], example: 'e.g. Mrs. Abigale – Literacy', showIf: isStaff }
     ],
     rules: ['upright'],
-    variant: { field: 'spotlightType' },
+    variant: { field: 'spotlightType', question: 'Which spotlight do you want to make?', options: [
+      { value: 'Teacher Spotlight', label: 'Teacher spotlight', desc: 'One teacher talks to the camera about why they love teaching here.',
+        more: ['You write a short statement for them to read (about 25 seconds).', 'You film 3 clips: the statement, plus 2 clips of them teaching.'] },
+      { value: 'Staff Spotlight (90s Sitcom Intro)', label: 'Staff sitcom intro', desc: 'Four staff members star in a fun, 90s TV-show style opening. No talking.',
+        more: ['You need 4 staff members, in two pairs.', 'You film 8 short clips of them in action, waving and smiling.'] }] },
     guide: { needFn: function (v) { return isStaff(v) ? ['Four staff members, in two pairs (Staff 1 & 4, Staff 2 & 3)', 'Only children covered by a signed media release'] : ['One teacher, and a statement they will read (written in the next step)', 'Only children covered by a signed media release']; },
              notesFn: function (v) { return isStaff(v) ? ['No talking needed: music replaces the sound.', 'Two of the shots are a pair waving and smiling at the camera.'] : ['Record the statement in a quiet room, framed from the chest up, with a tidy classroom behind.']; } },
     details: [
@@ -814,28 +954,71 @@ var VIDEOS = {
     }
   },
   highlight_reel: {
-    count: function () { return ['9–15 clips', '9–15 clips: 3 for each of 3 activities, plus up to 6 extras']; },
-    name: 'Program Highlight Reel', short: 'Highlight Reel', blurb: 'High-energy action from three activity categories.',
-    filmIntro: 'Pick 3 activity categories. Each becomes a badge in the video.',
+    count: function (v) { return recap(v) ? ['9–12 clips', '9–12 clips: 3 before, 4–6 during and 2–3 after the event'] : ['9–15 clips', '9–15 clips: 3 for each of 3 activities, plus up to 6 extras']; },
+    name: 'Program Highlight Reel', short: 'Highlight Reel', blurb: 'Show off your program: everything that happens here, or one big event.',
+    variant: { field: 'reelType', question: 'What do you want this highlight video to show?', options: [
+      { value: 'Program Highlights (Over Time)', label: 'Program highlights: how much happens here',
+        desc: 'Capture your program over a day or a week: lots of different activities, cut into a fast, high-energy montage.',
+        more: ['The message: "Look how much happens here."', 'You pick 3 kinds of activity (for example sports, STEM and art).', 'You film 9–15 short action clips across your normal days.'] },
+      { value: 'Event Recap (One Event)', label: 'Event recap: what we achieved',
+        desc: 'Capture one special event from start to finish, like a performance or showcase, and celebrate the big moment.',
+        more: ['The message: "Look what we achieved here."', 'Everything is filmed on one day: before, during and after the event.', 'You film 9–12 clips.'] }] },
+    filmIntroFn: function (v) { return recap(v) ? 'Name your event. It becomes the title at the start of the video.' : 'Pick 3 activity categories. Each becomes a badge in the video.'; },
     film: [
-      { name: 'badge1', label: 'Category 1', example: 'e.g. SPORTS & PLAY' },
-      { name: 'badge2', label: 'Category 2', example: 'e.g. STEM LABS' },
-      { name: 'badge3', label: 'Category 3', example: 'e.g. CREATIVE ARTS' }
+      { name: 'badge1', label: 'Category 1', example: 'e.g. SPORTS & PLAY', showIf: function (v) { return !recap(v); } },
+      { name: 'badge2', label: 'Category 2', example: 'e.g. STEM LABS', showIf: function (v) { return !recap(v); } },
+      { name: 'badge3', label: 'Category 3', example: 'e.g. CREATIVE ARTS', showIf: function (v) { return !recap(v); } },
+      { name: 'eventName', label: 'Event name', words: [1, 6], example: 'e.g. Spring Showcase. It appears at the start as "Spring Showcase · [your site]".', showIf: function (v) { return recap(v); } }
     ],
-    rules: ['upright', 'close'],
-    guide: { need: ['3 kinds of activity, for example sports, STEM and art', 'Only children covered by a signed media release'],
-             notes: ['No talking needed: music replaces the sound.', 'Catch the action in the middle of the clip, for example a ball going into the hoop.'] },
+    rulesFn: function (v) { return recap(v) ? ['upright', 'close'] : ['upright', 'close']; },
+    guide: {
+      needFn: function (v) {
+        return recap(v) ? ['The date and start time of your event, so you can arrive early.', 'Someone free to film for the whole event (not someone who is running it).', 'A fully charged phone with plenty of free storage space.', 'Only children covered by a signed media release.']
+          : ['3 kinds of activity, for example sports, STEM and art', 'Only children covered by a signed media release'];
+      },
+      notesFn: function (v) {
+        if (!recap(v)) return ['No talking needed: music replaces the sound.', 'Catch the action in the middle of the clip, for example a ball going into the hoop.'];
+        return ['Arrive early. The "before" shots (setting up, warming up, nerves backstage) happen before the audience arrives.',
+          'Get one wide shot of the whole stage or room, so viewers can see how big the event is.',
+          'Stand at the front or the side, never behind the audience\'s heads.',
+          'Move closer between acts instead of zooming in. Zooming makes the picture grainy.',
+          'Film the audience\'s faces too, not just the stage. Proud parents and cheering friends tell the story.',
+          'Keep the sound on. The applause at the end is used in the video.',
+          'Keep recording through the big moment (the finale, the bow, the award), and stop a few seconds after it ends.',
+          'Don\'t miss the "after": hugs, the group photo, students holding their certificates or their work.'];
+      } },
     details: [
-      { name: 'musicTempo', label: 'Music', type: 'choice', options: [
+      { name: 'musicTempo', label: 'Music', type: 'choice', showIf: function (v) { return !recap(v); }, options: [
         { value: 'Modern, Driving Electronic Beat (Ultra-fast dynamic edit pacing)', label: 'Driving electronic', desc: 'Ultra-fast, dynamic cuts.' },
-        { value: 'Upbeat Corporate-Pop (Inspiring, joyful, community-centric pacing)', label: 'Upbeat pop', desc: 'Joyful and community-centred.' }] }
+        { value: 'Upbeat Corporate-Pop (Inspiring, joyful, community-centric pacing)', label: 'Upbeat pop', desc: 'Joyful and community-centred.' }] },
+      { name: 'eventMusic', label: 'Music: choose the one that matches the mood of your event', type: 'choice', showIf: function (v) { return recap(v); }, options: [
+        { value: 'Lively & Fun (Celebration)', label: 'Lively and fun', desc: 'Upbeat, celebratory music that builds to a big finish. For high-energy events like performances, carnivals, sports days and talent shows.' },
+        { value: 'Professional & Polished (Inspiring)', label: 'Professional and polished', desc: 'Calm, inspiring music that builds gently. For events where people present their work, like exhibitions, science fairs, presentations and graduations.' }] },
+      { name: 'achievementLine', label: 'What it took (optional)', optional: true, words: [1, 8], example: 'e.g. 12 weeks of practice. One unforgettable night. Shown on screen near the end. Leave blank to skip it.', showIf: function (v) { return recap(v); } }
     ],
-    shots: function () {
+    shots: function (v) {
+      if (recap(v)) {
+        var G = function (i) { return i <= 3 ? 'Before the event' : (i <= 7 ? 'During the event' : 'After the event'); };
+        var L = function (i) { return i <= 3 ? 'Getting ready' : (i === 4 ? 'Wide shot of the whole stage or room' : (i <= 7 ? 'The event in action' : 'The big finish')); };
+        var E = { 1: 'For example: setting up the room or stage', 2: 'For example: a last-minute warm-up or rehearsal', 3: 'For example: students waiting backstage',
+                  4: 'Show the whole space, with the audience in it', 5: 'For example: a close-up of a performer or presenter', 6: 'For example: the audience\'s faces, watching and cheering',
+                  8: 'For example: the applause, the bow or the award', 9: 'For example: hugs, the group photo, students holding their work' };
+        return shotsRange(4, 1, 9, 2, L, null, null, G, function (i) { return E[i] || ''; }).map(function (x) {
+          if (x.n <= 3 || x.n >= 8) { x.lo = 4; x.hi = 8; } else { x.lo = 6; x.hi = 10; }
+          return x;
+        });
+      }
       var ex = ['sports and play', 'a STEM lab', 'creative arts'];
       return shotsRange(4, 1, 9, 2, function (i) { return 'Action clip'; }, 3, 5, function (i) { return 'Activity ' + Math.ceil(i / 3); },
         function (i) { return (i - 1) % 3 === 0 ? 'For example: ' + ex[Math.ceil(i / 3) - 1] : ''; });
     },
-    optional: function () { return [1, 2, 3, 4, 5, 6].map(function (i) { return { shot: 'Obj-4_Extra_' + i, n: 'Extra ' + i, what: 'Any extra action clip', min: 2, lo: 3, hi: 5, group: 'Optional extras' }; }); }
+    optional: function (v) {
+      if (recap(v)) return [
+        { shot: 'Obj-4_Extra_1', n: 'Extra 1', what: 'Another moment during the event', min: 2, lo: 6, hi: 10, group: 'Optional extras' },
+        { shot: 'Obj-4_Extra_2', n: 'Extra 2', what: 'Another moment during the event', min: 2, lo: 6, hi: 10, group: 'Optional extras' },
+        { shot: 'Obj-4_Extra_3', n: 'Extra 3', what: 'Another moment after the event', min: 2, lo: 4, hi: 8, group: 'Optional extras' }];
+      return [1, 2, 3, 4, 5, 6].map(function (i) { return { shot: 'Obj-4_Extra_' + i, n: 'Extra ' + i, what: 'Any extra action clip', min: 2, lo: 3, hi: 5, group: 'Optional extras' }; });
+    }
   },
   campus_tour: {
     count: function () { return ['13 clips', '13 clips: 1 welcome + 3 for each of 4 areas']; },
@@ -865,13 +1048,13 @@ var VIDEOS = {
   brand_story: {
     count: function (v) { return proVO(v) ? ['5 clips', '5 clips'] : ['5 clips + voiceover', '5 clips + your voiceover recording']; },
     name: '"Mission Moment" Brand Story', short: 'Brand Story', blurb: 'Why your program exists, told over five slow, steady shots.',
-    film: [
-      { name: 'voOption', label: 'Who reads the voiceover?', type: 'choice', options: [
-        { value: 'Provide Script for Professional VO', label: 'A professional voice actor', desc: 'You write the script in the details step.' },
-        { value: 'Uploading Own Audio File', label: 'I\'ll record it myself', desc: 'Record it in a silent room, 30 seconds or less.' }] }
-    ],
+    film: [],
     rules: ['upright'],
-    variant: { field: 'voOption' },
+    variant: { field: 'voOption', question: 'Who will read the voiceover (the voice telling your story)?', options: [
+      { value: 'Provide Script for Professional VO', label: 'A professional voice actor', desc: 'You write a short script in this order form, and a professional voice actor reads it.',
+        more: ['You film 5 slow, calm clips.'] },
+      { value: 'Uploading Own Audio File', label: 'I\'ll record it myself', desc: 'You record yourself reading your story, in a silent room, 30 seconds or less.',
+        more: ['You film 5 slow, calm clips, plus your voice recording (a voice memo is fine).'] }] },
     guide: { needFn: function (v) { return (proVO(v) ? ['A short script, written in the details step (a voice actor reads it)'] : ['A quiet room to record your own voiceover']).concat(['Your program leader, for the last shot', 'Only children covered by a signed media release']); },
              notes: ['These are slow, calm shots: move gently or hold still, never rush.'] },
     details: [
@@ -960,13 +1143,14 @@ var VIDEOS = {
     name: 'Parent How-To', short: 'Parent How-To', blurb: 'An educator shares one practical tip parents can use tonight.',
     film: [
       { name: 'howToTopic', label: 'The parent concern', example: 'e.g. Managing the Homework Environment' },
-      { name: 'keyTip', label: 'The tip', type: 'textarea', words: [1, 12], example: 'e.g. Use a 20-minute timer on a clear, quiet desk.' },
-      { name: 'presentationFormat', label: 'Format', type: 'choice', options: [
-        { value: 'Talking Head (Educator Direct)', label: 'Educator to camera', desc: 'The educator says the tip to camera. 3 clips.' },
-        { value: 'Voiceover + Visual Demonstrations', label: 'Voiceover with demos', desc: 'The tip over demonstration clips. 5 clips.' }] }
+      { name: 'keyTip', label: 'The tip', type: 'textarea', words: [1, 12], example: 'e.g. Use a 20-minute timer on a clear, quiet desk.' }
     ],
     rules: ['upright', 'quiet'],
-    variant: { field: 'presentationFormat' },
+    variant: { field: 'presentationFormat', question: 'How do you want the tip shown?', options: [
+      { value: 'Talking Head (Educator Direct)', label: 'Educator to camera', desc: 'The educator says the tip while looking at the camera, with 2 short clips showing it in action.',
+        more: ['You film 3 clips.'] },
+      { value: 'Voiceover + Visual Demonstrations', label: 'Voiceover with demonstrations', desc: 'The educator\'s voice plays over clips that show the tip being done, step by step.',
+        more: ['You film 5 clips: the educator\'s tip, plus 4 demonstration clips.'] }] },
     guide: { need: ['An educator to share the tip', 'A child to show the tip in action', 'Only children covered by a signed media release'],
              notes: ['In shot 1 the educator names the problem in one sentence, then gives the tip.'] },
     details: [],
@@ -979,6 +1163,9 @@ var VIDEOS = {
     }
   }
 };
+var PV_QUESTIONS = ['What have you noticed in your child since they started the program?', 'What makes this program different for your family?', 'Why would you recommend this program to another parent?'];
+function voices(v) { return /voices/i.test((v && v.testimonialType) || ''); }
+function recap(v) { return /event/i.test((v && v.reelType) || ''); }
 function isStaff(v) { return /staff/i.test(v.spotlightType || ''); }
 function proVO(v) { return /script/i.test(v.voOption || 'script'); }
 var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_reel', 'campus_tour', 'brand_story', 'program_explainer', 'alumni_success', 'bts_fun', 'parent_how_to'];
@@ -1075,8 +1262,14 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
     var V = VIDEOS[t], req = V.shots(v), opt = V.optional ? V.optional(v) : [];
     return { req: req, opt: opt, atLeast: V.atLeast || 0 };
   }
-  function stepsFor(t, v) { var s = ['guide', 'film', 'clips']; if (visible(VIDEOS[t].details, v).length) s.push('details'); s.push('send'); return s; }
-  var STEP_TITLE = { guide: 'Filming guide', film: 'Plan your video', clips: 'Add your clips', details: 'Details', send: 'Check & send' };
+  function stepsFor(t, v) {
+    var V = VIDEOS[t], s = V.variant ? ['version', 'guide'] : ['guide'];
+    if (visible(V.film, v).length || (V.planNote && V.planNote(v))) s.push('film');
+    s.push('clips'); if (visible(V.details, v).length) s.push('details'); s.push('send'); return s;
+  }
+  function variantOf(t, v) { var V = VIDEOS[t]; if (!V.variant) return null; var val = v[V.variant.field]; return V.variant.options.filter(function (o) { return o.value === val; })[0] || null; }
+  function introOf(V, v) { return V.filmIntroFn ? V.filmIntroFn(v) : (V.filmIntro || ''); }
+  var STEP_TITLE = { version: 'Choose your version', guide: 'Filming guide', film: 'Plan your video', clips: 'Add your clips', details: 'Details', send: 'Check & send' };
   function rulesFor(t, v) {
     var V = VIDEOS[t];
     return (V.rules || []).map(function (k) { return EVERY[k]; }).concat(V.extraRules || []).concat(V.extraRulesFn ? V.extraRulesFn(v) : []);
@@ -1098,16 +1291,15 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
   function guideHtml(t, v) {
     var V = VIDEOS[t], g = V.guide || {}, s = shotsFor(t, v), h = '';
     var need = g.needFn ? g.needFn(v) : (g.need || []), notes = g.notesFn ? g.notesFn(v) : (g.notes || []);
-    if (V.variant) {
-      var f = V.film.filter(function (x) { return x.name === V.variant.field; })[0], cur = v[f.name] || f.options[0].value;
-      h += '<section class="group"><p class="eyebrow">Show the shots for</p><div class="bbm-options">' + f.options.map(function (o) {
-        var on = cur === o.value;
-        return '<label class="bbm-option' + (on ? ' is-checked' : '') + '"><input type="radio" name="gv_' + f.name + '" data-variant="' + f.name + '" value="' + esc(o.value) + '"' + (on ? ' checked' : '') + '><span class="bbm-option-name">' + esc(o.label) + '</span>'
-          + (o.desc ? '<span class="bbm-option-desc">' + esc(o.desc) + '</span>' : '') + '</label>';
-      }).join('') + '</div><p class="meta">You choose for real in the next step.</p></section>';
-    }
+    var chosen = variantOf(t, v);
+    if (chosen) h += '<p class="bbm-notice">You chose: <strong>' + esc(chosen.label) + '</strong>. ' + esc(chosen.desc) + '</p>';
     if (need.length) h += '<section class="group"><h2>Before you film</h2><ul class="steps-list" style="list-style:disc">' + need.map(function (x) { return '<li>' + esc(x) + '</li>'; }).join('') + '</ul></section>';
-    h += '<section class="group"><h2>How to film</h2><div class="stack-8">' + (V.rules || []).map(function (k) { return EVERY[k]; }).concat(notes)
+    (g.extraFn ? g.extraFn(v) : []).forEach(function (x) {
+      var tag = x.ordered ? 'ol' : 'ul';
+      h += '<section class="group"><h2>' + esc(x.title) + '</h2>' + (x.intro ? '<p>' + esc(x.intro) + '</p>' : '')
+        + '<' + tag + ' class="steps-list"' + (x.ordered ? '' : ' style="list-style:disc"') + '>' + x.list.map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('') + '</' + tag + '></section>';
+    });
+    h += '<section class="group"><h2>How to film</h2><div class="stack-8">' + (V.rulesFn ? V.rulesFn(v) : (V.rules || [])).map(function (k) { return EVERY[k]; }).concat(notes)
       .map(function (r) { return '<div class="rule">' + ICON.check + '<span>' + esc(r) + '</span></div>'; }).join('') + '</div></section>';
     var list = s.req.length ? s.req : s.opt, c = V.count(v);
     h += '<section class="group"><h2>Your shots: ' + esc(c[1]) + '</h2>'
@@ -1135,7 +1327,7 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
       + '<button class="icon-btn" id="sheet-close" aria-label="Close the guide">' + ICON.close + '</button></div><div class="sheet-body" id="sheet-body"></div></div>';
     document.body.appendChild(wrap); document.body.style.overflow = 'hidden';
     var body = wrap.querySelector('#sheet-body');
-    function paint() { body.innerHTML = guideHtml(t, d.vals); bindVariant(body, t, d, paint); }
+    function paint() { body.innerHTML = guideHtml(t, d.vals); }
     paint();
     function close() { wrap.remove(); document.body.style.overflow = ''; document.removeEventListener('keydown', esc_); window.removeEventListener('hashchange', close); if (opener) opener.focus(); }
     function esc_(e) { if (e.key === 'Escape') close(); }
@@ -1149,7 +1341,8 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
   // ---------- field rendering + validation ----------
   function fieldError(f, val) {
     val = String(val || '').trim();
-    if (!val) return f.type === 'choice' ? 'Please choose one.' : 'Please fill this in.';
+    if (f.type === 'confirm') return val === 'Yes' ? '' : 'Please tick this box to continue.';
+    if (!val) return f.optional ? '' : (f.type === 'choice' ? 'Please choose one.' : 'Please fill this in.');
     if (f.words) {
       var n = countWords(val), lo = f.words[0], hi = f.words[1];
       if (n < lo) return 'Please use at least ' + lo + ' words (now ' + n + ').';
@@ -1166,6 +1359,10 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
   }
   function fieldHtml(f, v, err) {
     var id = 'f_' + f.name, val = v[f.name] || '';
+    if (f.type === 'confirm') {
+      return '<div class="bbm-field' + (err ? ' is-invalid' : '') + '" data-field="' + f.name + '"><label class="bbm-check"><input type="checkbox" id="' + id + '" name="' + f.name + '"' + (val === 'Yes' ? ' checked' : '') + '><span>' + esc(f.label) + '</span></label>'
+        + (err ? '<p class="bbm-field-error">' + esc(err) + '</p>' : '') + '</div>';
+    }
     if (f.type === 'choice') {
       return '<fieldset class="bbm-field bbm-options' + (err ? ' is-invalid' : '') + '" data-field="' + f.name + '"><legend class="legend">' + esc(f.label) + '</legend>'
         + f.options.map(function (o, i) {
@@ -1178,7 +1375,7 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
     var input = f.type === 'textarea'
       ? '<textarea id="' + id + '" name="' + f.name + '" rows="4">' + esc(val) + '</textarea>'
       : '<input id="' + id + '" name="' + f.name + '" type="' + (f.type === 'url' ? 'url' : 'text') + '" value="' + esc(val) + '"' + (f.type === 'url' ? ' inputmode="url" autocapitalize="off"' : '') + ' autocomplete="off">';
-    return '<div class="bbm-field' + (err ? ' is-invalid' : '') + '" data-field="' + f.name + '"><label for="' + id + '">' + esc(f.label) + '</label>' + input
+    return '<div class="bbm-field' + (err ? ' is-invalid' : '') + '" data-field="' + f.name + '"><label for="' + id + '">' + esc(f.label) + (f.optional ? ' <span class="meta">(optional)</span>' : '') + '</label>' + input
       + '<div class="bbm-field-foot"><span>' + esc(f.example || '') + '</span>' + countHtml(f, val) + '</div>'
       + (err ? '<p class="bbm-field-error">' + esc(err) + '</p>' : '') + '</div>';
   }
@@ -1195,6 +1392,12 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
     });
     root.querySelectorAll('input[type=radio]').forEach(function (el) {
       el.addEventListener('change', function () { d.vals[el.name] = el.value; saveDraft(t, d); rerender(); });
+    });
+    root.querySelectorAll('.bbm-field input[type=checkbox]').forEach(function (el) {
+      el.addEventListener('change', function () {
+        d.vals[el.name] = el.checked ? 'Yes' : ''; saveDraft(t, d);
+        var box = el.closest('.bbm-field'); if (el.checked && box.classList.contains('is-invalid')) { box.classList.remove('is-invalid'); var e = box.querySelector('.bbm-field-error'); if (e) e.remove(); }
+      });
     });
   }
   function validate(fields, v) {
@@ -1606,23 +1809,52 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
     var head = '<div class="bbm-steps"><div class="bbm-steps-label"><strong>' + STEP_TITLE[kind] + '</strong><span>Step ' + n + ' of ' + steps.length + '</span></div>'
       + '<div class="bbm-steps-bar" style="grid-template-columns:repeat(' + steps.length + ',1fr)">' + steps.map(function (s, i) { return '<span' + (i < n ? ' class="is-done"' : '') + '></span>'; }).join('') + '</div></div>';
     var next = function () { go('#v/' + t + '/' + (n + 1)); };
-    if (kind !== 'guide') head += GUIDE_BTN;
+    if (kind !== 'guide' && kind !== 'version') head += GUIDE_BTN;
     CUR = { t: t, d: d };
-    ({ guide: stepGuide, film: stepFilm, clips: stepClips, details: stepDetails, send: stepSend })[kind](t, V, d, head, next, n, steps);
+    ({ version: stepVersion, guide: stepGuide, film: stepFilm, clips: stepClips, details: stepDetails, send: stepSend })[kind](t, V, d, head, next, n, steps);
     bindGuideButton(t, d);
   }
   function rerenderKeepScroll(fn) { var y = window.scrollY; fn(); window.scrollTo(0, y); }
 
-  function stepGuide(t, V, d, head, next) {
+  function stepVersion(t, V, d, head, next) {
+    var f = V.variant;
     function paint(msg) {
+      var cur = d.vals[f.field] || '';
       var h = head + '<p class="meta">' + (d.slot ? 'Planned' + (d.postWeekOf ? ' · posts the week of ' + esc(d.postWeekOf) : '') + '. ' : '') + esc(V.blurb) + '</p>'
+        + '<section class="group"><h2>' + esc(f.question) + '</h2><p>This video comes in two versions. Read both, then tap the one you want. The filming guide on the next screen will then show exactly what to film for your choice.</p>'
+        + '<fieldset class="bbm-options" data-field="' + f.field + '">' + f.options.map(function (o) {
+          var on = cur === o.value;
+          return '<label class="bbm-option' + (on ? ' is-checked' : '') + '"><input type="radio" name="version" value="' + esc(o.value) + '"' + (on ? ' checked' : '') + '>'
+            + '<span class="bbm-option-name">' + esc(o.label) + '</span><span class="bbm-option-desc">' + esc(o.desc)
+            + (o.more && o.more.length ? '<ul class="steps-list" style="list-style:disc;margin-top:6px">' + o.more.map(function (m) { return '<li>' + esc(m) + '</li>'; }).join('') + '</ul>' : '')
+            + '</span></label>';
+        }).join('') + '</fieldset></section>'
+        + (msg ? '<p class="bbm-field-error" id="verr">' + esc(msg) + '</p>' : '')
+        + '<button class="bbm-btn bbm-btn-primary bbm-btn-block" id="next">Next: filming guide</button>';
+      app.innerHTML = h;
+      app.querySelectorAll('input[name=version]').forEach(function (r) {
+        r.addEventListener('change', function () {
+          if (d.vals[f.field] && d.vals[f.field] !== r.value) d.guideOk = false;   // a new version means a new guide to read
+          d.vals[f.field] = r.value; saveDraft(t, d); rerenderKeepScroll(function () { paint(); });
+        });
+      });
+      document.getElementById('next').addEventListener('click', function () {
+        if (!d.vals[f.field]) { paint('Please choose a version first.'); document.getElementById('verr').scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
+        next();
+      });
+    }
+    paint();
+  }
+  function stepGuide(t, V, d, head, next, n) {
+    function paint(msg) {
+      if (V.variant && !d.vals[V.variant.field]) { go('#v/' + t + '/1'); return; }
+      var h = head + (V.variant ? '' : '<p class="meta">' + (d.slot ? 'Planned' + (d.postWeekOf ? ' · posts the week of ' + esc(d.postWeekOf) : '') + '. ' : '') + esc(V.blurb) + '</p>')
         + '<p>Read this before you film. You can film now and come back: your progress is saved on this phone.</p>'
         + guideHtml(t, d.vals)
         + '<label class="bbm-check" id="gok_box"><input type="checkbox" id="gok"' + (d.guideOk ? ' checked' : '') + '><span>I have read and understood how the videos should be captured.</span></label>'
         + (msg ? '<p class="bbm-field-error" id="gerr">' + esc(msg) + '</p>' : '')
-        + '<button class="bbm-btn bbm-btn-primary bbm-btn-block" id="next">Next: plan your video</button>';
+        + '<button class="bbm-btn bbm-btn-primary bbm-btn-block" id="next">Next: ' + (stepsFor(t, d.vals).indexOf('film') >= 0 ? 'plan your video' : 'add your clips') + '</button>';
       app.innerHTML = h;
-      bindVariant(app, t, d, function () { rerenderKeepScroll(function () { paint(); }); });
       document.getElementById('gok').addEventListener('change', function () { d.guideOk = this.checked; saveDraft(t, d); var e = document.getElementById('gerr'); if (e && this.checked) e.remove(); });
       document.getElementById('next').addEventListener('click', function () {
         if (!d.guideOk) { paint('Please tick the box to confirm you have read the guide.'); document.getElementById('gok_box').scrollIntoView({ behavior: 'smooth', block: 'center' }); return; }
@@ -1634,11 +1866,16 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
   function stepFilm(t, V, d, head, next) {
     function paint(errs) {
       errs = errs || {};
-      var v = d.vals, fields = visible(V.film, v);
-      var h = head + (V.filmIntro ? '<p class="meta">' + esc(V.filmIntro) + '</p>' : '') + '<div class="form">' + fields.map(function (f) { return fieldHtml(f, v, errs[f.name]); }).join('') + '</div>';
+      var v = d.vals, fields = visible(V.film, v), note = V.planNote ? V.planNote(v) : null, intro = introOf(V, v);
+      var h = head + (intro ? '<p class="meta">' + esc(intro) + '</p>' : '');
+      if (note) h += '<div class="bbm-card"><div class="plan-top"><h2>' + esc(note.title) + '</h2><button class="bbm-btn bbm-btn-sm" type="button" id="copynote">Copy</button></div>'
+        + '<p>' + esc(note.intro) + '</p><ol class="steps-list">' + note.list.map(function (q) { return '<li><strong>' + esc(q) + '</strong></li>'; }).join('') + '</ol>'
+        + '<p class="meta">Tap Copy to paste the questions into a text or email to the person asking them.</p></div>';
+      h += '<div class="form">' + fields.map(function (f) { return fieldHtml(f, v, errs[f.name]); }).join('') + '</div>';
       h += '<div class="stack-8"><button class="bbm-btn bbm-btn-primary bbm-btn-block" id="next">Next: add your clips</button><p class="meta center">Your answers are saved on this phone, so you can come back after filming.</p></div>';
       app.innerHTML = h;
       bindFields(app, fields, t, d, function () { rerenderKeepScroll(function () { paint(); bindGuideButton(t, d); }); });
+      var cb = document.getElementById('copynote'); if (cb) cb.addEventListener('click', function () { copyText(note.copy, cb); });
       document.getElementById('next').addEventListener('click', function () {
         var e = validate(visible(V.film, d.vals), d.vals);
         if (Object.keys(e).length) { paint(e); bindGuideButton(t, d); focusFirstError(); return; }
@@ -1786,6 +2023,7 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
 
   function valueText(f, val) {
     if (f.type === 'choice') { var o = f.options.filter(function (x) { return x.value === val; })[0]; return o ? o.label : val; }
+    if (f.type === 'confirm') return val === 'Yes' ? 'Yes' : '';
     if (f.type === 'textarea') return countWords(val) + '-word ' + (/script|statement|line|story|say/i.test(f.label) ? 'text' : 'answer');
     return val;
   }
@@ -1802,11 +2040,12 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
       };
       var h = head + '<div class="bbm-card">'
         + row('Video', V.name + ' · ' + (PROFILE ? PROFILE.site : ''))
+        + (V.variant ? row('Version', variantOf(t, v) ? variantOf(t, v).label : 'Not chosen yet', 1, !variantOf(t, v)) : '')
         + (d.slot ? row('Planned', d.postWeekOf ? 'Posts the week of ' + d.postWeekOf : d.slot) : '');
-      filmF.forEach(function (f) { var e = fieldError(f, v[f.name]); h += row(f.label, e ? 'Needs an answer' : valueText(f, v[f.name]), iFilm, !!e); });
+      filmF.forEach(function (f) { var e = fieldError(f, v[f.name]); h += row(f.type === 'confirm' ? 'Questions shared' : f.label, e ? 'Needs an answer' : valueText(f, v[f.name]), iFilm, !!e); });
       if (d.mode === 'drive') h += row('Clips', driveLinkOk(d.driveLink) ? 'Google Drive folder' : 'Folder link missing', iClips, !driveLinkOk(d.driveLink));
       else h += row('Clips', st.got + ' of ' + st.need + ' added' + (st.busy ? ' · ' + st.busy + ' still uploading' : ''), iClips, !st.ok);
-      detF.forEach(function (f) { var e = fieldError(f, v[f.name]); h += row(f.label, e ? 'Needs an answer' : valueText(f, v[f.name]), iDet, !!e); });
+      detF.forEach(function (f) { var e = fieldError(f, v[f.name]); if (f.optional && !v[f.name]) return; h += row(f.label, e ? 'Needs an answer' : valueText(f, v[f.name]), iDet, !!e); });
       h += '</div>';
       h += '<section class="group"><h2>Before you send</h2>'
         + '<label class="bbm-check"><input type="checkbox" id="c1"><span>Every child who can be identified in my footage is covered by a <strong>signed media release</strong> kept on file at our site.</span></label>'
@@ -1820,7 +2059,7 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
       c1.addEventListener('change', function () { paint.c1 = c1.checked; }); c2.addEventListener('change', function () { paint.c2 = c2.checked; });
       document.getElementById('send').addEventListener('click', function () {
         if (sending) return;
-        var problem = !d.guideOk ? 'Please read the filming guide in step 1 and tick the box.' : filmErr ? 'Please finish step ' + iFilm + ' (what to film).'
+        var problem = V.variant && !variantOf(t, v) ? 'Please choose a version in step 1.' : !d.guideOk ? 'Please read the filming guide in step ' + (steps.indexOf('guide') + 1) + ' and tick the box.' : filmErr ? 'Please finish step ' + iFilm + ' (what to film).'
           : !clipsOk ? (d.mode === 'drive' ? 'Please add your Google Drive folder link in step ' + iClips + '.' : st.busy ? 'Please wait for your clips to finish uploading.' : 'Please add ' + (st.missing.length ? 'the missing clips' : 'at least ' + st.s.atLeast + ' clips') + ' in step ' + iClips + '.')
           : detErr ? 'Please finish step ' + iDet + ' (details).'
           : !c1.checked || !c2.checked ? 'Please tick both boxes before sending.' : '';
@@ -1847,6 +2086,7 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
   }
   function orderData(t, V, d) {
     var v = d.vals, data = { formType: t, bb_hp: '' }, now = new Date();
+    if (V.variant) data[V.variant.field] = v[V.variant.field] || '';
     visible(V.film, v).concat(visible(V.details, v)).forEach(function (f) {
       var val = String(v[f.name] || '').trim();
       if (f.type === 'url' && val && !/^https?:\/\//i.test(val)) val = 'https://' + val;
@@ -2078,12 +2318,12 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
   function findShot(formType, shot) {
     var V = VIDEOS[formType];
     if (V) {
-      var vals = {}, sets = [{}, { spotlightType: 'Staff Spotlight (90s Sitcom Intro)' }, { presentationFormat: 'Voiceover + Visual Demonstrations' }, { voOption: 'Uploading Own Audio File' }];
+      var vals = {}, sets = [{}, { spotlightType: 'Staff Spotlight (90s Sitcom Intro)' }, { presentationFormat: 'Voiceover + Visual Demonstrations' }, { voOption: 'Uploading Own Audio File' }, { testimonialType: 'Parent Voices (On the Spot)' }, { reelType: 'Event Recap (One Event)' }];
       for (var i = 0; i < sets.length; i++) {
         vals = sets[i];
         var all = V.shots(vals).concat(V.optional ? V.optional(vals) : []);
         var hit = all.filter(function (x) { return x.shot === shot; })[0];
-        if (hit) return { shot: hit.shot, n: hit.n, what: formType === 'staff_spotlight' ? '' : (hit.group && !/extras/i.test(hit.group) ? hit.group + ', ' + hit.what.toLowerCase() : hit.what), min: hit.min, lo: hit.lo, hi: hit.hi, photo: hit.photo, accept: hit.accept };
+        if (hit) return { shot: hit.shot, n: hit.n, what: /^(staff_spotlight|testimonials|highlight_reel)$/.test(formType) ? '' : (hit.group && !/extras/i.test(hit.group) ? hit.group + ', ' + hit.what.toLowerCase() : hit.what), min: hit.min, lo: hit.lo, hi: hit.hi, photo: hit.photo, accept: hit.accept };
       }
     }
     var m = shot.match(/_(Shot|Extra)_(\d+)$/);
