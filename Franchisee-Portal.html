@@ -729,9 +729,88 @@ code { font-size:13px; background:var(--surface-sunken); padding:1px 6px; border
     'Flag anything that looks unsafe or a child who seems uncomfortable — do not publish; reply to the order email.'
   ];
 
+  /* ---------------- Universal edition (in use now) ----------------
+     Until an in-house editor and the BB Template Library exist, briefs are written in plain editing language that any
+     editor can follow in any app. The same specs drive both editions; this table translates the template names. */
+  var EDITION = 'universal';   // 'universal' now; switch to 'bbm' once the BB Template Library is built
+  var LOGO_WHITE = 'https://xsrels23.github.io/Brand-Booster-Web/assets/bbm-logo-white.png';
+  var LOGO_COLOR = 'https://xsrels23.github.io/Brand-Booster-Web/assets/bbm-logo-color.png';
+  var TERMS = [
+    [/BB_Music\/01_Warm_Acoustic/g, 'a warm acoustic track'],
+    [/BB_Music\/02_Upbeat_Electronic/g, 'an upbeat electronic track'],
+    [/BB_Music\/03_Driving_Electronic/g, 'a fast, driving electronic track'],
+    [/BB_Music\/04_Upbeat_Pop/g, 'an upbeat, joyful pop track'],
+    [/BB_Music\/05_Light_Ambient/g, 'a light ambient track'],
+    [/BB_Music\/06_Cinematic/g, 'a cinematic track that builds'],
+    [/BB_Music\/07_Playful/g, 'a playful, light-hearted track'],
+    [/BB_Music\/08_Inspirational/g, 'an inspiring, uplifting track'],
+    [/BB_Music\/09_Sitcom_Theme — the BB signature theme \(until delivered, the licensed temp track in the same folder\)\. Never retime the theme; cut picture to it\./g,
+      'an upbeat 90s TV-sitcom-theme style track (the custom Brand Booster theme is not ready yet). Never retime the music; cut the picture to it.'],
+    [/BB_SFX\/Transitions/g, 'a royalty-free swoosh sound effect'],
+    [/from BB_SFX\/Playful/g, '(royalty-free, playful)'],
+    [/Enhance Speech \(strong; crowd noise expected\), then Essential Sound > Dialogue preset/g, 'strong voice clean-up for crowd noise (for example Enhance Speech in Premiere, Voice Isolation in DaVinci Resolve or Reduce noise in CapCut), then light compression and EQ for speech'],
+    [/Enhance Speech \(self-recorded only\) \+ Dialogue preset/g, 'voice clean-up (only if self-recorded), then light compression and EQ for speech'],
+    [/Enhance Speech, then Essential Sound > Dialogue preset/g, 'voice clean-up (for example Enhance Speech in Premiere, Voice Isolation in DaVinci Resolve or Reduce noise in CapCut), then light compression and EQ for speech'],
+    [/Enhance Speech \+ Dialogue preset/g, 'voice clean-up (for example Enhance Speech in Premiere, Voice Isolation in DaVinci Resolve or Reduce noise in CapCut), then light compression and EQ for speech'],
+    [/with Remix/g, 'by editing the music at a natural phrase (or your app\'s auto-fit tool)'],
+    [/Add beat markers \(M\) first, then cut to them\./g, 'Mark the beats on the music first, then cut to them.'],
+    [/\(Time Remapping\)/g, '(speed ramp)'],
+    [/a Frame Hold/g, 'a freeze frame'],
+    [/apply the BB_Soft_Cinematic Lumetri look/g, 'apply a soft, warm cinematic colour grade (gently lifted shadows, slight warmth, consistent across all shots)'],
+    [/BB_Captions_Kinetic \(word-by-word\)/g, 'Word-by-word animated captions (each word pops in as it is spoken)'],
+    [/BB_Captions_Kinetic/g, 'Word-by-word animated captions (each word pops in as it is spoken)'],
+    [/BB_Captions_Minimal/g, 'Clean subtitle captions (1–2 lines, lower third, white with a soft shadow)'],
+    [/BB_Captions_Large/g, 'Large, bold captions sized for phone screens'],
+    [/BB_Outro_Logo_4s/g, 'Logo end card (4 s)'],
+    [/BB_Hook_Title/g, 'Opening title'],
+    [/BB_Timestamp_Badge/g, 'Moment banner'],
+    [/BB_Metric_Hook/g, 'Result headline'],
+    [/BB_LowerThird/g, 'Name label (lower third)'],
+    [/BB_Quote_Overlay/g, 'Quote overlay'],
+    [/BB_Retro_Show_Title/g, 'Retro TV-show title'],
+    [/BB_Retro_Name_Banner/g, 'Retro name banner'],
+    [/BB_Corner_Logo/g, 'Small corner logo'],
+    [/BB_Category_Badge/g, 'Category badge'],
+    [/BB_Pin_Label · Style switch/g, 'Place label style'],
+    [/BB_Pin_Label/g, 'Place label'],
+    [/BB_Step_Badge/g, 'Numbered step badge'],
+    [/BB_Text_Card/g, 'Text card'],
+    [/BB_Then_Now_Tag/g, 'Then / Now tag'],
+    [/BB_Time_Place_Stamp/g, 'Day-and-time stamp'],
+    [/BB_Emoji_Pop/g, 'Emoji pop'],
+    [/top 15% safe line/g, 'top 15% of the frame'],
+    [/ · URL override/g, ' · website line'],
+    [/\bBadge #(\d)/g, 'Moment banner #$1'],
+    [/under the hook title/g, 'under the opening title'],
+    [/ · CTA line/g, ' · call-to-action line'],
+    [/\(Professional VO recorded from the SCRIPT section\)|Professional VO recorded from the SCRIPT section/g, 'Professional voiceover recorded from the SCRIPT section (Brand Booster books it)'],
+    [/Professional VO: producer books the read from the script; editing starts once Obj-6_Voiceover is in the folder\./g, 'Professional voiceover: Brand Booster books the read from the script; start editing once Obj-6_Voiceover is in the folder.']
+  ];
+  function tr(x) { x = String(x); TERMS.forEach(function (t) { x = x.replace(t[0], t[1]); }); return x; }
+  function universal(spec) {
+    var u = {}; Object.keys(spec).forEach(function (k) { u[k] = spec[k]; });
+    ['footage', 'text', 'timeline', 'script'].forEach(function (k) { u[k] = (spec[k] || []).map(function (row) { return row.map(tr); }); });
+    u.audio = spec.audio.map(tr);
+    u.captions = tr(spec.captions); u.rules = spec.rules.map(tr);
+    return u;
+  }
+  var BRAND_KIT = [
+    'Fonts (free from Google Fonts): Poppins (titles, labels, banners; Bold or SemiBold) and Nunito Sans (captions and small text; Bold).',
+    'Colours: brand purple #9F298D (label and badge boxes); brand gradient #FE4C7A → #92278F (end card background only); white text on video.',
+    'On-screen text: white Poppins Bold with a soft drop shadow, or white text in a rounded #9F298D box for labels, badges and banners. Keep it short and on screen long enough to read twice.',
+    'Safe zone: keep all text out of the top 15% and the bottom 20% of the frame (phone app buttons cover those areas).',
+    'Music and sound effects: licensed or royalty-free tracks you are cleared to use in commercial social media videos. Each brief names the mood; pick any track that fits it.',
+    'Logo files: white ' + LOGO_WHITE + ' · colour ' + LOGO_COLOR,
+    'Logo end card (last 4 s of every video): brand gradient background, white logo centred (logo eases in over about 0.5 s), the call-to-action line below it in white Poppins SemiBold, and the program website under that when one is given. Music resolves under it.',
+    'Every video opens straight into the action (no logo intro), except where the timeline says otherwise.'
+  ];
+  var EXPORT = 'H.264 MP4, same frame size as the project, 30 fps, about 16 Mbps (variable bitrate), AAC audio 48 kHz 320 kbps, loudness about −14 LUFS with peaks below −1 dB.';
+
   function pad(s, n) { s = String(s); while (s.length < n) s += ' '; return s; }
 
-  function render(spec, d) {
+  function render(spec, d, edition) {
+    var uni = (edition || EDITION) === 'universal';
+    if (uni) spec = universal(spec);
     var L = [];
     var orderId = val(d, 'orderId', 'Order ID');
     var site = val(d, 'siteName', 'Site Name');
@@ -751,8 +830,13 @@ code { font-size:13px; background:var(--surface-sunken); padding:1px 6px; border
     L.push('=== DELIVERY SPECS ===');
     L.push('Length:        ' + spec.length);
     L.push('Frame:         ' + spec.frame + ', ' + size + ', 30 fps');
-    L.push('Open template: ' + LIBRARY + ' > ' + spec.template + '.prproj  (Save As before editing)');
-    L.push('Export preset: ' + preset);
+    if (uni) {
+      L.push('Project:       new project, ' + size + ' (' + spec.frame + '), 30 fps, in any editing app (Premiere Pro, DaVinci Resolve, Final Cut Pro, CapCut desktop)');
+      L.push('Export:        ' + EXPORT);
+    } else {
+      L.push('Open template: ' + LIBRARY + ' > ' + spec.template + '.prproj  (Save As before editing)');
+      L.push('Export preset: ' + preset);
+    }
     L.push('File name:     ' + slug(site) + '_' + spec.obj + '_' + spec.short + '_' + orderId + '_v1.mp4');
     L.push('Deliver to:    the order\'s footage folder > Finished');
     L.push('');
@@ -760,7 +844,12 @@ code { font-size:13px; background:var(--surface-sunken); padding:1px 6px; border
     spec.footage.forEach(function (f) { L.push('[ ] ' + pad(f[0], 20) + ' → ' + pad(f[1], 26) + ' ' + f[2]); });
     L.push('Missing, sideways or unusable clip? Stop and reply to this email before editing.');
     L.push('');
-    L.push('=== TEXT FIELDS (Essential Graphics panel — type exactly) ===');
+    if (uni) {
+      L.push('=== BRAND KIT (every video) ===');
+      BRAND_KIT.forEach(function (b) { L.push('• ' + b); });
+      L.push('');
+    }
+    L.push(uni ? '=== ON-SCREEN TEXT (type exactly as written) ===' : '=== TEXT FIELDS (Essential Graphics panel — type exactly) ===');
     spec.text.forEach(function (t) { L.push('• ' + t[0] + ': ' + t[1]); });
     L.push('');
     if (spec.script.length) {
@@ -783,18 +872,23 @@ code { font-size:13px; background:var(--surface-sunken); padding:1px 6px; border
     if (SHORT[spec.short]) L.push('• For this video: ' + SHORT[spec.short]);
     L.push('');
     L.push('=== QC BEFORE EXPORT ===');
-    UNIVERSAL_QC.forEach(function (c) { L.push('[ ] ' + c); });
+    (uni ? UNIVERSAL_QC.map(function (c) {
+      return c.replace('Every on-screen word matches TEXT FIELDS exactly', 'Every on-screen word matches ON-SCREEN TEXT exactly')
+        .replace('Text inside the 9:16 safe zone (BB_SafeZone guide layer on, then off before export).', 'All text inside the safe zone (not in the top 15% or bottom 20% of the frame).')
+        .replace('Loudness about −14 LUFS (set by the export preset); no clipping.', 'Loudness about −14 LUFS; peaks below −1 dB; no clipping.')
+        .replace('Outro is the untouched BB_Outro_Logo_4s.', 'The last 4 s are the logo end card, as described in BRAND KIT.');
+    }) : UNIVERSAL_QC).forEach(function (c) { L.push('[ ] ' + c); });
     return L.join('\n');
   }
 
-  function buildBrief(formType, data) {
+  function buildBrief(formType, data, edition) {
     var fn = SPECS[formType];
     if (!fn || formType.charAt(0) === '_') {
       var lines = ['SUBJECT: PRODUCTION ORDER: ' + val(data, 'projectName', 'Project Name') + ' - UNKNOWN VIDEO TYPE (' + formType + ')', '', 'Raw form values:'];
       Object.keys(data || {}).forEach(function (k) { lines.push('• ' + k + ': ' + data[k]); });
       return lines.join('\n');
     }
-    return render(fn(data || {}), data || {});
+    return render(fn(data || {}), data || {}, edition);
   }
 
   function makeOrderId(now) {
@@ -804,7 +898,7 @@ code { font-size:13px; background:var(--surface-sunken); padding:1px 6px; border
     return 'BB-' + y + m + dd + '-' + r;
   }
 
-  var api = { buildBrief: buildBrief, makeOrderId: makeOrderId, SPECS: SPECS, MUSIC: MUSIC };
+  var api = { buildBrief: buildBrief, makeOrderId: makeOrderId, SPECS: SPECS, MUSIC: MUSIC, EDITION: EDITION };
   if (typeof module !== 'undefined' && module.exports) module.exports = api;
   else root.BBBriefs = api;
 })(this);
