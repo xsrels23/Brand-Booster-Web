@@ -701,6 +701,24 @@ code { font-size:13px; background:var(--surface-sunken); padding:1px 6px; border
     }
   };
 
+  // Short-clip allowance: the footage check accepts a clip up to 1 s under its minimum. How each video absorbs it:
+  var SHORT_RULE = 'Short-clip allowance: the footage check accepts clips up to 1 s shorter than requested (listed at the top of this email). Never loop, repeat or slow down a clip to stretch it (only slow motion that is already part of this style), and never stretch the music. Keep the 4 s outro. If the video comes out shorter than its target length, that is expected: the franchisee is told on delivery.';
+  var SHORT = {
+    DayInTheLife: 'Slots are 3.0 s and clips are filmed at 4 s or more, so a clip 1 s short (3 s) still fills its slot: keep the 28 s length. Only a usable clip under 3 s shortens its slot.',
+    Testimonial: 'The interview (25 s minimum) may arrive at 24 s: follow the speech and let the video run shorter. A supporting clip (4 s minimum) may arrive at 3 s: cut back to the interview sooner.',
+    ParentVoices: 'An answer (8 s minimum) may arrive at 7 s: that still fills a 7–9 s slot. If a slot cannot hold a complete thought, shorten the slot, never the sentence.',
+    TeacherSpotlight: 'The statement (20 s minimum) may arrive at 19 s: the video follows the statement and runs shorter. A teaching clip (4 s minimum) may arrive at 3 s: cut back to the statement sooner.',
+    StaffSitcom: 'Slots are 3 s and clips are filmed at 4 s or more, so a clip 1 s short still fills its slot. Never retime the theme: if a clip cannot fill its slot, lengthen the neighbouring shot or the freeze-frame hold.',
+    HighlightReel: 'A clip (2 s minimum) may arrive at 1 s: use it as a quick beat cut, or swap in an Extra. Keep the 21 s length by adding another clip, not by slowing one down.',
+    EventRecap: 'A clip (2 s minimum) may arrive at 1 s: use it as a quick cut in the build-up, or swap in an Extra. Fill a 3–4 s hold with a second angle, not slow motion; the only slow motion is the planned ramp into the payoff.',
+    CampusTour: 'The welcome (4 s minimum) may arrive at 3 s: shorten the hook to fit, and the video runs up to 1 s shorter. An area shot (3 s minimum) may arrive at 2 s: use it at full length and let that area run shorter.',
+    BrandStory: 'A shot (5 s minimum) may arrive at 4 s: shorten that slot to the clip and let the video run shorter. No extra slow motion beyond the cinematic look.',
+    ProgramExplainer: 'The instructor clip (12 s minimum) may arrive at 11 s: follow the speech and let the video run shorter. An activity clip (4 s minimum) may arrive at 3 s: cut back to the instructor sooner.',
+    AlumniStory: 'The statement (12 s minimum) may arrive at 11 s: the video follows the statement and runs shorter. Photos are not affected.',
+    BehindTheScenes: 'A clip (2 s minimum) may arrive at 1 s: use it as a quick reaction cut. The 20–30 s range absorbs the difference.',
+    ParentHowTo: 'The tip (12 s minimum) may arrive at 11 s: tighten the 0:03–0:18 section and let the video run shorter. A demo clip (4 s minimum) may arrive at 3 s: cut back sooner.'
+  };
+
   var UNIVERSAL_QC = [
     'Length and frame size match DELIVERY SPECS.',
     'Every on-screen word matches TEXT FIELDS exactly (spelling, capitals).',
@@ -761,6 +779,8 @@ code { font-size:13px; background:var(--surface-sunken); padding:1px 6px; border
     L.push('');
     L.push('=== EDITING RULES ===');
     spec.rules.forEach(function (r) { L.push('• ' + r); });
+    L.push('• ' + SHORT_RULE);
+    if (SHORT[spec.short]) L.push('• For this video: ' + SHORT[spec.short]);
     L.push('');
     L.push('=== QC BEFORE EXPORT ===');
     UNIVERSAL_QC.forEach(function (c) { L.push('[ ] ' + c); });
@@ -1275,7 +1295,13 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
   function clipCount(t) { return VIDEOS[t].count({})[0]; }
   function shotTitle(s) { return typeof s.n === 'number' ? 'Shot ' + s.n : s.n; }
   function lengthText(x) { var r = secs(x); return x.photo ? 'A photo, or a clip of ' + r : r || (x.accept ? 'Photo or clip' : ''); }
-  function longNote(x, rec) { return rec && rec.dur != null && x.hi && rec.dur > x.hi + 0.5 ? ' · A little long, that\'s fine: the editor will trim it' : ''; }
+  function secsText(d) { var r = d < 10 ? Math.round(d * 10) / 10 : Math.round(d); return r + (r === 1 ? ' second' : ' seconds'); }
+  function longNote(x, rec) {
+    if (!rec || rec.dur == null) return '';
+    if (x.hi && rec.dur > x.hi + 0.5) return ' · A little long, that\'s fine: the editor will trim it';
+    if (x.min && rec.dur + 0.3 < x.min) return ' · A little short (aim for ' + x.min + ' seconds). It will still be accepted, but your finished video may come out a little shorter. You can replace it with a longer clip if you have one.';
+    return '';
+  }
   // Shots in their groups (Moment 1, Area 2…): the group is a heading; the label stays general.
   function grouped(list, render) {
     var out = '', cur = null;
@@ -1302,7 +1328,7 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
       .map(function (r) { return '<div class="rule">' + ICON.check + '<span>' + esc(r) + '</span></div>'; }).join('') + '</div></section>';
     var list = s.req.length ? s.req : s.opt, c = V.count(v);
     h += '<section class="group"><h2>Your shots: ' + esc(c[1]) + '</h2>'
-      + '<p class="meta">What you film will vary with each video; the examples are only ideas.</p>'
+      + '<p class="meta">What you film will vary with each video; the examples are only ideas. Aim for the full time shown for each shot. A clip up to 1 second shorter is still accepted, but your finished video may then come out a little shorter, and full-length videos perform better.</p>'
       + grouped(list.concat(s.req.length ? s.opt : []), guideShot) + '</section>';
     return h;
   }
@@ -1913,7 +1939,7 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
     var horizontalOk = /horizontal/i.test(d.vals.videoOrientation || '');
     function warnFor(min) {
       return function (rec) {
-        if (rec.dur != null && min && rec.dur + 0.3 < min) return 'Only ' + Math.round(rec.dur) + ' second' + (Math.round(rec.dur) === 1 ? '' : 's') + '. Please film at least ' + min + ' seconds, then replace it.';
+        if (rec.dur != null && min && rec.dur + 0.1 < min - 1) return 'Only ' + secsText(rec.dur) + '. Please film at least ' + min + ' seconds, then replace it.';
         if (rec.w && rec.h && rec.w > rec.h && !horizontalOk) return 'Looks sideways. Film with the phone upright, then replace it.';
         return '';
       };
@@ -1963,7 +1989,7 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
           uploaded: function () { return d.uploads[x.shot]; },
           warnFor: warnFor(x.min),
           emptyText: lengthText(x),
-          doneText: function (rec) { return (rec.dur ? Math.round(rec.dur) + ' seconds · ' : '') + 'Added' + longNote(x, rec); },
+          doneText: function (rec) { return (rec.dur ? secsText(rec.dur) + ' · ' : '') + 'Added' + longNote(x, rec); },
           onFile: function (f, info) {
             if (!d.uploads[x.shot]) {} // keep the old record until the new one finishes
             enqueue(d.draftId, x.shot, f, function (res) { if (res.folderUrl) { d.folderUrl = res.folderUrl; saveDraft(t, d); } });
@@ -2224,6 +2250,7 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
     if (['Delivered', 'Posted', 'Complete'].indexOf(status) >= 0) {
       if (o.videoUrl) h += '<div class="bbm-card" style="flex-direction:row;align-items:center;gap:16px"><a class="video-tile" href="' + esc(o.videoUrl) + '" target="_blank" rel="noopener" aria-label="Watch the video">' + ICON.play + '</a>'
         + '<div class="stack-8"><strong>Your finished video</strong><a class="bbm-btn bbm-btn-sm" href="' + esc(o.videoUrl) + '" target="_blank" rel="noopener">Watch & download</a></div></div>';
+      if (o.shortNote) h += '<p class="bbm-notice"><strong>A quick tip for next time.</strong> ' + esc(o.shortNote) + '</p>';
       var fu = o.followUp;
       if (status !== 'Delivered') h += '<p class="bbm-notice good">Posted' + (o.postedOn ? ' on ' + esc(o.postedOn) : '') + '. Thank you!'
         + (fu && !fu.ready ? ' Your follow-up post will be ready here ' + (fu.readyOn ? 'on ' + esc(fu.readyOn) : 'two days after posting') + '.' : '') + '</p>';
