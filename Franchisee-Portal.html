@@ -875,9 +875,7 @@ var VIDEOS = {
     guide: {
       needFn: function (v) {
         return voices(v) ? ['An event where lots of parents are there, for example the end of a showcase or a family night.',
-          'Two people: one to hold the phone and one to ask the questions. One person can do both, but two is easier.',
-          'The person asking the questions must read the questions below before the event, so they know what to ask.',
-          'Only children covered by a signed media release.']
+          'The person asking the questions must read the questions below before the event, so they know what to ask.']
           : ['One parent or student who is happy to speak on camera', 'Their three lines, written in this order form (they say them in their own words)', 'Only children covered by a signed media release'];
       },
       extraFn: function (v) {
@@ -970,15 +968,15 @@ var VIDEOS = {
       { name: 'badge3', label: 'Category 3', example: 'e.g. CREATIVE ARTS', showIf: function (v) { return !recap(v); } },
       { name: 'eventName', label: 'Event name', words: [1, 6], example: 'e.g. Spring Showcase. It appears at the start as "Spring Showcase · [your site]".', showIf: function (v) { return recap(v); } }
     ],
-    rulesFn: function (v) { return recap(v) ? ['upright', 'close'] : ['upright', 'close']; },
+    rulesFn: function (v) { return recap(v) ? ['upright'] : ['upright', 'close']; },
     guide: {
       needFn: function (v) {
-        return recap(v) ? ['The date and start time of your event, so you can arrive early.', 'Someone free to film for the whole event (not someone who is running it).', 'A fully charged phone with plenty of free storage space.', 'Only children covered by a signed media release.']
+        return recap(v) ? ['Know the date and start time of your event, so you can arrive early.', 'You will need someone free to film for the whole event (not someone who is running it).', 'A fully charged phone with plenty of free storage space.']
           : ['3 kinds of activity, for example sports, STEM and art', 'Only children covered by a signed media release'];
       },
       notesFn: function (v) {
         if (!recap(v)) return ['No talking needed: music replaces the sound.', 'Catch the action in the middle of the clip, for example a ball going into the hoop.'];
-        return ['Arrive early. The "before" shots (setting up, warming up, nerves backstage) happen before the audience arrives.',
+        return ['Arrive early. The "before" shots happen before the audience arrives (setting up, warming up, nerves backstage).',
           'Get one wide shot of the whole stage or room, so viewers can see how big the event is.',
           'Stand at the front or the side, never behind the audience\'s heads.',
           'Move closer between acts instead of zooming in. Zooming makes the picture grainy.',
@@ -1299,7 +1297,8 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
       h += '<section class="group"><h2>' + esc(x.title) + '</h2>' + (x.intro ? '<p>' + esc(x.intro) + '</p>' : '')
         + '<' + tag + ' class="steps-list"' + (x.ordered ? '' : ' style="list-style:disc"') + '>' + x.list.map(function (i) { return '<li>' + esc(i) + '</li>'; }).join('') + '</' + tag + '></section>';
     });
-    h += '<section class="group"><h2>How to film</h2><div class="stack-8">' + (V.rulesFn ? V.rulesFn(v) : (V.rules || [])).map(function (k) { return EVERY[k]; }).concat(notes)
+    h += '<section class="group"><h2>How to film</h2><div class="stack-8">' + ['Always film with your phone\'s own Camera app, not inside this portal. You add the finished clips to your order afterwards.']
+      .concat((V.rulesFn ? V.rulesFn(v) : (V.rules || [])).map(function (k) { return EVERY[k]; })).concat(notes)
       .map(function (r) { return '<div class="rule">' + ICON.check + '<span>' + esc(r) + '</span></div>'; }).join('') + '</div></section>';
     var list = s.req.length ? s.req : s.opt, c = V.count(v);
     h += '<section class="group"><h2>Your shots: ' + esc(c[1]) + '</h2>'
@@ -1587,8 +1586,22 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
 
   // One shot slot (used by step 2 and by "Needs a fix").
   // opts: { draft, shot, onFile(file, probeResult), what, min, horizontalOk, uploaded: {name,size,dur} | null, problem }
+  // File types only (no "video/*"): pick a finished clip from the library or files; recording inside the browser is lower quality.
+  var TYPES = { video: 'video/mp4,video/quicktime,video/x-m4v,video/3gpp,video/webm,.mp4,.mov,.m4v,.3gp,.webm',
+                image: 'image/jpeg,image/png,image/heic,image/heif,.jpg,.jpeg,.png,.heic,.heif',
+                audio: 'audio/mp4,audio/x-m4a,audio/mpeg,audio/wav,audio/aac,.m4a,.mp3,.wav,.aac' };
+  function acceptFor(s) {
+    var a = s.accept || 'video/*', out = [];
+    if (/video/.test(a)) out.push(TYPES.video);
+    if (/image/.test(a)) out.push(TYPES.image);
+    if (/audio/.test(a)) out.push(TYPES.audio);
+    return out.join(',');
+  }
+  // A clip recorded inside the browser (iPhone names these "capturedvideo.MOV") is turned away.
+  function recordedHere(f) { return /^capturedvideo\./i.test(f.name || ''); }
+  var RECORDED_MSG = 'This clip was recorded inside the portal, which lowers its quality. Please film it with your phone\'s Camera app, then tap Add clip and choose it from your photo library.';
   function slotHtml(s, opts) {
-    var accept = s.accept || 'video/*';
+    var accept = acceptFor(s);
     return '<div class="bbm-shot" id="slot-' + esc(s.shot) + '" data-shot="' + esc(s.shot) + '">'
       + '<p class="bbm-shot-name">' + esc(opts.title || shotTitle(s) + ' · ' + s.what) + '</p>'
       + '<p class="bbm-shot-what"></p>'
@@ -1625,6 +1638,7 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
       if (!f) return;
       var u = UP[upKey(opts.draft, s.shot)];
       if (u && (u.state === 'queued' || u.state === 'uploading')) { toast('That clip is still uploading'); return; }
+      if (recordedHere(f)) { UP[upKey(opts.draft, s.shot)] = { state: 'failed', pct: 0, msg: RECORDED_MSG }; paint(); return; }
       probe(f).then(function (info) { opts.onFile(f, info); });
     });
     paint();
@@ -1931,7 +1945,8 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
         });
         return;
       }
-      h += '<p class="meta">Tap <strong>Add clip</strong> and pick each video from your camera roll, or film it now. Keep this screen open while clips upload.</p>';
+      h += '<div class="bbm-notice"><strong>Film first, then add.</strong> Record each clip with your phone\'s own Camera app. Then tap <strong>Add clip</strong> and choose the video from your photo library or files. If your phone offers to "Take Video" or record, don\'t use it: videos recorded inside the browser are lower quality.</div>'
+        + '<p class="meta">Keep this screen open while clips upload.</p>';
       h += '<section class="group"><div class="plan-top"><h2>Your shots: ' + esc(V.count(d.vals)[0]) + '</h2><span class="meta" id="count"></span></div>'
         + (s.atLeast ? '<p class="meta">Add at least ' + s.atLeast + '.</p>' : '')
         + grouped(s.req.length ? s.req : s.opt, function (x) { return slotHtml(x, {}); }) + '</section>';
