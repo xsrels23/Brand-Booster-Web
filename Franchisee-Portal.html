@@ -1349,6 +1349,7 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
   var UPDATED_MSG = 'The portal was just updated, so we reloaded it. Your answers and clips are all still here.';
   function latestBuild() {
     if (!/^https?:$/.test(location.protocol) || !BUILD || BUILD.indexOf('__') === 0) return Promise.resolve('');
+    return fetch(location.pathname + '?build=' + Date.now(), { cache: 'no-store' })
       .then(function (r) { return r.ok ? r.text() : ''; })
       .then(function (h) { var m = String(h).match(/<meta name="bb-build" content="([^"]+)"/); return m ? m[1] : ''; })
       .catch(function () { return ''; });
