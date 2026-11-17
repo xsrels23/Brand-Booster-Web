@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
 <meta name="theme-color" content="#f7f2f7">
+<meta name="bb-build" content="20261116-cda42f7c">
 <meta name="color-scheme" content="light only">
 <title>Brand Booster Media · Video portal</title>
 <link rel="icon" href="Brand Boosters Logo Icon - COLOR.png">
@@ -1340,6 +1341,30 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
   function serverError(msg) { var e = new Error(msg || 'Please try again.'); e.fromServer = true; return e; }
   function netMsg(err, what) { return err && err.fromServer ? err.message : what + ' didn\'t go through. Check your connection and try again.'; }
 
+  // ---------- always send from the newest portal ----------
+  // A page left open in a tab keeps running its old code (including the old editor briefs)
+  // until it is reloaded. Before sending, and when the tab comes back into view, compare this
+  // page's build with the published one; if it is older, reload (answers and clips are kept).
+  var BUILD = (document.querySelector('meta[name="bb-build"]') || {}).content || '';
+  var UPDATED_MSG = 'The portal was just updated, so we reloaded it. Your answers and clips are all still here.';
+  function latestBuild() {
+    if (!/^https?:$/.test(location.protocol) || !BUILD || BUILD.indexOf('__') === 0) return Promise.resolve('');
+      .then(function (r) { return r.ok ? r.text() : ''; })
+      .then(function (h) { var m = String(h).match(/<meta name="bb-build" content="([^"]+)"/); return m ? m[1] : ''; })
+      .catch(function () { return ''; });
+  }
+  function isOutdated() { return latestBuild().then(function (b) { return !!b && b !== BUILD; }); }
+  function reloadToLatest(msg) {
+    try { sessionStorage.setItem('bbUpdated', msg || UPDATED_MSG); } catch (e) {}
+    location.reload();
+  }
+  var hiddenAt = 0;
+  document.addEventListener('visibilitychange', function () {
+    if (document.hidden) { hiddenAt = Date.now(); return; }
+    if (!hiddenAt || Date.now() - hiddenAt < 60000) return;
+    isOutdated().then(function (old) { if (old && !activeUploads()) reloadToLatest(); });
+  });
+
   // ---------- personal link ----------
   var KEY = (new URLSearchParams(location.search).get('s') || read('bbSiteKey') || '').trim() || null;
   if (new URLSearchParams(location.search).get('s')) store('bbSiteKey', KEY);
@@ -2205,6 +2230,13 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
     }
     function send(t2, V2, d2, btn) {
       sending = true; btn.disabled = true; btn.textContent = 'Sending…';
+      isOutdated().then(function (old) {
+        if (!old) return sendNow(t2, V2, d2);
+        saveDraft(t2, d2);
+        reloadToLatest('The portal was updated since you opened it, so we reloaded it to make sure your order uses the latest version. Your answers and clips are all still here: tick the two boxes and tap Send my order again.');
+      });
+    }
+    function sendNow(t2, V2, d2) {
       var data = orderData(t2, V2, d2);
       post(Object.assign({}, data, { compiledBrief: B.buildBrief(t2, data), siteKey: KEY, planSlot: d2.slot || '' })).then(function (r) {
         if (r.result === 'error') throw serverError(r.message || 'The order could not be saved.');
@@ -2466,6 +2498,10 @@ var ORDER = ['day_in_the_life', 'testimonials', 'staff_spotlight', 'highlight_re
     return { shot: shot, n: m ? (m[1] === 'Extra' ? 'Extra ' + m[2] : Number(m[2])) : shot.replace(/^Obj-\d+_/, ''), what: '', min: 0 };
   }
 
+  (function () {
+    var m = null; try { m = sessionStorage.getItem('bbUpdated'); sessionStorage.removeItem('bbUpdated'); } catch (e) {}
+    if (m) setTimeout(function () { toast(m); }, 400);
+  })();
   route();
 })();
 </script>
